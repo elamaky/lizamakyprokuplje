@@ -1,119 +1,70 @@
+document.addEventListener('DOMContentLoaded', function() {
+  if (!document.getElementById('user-stats')) {
+    const statsDiv = document.createElement('div');
+    statsDiv.id = 'user-stats';
+    statsDiv.innerHTML = `<p id="current-users"><b><i>Online: 0</i></b></p> / <p id="total-users"><b><i>Ukupno: 0</i></b></p>`;
+    document.body.appendChild(statsDiv);
 
+    const style = document.createElement('style');
+    style.textContent = `
+      #user-stats {
+        position: fixed;
+        top: 50px;
+        left: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1;
+        padding: 10px;
+       font-size: 20px;
+        cursor: move;
+      }
+      #user-stats p {
+        display: inline;
+        margin: 0 5px;
+      }
+      #local-time-div {
+        position: fixed;
+        top: 50px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1;
+        font-size: 20px;
+        cursor: move;
+      }
+    `;
+    document.head.appendChild(style);
 
-socket.on('azuriraj_slike', (serverSlike) => {
-  // Ukloni stare slike sa strane
-  Object.values(slike).forEach(s => {
-    const el = document.getElementById(s.id);
-    if (el) el.remove();
-  });
-  Object.keys(slike).forEach(k => delete slike[k]);
-  Object.assign(slike, serverSlike);
-
-  Object.values(slike).forEach(({id, url, left, top, width, height}) => {
-    let img = document.getElementById(id);
-    if (!img) {
-      img = document.createElement('img');
-      img.id = id;
-      img.src = url;
-      img.style.position = 'absolute';
-      img.style.cursor = 'move';
-      img.style.userSelect = 'none';
-      img.style.zIndex = '1600';
-      img.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        if (confirm('Obrisati sliku?')) {
-          socket.emit('obrisi_sliku', id);
-        }
-      });
-      document.body.appendChild(img);
-      setupInteract(img); // tvoj originalni setupInteract
-      setupSocketForImage(img, id); // dodajem socket emit na end događaje
+    if (authorizedUsers.has(currentUser)) {
+      setupInteract(statsDiv);
     }
-    img.style.width = width + 'px';
-    img.style.height = height + 'px';
-    img.style.transform = `translate(${left}px, ${top}px)`;
-    img.setAttribute('data-x', left);
-    img.setAttribute('data-y', top);
+  }
+
+  if (!document.getElementById('local-time-div')) {
+    const timeDiv = document.createElement('div');
+    timeDiv.id = 'local-time-div';
+    timeDiv.innerHTML = `<p id="local-time"><b><i>Vreme: --:--:--</i></b></p>`;
+    document.body.appendChild(timeDiv);
+
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('local-time').innerHTML = `<b><i>Vreme: ${now.toLocaleTimeString()}</i></b>`;
+    }, 1000);
+
+    if (authorizedUsers.has(currentUser)) {
+      setupInteract(timeDiv);
+    }
+  }
+
+  socket.on('usersCount', (data) => {
+    document.getElementById('current-users').innerHTML = `<b><i>Online: ${data.current}</i></b>`;
+    document.getElementById('total-users').innerHTML = `<b><i>Ukupno: ${data.total}</i></b>`;
   });
+
+  socket.emit('requestUsersCount');
 });
-
-function dodajSliku() {
-  const url = prompt("Unesi URL slike:");
-  if (!url) return;
-
-  const id = 'img-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-  const img = document.createElement('img');
-  img.src = url;
-  img.id = id;
-  img.style.position = 'absolute';
-  img.style.top = '10px';
-  img.style.left = '10px';
-  img.style.width = '150px';
-  img.style.height = '150px';
-  img.style.zIndex = '1600';
-  img.style.cursor = 'move';
-  img.style.userSelect = 'none';
-
-  img.addEventListener('contextmenu', e => {
-    e.preventDefault();
-    if (confirm('Obrisati sliku?')) {
-      img.remove();
-      delete slike[id];
-      socket.emit('azuriraj_slike', slike);
-    }
-  });
-
-  document.body.appendChild(img);
-
-  slike[id] = {
-    id,
-    url,
-    left: 10,
-    top: 10,
-    width: 150,
-    height: 150
-  };
-  socket.emit('azuriraj_slike', slike);
-
-  setupInteract(img);
-  setupSocketForImage(img, id);
-}
-
-document.getElementById('chatsl').onclick = dodajSliku;
-
-// Tvoj originalni setupInteract ne diramo!
-
-// Dodajemo socket emit kad slika zavrsi drag ili resize
-function setupSocketForImage(el, id) {
-  interact(el).draggable({
-    listeners: {
-      end(event) {
-        const target = event.target;
-        const x = parseFloat(target.getAttribute('data-x')) || 0;
-        const y = parseFloat(target.getAttribute('data-y')) || 0;
-        if (id && slike[id]) {
-          slike[id].left = x;
-          slike[id].top = y;
-          socket.emit('azuriraj_slike', slike);
-        }
-      }
-    }
-  });
-
-  interact(el).resizable({
-    listeners: {
-      end(event) {
-        const target = event.target;
-        const x = parseFloat(target.getAttribute('data-x')) || 0;
-        const y = parseFloat(target.getAttribute('data-y')) || 0;
-        if (id && slike[id]) {
-          slike[id].left = x;
-          slike[id].top = y;
-          slike[id].width = parseFloat(target.style.width);
-          slike[id].height = parseFloat(target.style.height);
-          socket.emit('azuriraj_slike', slike);
-        }
-      }
-    }
-  });
-}
