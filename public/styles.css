@@ -100,13 +100,14 @@ body {
     background-color: black;
     color: rgba(200, 200, 200, 0.5); 
     font-size: 17px;
+    resize: none;
     overflow: hidden;
     outline: none;
     
 }
 #guestList {
     position: absolute;
-    top: 60px;
+    top: 55px;
     right: 0;
     bottom: 0;
     width: 150px;
