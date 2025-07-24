@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         font-family: Arial, sans-serif;
         z-index: 1;
         padding: 10px;
-       font-size: 20px;
+       font-size: 25px;
         cursor: move;
       }
       #user-stats p {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         border-radius: 5px;
         font-family: Arial, sans-serif;
         z-index: 1;
-        font-size: 20px;
+        font-size: 25px;
         cursor: move;
       }
     `;
