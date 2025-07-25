@@ -1,70 +1,291 @@
 document.addEventListener('DOMContentLoaded', function() {
-  if (!document.getElementById('user-stats')) {
-    const statsDiv = document.createElement('div');
-    statsDiv.id = 'user-stats';
-    statsDiv.innerHTML = `<p id="current-users"><b><i>Online: 0</i></b></p> / <p id="total-users"><b><i>Ukupno: 0</i></b></p>`;
-    document.body.appendChild(statsDiv);
+  const authorizedUsers = new Set(['Radio Galaksija', 'ZI ZU', '*__X__*']);
+ let activeDiv = null;
 
-    const style = document.createElement('style');
-    style.textContent = `
-      #user-stats {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: transparent;
-        color: white;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        z-index: 1;
-        padding: 10px;
-       font-size: 25px;
-        cursor: move;
-      }
-      #user-stats p {
-        display: inline;
-        margin: 0 5px;
-      }
-      #local-time-div {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: transparent;
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        z-index: 1;
-        font-size: 25px;
-        cursor: move;
-      }
-    `;
-    document.head.appendChild(style);
+  function isAuthorized() {
+    return authorizedUsers.has(currentUser);
+  }
 
-    if (authorizedUsers.has(currentUser)) {
-      setupInteract(statsDiv);
+function setupDragAndResize(element) {
+  let isDragging = false;
+  let isResizing = false;
+  let resizeDir = '';
+  let offsetX = 0;
+  let offsetY = 0;
+  let active = false;
+
+  element.style.position = 'absolute';
+  element.style.left = element.style.left || '100px';
+  element.style.top = element.style.top || '100px';
+  element.style.boxSizing = 'border-box';
+
+  element.ondblclick = () => {
+    if (!isAuthorized()) return;
+
+    active = !active;
+    element.style.border = active ? '1px solid white' : 'none';
+    element.style.boxShadow = active ? '0 0 5px white' : 'none';
+    element.style.cursor = active ? 'move' : 'default';
+  };
+
+  element.onmousedown = e => {
+    if (!active) return;
+
+    const rect = element.getBoundingClientRect();
+    const offset = 10;
+
+    if (e.clientX >= rect.right - offset && e.clientY >= rect.bottom - offset) {
+      isResizing = true;
+      resizeDir = 'se';
+      element.style.cursor = 'se-resize';
+    } else if (e.clientX >= rect.right - offset) {
+      isResizing = true;
+      resizeDir = 'e';
+      element.style.cursor = 'e-resize';
+    } else if (e.clientY >= rect.bottom - offset) {
+      isResizing = true;
+      resizeDir = 's';
+      element.style.cursor = 's-resize';
+    } else {
+      isDragging = true;
+      offsetX = e.clientX - element.offsetLeft;
+      offsetY = e.clientY - element.offsetTop;
+      element.style.cursor = 'move';
+    }
+
+    document.onmousemove = onMove;
+    document.onmouseup = stopAction;
+  };
+
+  function onMove(e) {
+    e.preventDefault();
+
+    if (isDragging) {
+      element.style.left = (e.clientX - offsetX) + 'px';
+      element.style.top = (e.clientY - offsetY) + 'px';
+    }
+
+    if (isResizing) {
+      const rect = element.getBoundingClientRect();
+      if (resizeDir === 'e') {
+        element.style.width = (e.clientX - rect.left) + "px";
+      }
+      if (resizeDir === 's') {
+        element.style.height = (e.clientY - rect.top) + "px";
+      }
+      if (resizeDir === 'se') {
+        element.style.width = (e.clientX - rect.left) + "px";
+        element.style.height = (e.clientY - rect.top) + "px";
+      }
+
+      const baseWidth = element.offsetWidth;
+      const baseHeight = element.offsetHeight;
+
+      element.querySelectorAll('p, span').forEach(el => {
+        const fontSize = Math.min(baseWidth * 0.15, baseHeight * 0.3);
+        el.style.fontSize = fontSize + 'px';
+      });
     }
   }
 
-  if (!document.getElementById('local-time-div')) {
-    const timeDiv = document.createElement('div');
-    timeDiv.id = 'local-time-div';
-    timeDiv.innerHTML = `<p id="local-time"><b><i>Vreme: --:--:--</i></b></p>`;
-    document.body.appendChild(timeDiv);
+  function stopAction() {
+    isDragging = false;
+    isResizing = false;
+    resizeDir = '';
+    element.style.cursor = active ? 'move' : 'default';
+    document.onmousemove = null;
+    document.onmouseup = null;
 
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById('local-time').innerHTML = `<b><i>Vreme: ${now.toLocaleTimeString()}</i></b>`;
-    }, 1000);
+    socket.emit('updateDiv', {
+      id: element.id,
+      left: element.style.left,
+      top: element.style.top,
+      width: element.style.width,
+      height: element.style.height,
+      color: element.style.color || '',
+      backgroundImage: element.style.backgroundImage || '',
+      fontSize: element.querySelector('p, span')?.style.fontSize || '',
+    });
+  }
+}
 
-    if (authorizedUsers.has(currentUser)) {
-      setupInteract(timeDiv);
+  function createDivs() {
+    if (!document.getElementById('user-stats')) {
+      const statsDiv = document.createElement('div');
+      statsDiv.id = 'user-stats';
+      statsDiv.innerHTML = `<span id="current-users"><b><i>Online: 0</i></b></span>
+                            <span id="total-users"><b><i>Ukupno: 0</i></b></span>`;
+    Object.assign(statsDiv.style, {
+  position: 'absolute',
+  top: '50px',
+  left: '20px',
+  color: 'white',
+  zIndex: '1000',
+  padding: '10px',
+  fontSize: '20px',
+  userSelect: 'none',
+  display: 'flex',
+  gap: '15px',
+  alignItems: 'center',
+  fontFamily: 'Arial, sans-serif',
+  border: 'none',
+  outline: 'none',
+  whiteSpace: 'nowrap',
+  boxShadow: 'none'
+ });
+      document.body.appendChild(statsDiv);
+      setupDragAndResize(statsDiv);
+    }
+
+    if (!document.getElementById('local-time-div')) {
+      const timeDiv = document.createElement('div');
+      timeDiv.id = 'local-time-div';
+      timeDiv.innerHTML = `<p id="local-time"><b><i>Vreme: --:--:--</i></b></p>`;
+  Object.assign(timeDiv.style, {
+  position: 'absolute',
+  top: '50px',
+  right: '20px',
+  color: 'white',
+  zIndex: '1000',
+  padding: '10px',
+  fontSize: '20px',
+  userSelect: 'none',
+  fontFamily: 'Arial, sans-serif',
+  border: 'none',
+  outline: 'none',
+  boxShadow: 'none',
+  whiteSpace: 'nowrap'
+ });
+
+      document.body.appendChild(timeDiv);
+      setupDragAndResize(timeDiv);
+
+      setInterval(() => {
+        const now = new Date();
+        const localTimeEl = document.getElementById('local-time');
+        if (localTimeEl) {
+          localTimeEl.innerHTML = `<b><i>Vreme: ${now.toLocaleTimeString()}</i></b>`;
+        }
+      }, 1000);
     }
   }
 
-  socket.on('usersCount', (data) => {
-    document.getElementById('current-users').innerHTML = `<b><i>Online: ${data.current}</i></b>`;
-    document.getElementById('total-users').innerHTML = `<b><i>Ukupno: ${data.total}</i></b>`;
+  createDivs();
+const style = document.createElement('style');
+style.textContent = `
+  #user-stats.guest::before,
+  #local-time-div.guest::before {
+    content: none !important;
+  }
+`;
+document.head.appendChild(style);
+
+
+  const colorPicker = document.getElementById('colorPicker');
+  const gradijent = document.getElementById('gradijent');
+
+  function hidePickers() {
+    if (colorPicker) colorPicker.style.display = 'none';
+    if (gradijent) gradijent.style.display = 'none';
+  }
+
+  function showPickers() {
+    if (colorPicker) colorPicker.style.display = 'inline-block';
+    if (gradijent) gradijent.style.display = 'grid';
+  }
+
+function applyTextColorOrGradient(element, colorOrGradient) {
+  if (!isAuthorized()) return;
+
+  if (colorOrGradient.startsWith('linear-gradient') || colorOrGradient.startsWith('radial-gradient')) {
+    element.style.backgroundImage = colorOrGradient;
+    element.style.webkitBackgroundClip = 'text';
+    element.style.backgroundClip = 'text';
+    element.style.webkitTextFillColor = 'transparent';
+    element.style.color = 'transparent';
+  } else {
+    element.style.backgroundImage = '';
+    element.style.color = colorOrGradient;
+    element.style.webkitBackgroundClip = '';
+    element.style.backgroundClip = '';
+    element.style.webkitTextFillColor = '';
+  }
+}
+
+  function togglePickersForDiv(div) {
+    if (!isAuthorized()) return;
+
+    if (activeDiv === div) {
+      hidePickers();
+      activeDiv = null;
+    } else {
+      activeDiv = div;
+      showPickers();
+    }
+  }
+
+  ['user-stats', 'local-time-div'].forEach(id => {
+    const div = document.getElementById(id);
+    if (div) {
+      div.addEventListener('dblclick', e => {
+        e.stopPropagation();
+        togglePickersForDiv(div);
+      });
+    }
   });
 
-  socket.emit('requestUsersCount');
+  if (colorPicker) {
+    colorPicker.addEventListener('input', e => {
+      if (activeDiv) applyTextColorOrGradient(activeDiv, e.target.value);
+    });
+  }
+
+  if (gradijent) {
+    gradijent.querySelectorAll('.gradijent-box').forEach(box => {
+      box.addEventListener('click', () => {
+        if (activeDiv) {
+          const bg = window.getComputedStyle(box).backgroundImage;
+          applyTextColorOrGradient(activeDiv, bg);
+        }
+      });
+    });
+  }
+socket.on('updateDiv', (data) => {
+  setTimeout(() => {
+    const element = document.getElementById(data.id);
+    if (!element) return;
+
+    element.style.left = data.left;
+    element.style.top = data.top;
+    element.style.width = data.width;
+    element.style.height = data.height;
+
+    const isGradient = data.backgroundImage && 
+      (data.backgroundImage.startsWith('linear-gradient') || data.backgroundImage.startsWith('radial-gradient'));
+
+    if (isGradient) {
+      element.style.backgroundImage = data.backgroundImage;
+      element.style.webkitBackgroundClip = 'text';
+      element.style.backgroundClip = 'text';
+      element.style.webkitTextFillColor = 'transparent';
+      element.style.color = 'transparent';
+    } else {
+      element.style.backgroundImage = '';
+      element.style.webkitBackgroundClip = '';
+      element.style.backgroundClip = '';
+      element.style.webkitTextFillColor = '';
+      element.style.color = data.color || '';
+    }
+
+    element.querySelectorAll('p, span').forEach(el => {
+      el.style.fontSize = data.fontSize || '';
+    });
+  }, 3000);
 });
+socket.on('usersCount', data => {
+  const currentUsers = document.getElementById('current-users');
+  const totalUsers = document.getElementById('total-users');
+  if (currentUsers) currentUsers.innerHTML = `<b><i>Online: ${data.current}</i></b>`;
+  if (totalUsers) totalUsers.innerHTML = `<b><i>Ukupno: ${data.total}</i></b>`;
+});
+   });
