@@ -3,6 +3,19 @@ let myNickname = ''; // biće postavljen od servera
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
+const virtualGuests = [
+  { nickname: 'Bala Hatun', color: 'deepskyblue' },
+  { nickname: 'Halime', color: 'purple' },
+  { nickname: 'Holofira', color: 'red' },
+  { nickname: 'Robot-X', color: 'green' },
+  { nickname: 'Security', color: 'blue' },
+  { nickname: 'Higijenicar', color: 'olive' },
+  { nickname: 'Emir-Bosanac', color: 'navy' },
+  { nickname: 'Jasmina', color: 'hotpink' },
+  { nickname: 'Can Jaman', color: 'darkslategray' },
+  { nickname: 'Elena ukrajinka', color: 'orchid' },
+  { nickname: 'Beti Makedonka', color: 'mediumvioletred' }
+];
 
 let isBold = false;
 let isItalic = false;
@@ -14,6 +27,13 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
+
+let virtualsEnabled = false;
+
+document.getElementById('vir').addEventListener('click', () => {
+  virtualsEnabled = !virtualsEnabled;
+  socket.emit('toggleVirtualGuests', virtualsEnabled);
+});
 
 document.getElementById('boldBtn').addEventListener('click', function() {
     isBold = !isBold;
@@ -202,9 +222,16 @@ socket.on('updateGuestList', function (users) {
             newGuest.className = 'guest';
             newGuest.id = guestId;
             newGuest.textContent = nickname;
-            newGuest.style.color = '';
 
-            guestsData[guestId] = { nickname, color: newGuest.style.color };
+            // Dodaj boju ako je virtualni gost
+            const vg = virtualGuests.find(v => v.nickname === nickname);
+            if (vg) {
+                newGuest.style.color = vg.color;
+                guestsData[guestId] = { nickname, color: vg.color };
+            } else {
+                newGuest.style.color = '';
+                guestsData[guestId] = { nickname, color: '' };
+            }
 
             newGuest.setAttribute('data-guest-id', guestId);
             guestList.appendChild(newGuest);
