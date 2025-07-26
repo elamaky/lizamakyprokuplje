@@ -32,7 +32,7 @@ function setupDragAndResize(element) {
     if (!active) return;
 
     const rect = element.getBoundingClientRect();
-    const offset = 10;
+    const offset = 2;
 
     if (e.clientX >= rect.right - offset && e.clientY >= rect.bottom - offset) {
       isResizing = true;
@@ -117,10 +117,10 @@ function setupDragAndResize(element) {
                             <span id="total-users"><b><i>Ukupno: 0</i></b></span>`;
     Object.assign(statsDiv.style, {
   position: 'absolute',
-  top: '50px',
-  left: '20px',
+  top: '30px',
+  left: '100px',
   color: 'white',
-  zIndex: '1000',
+  zIndex: '3',
   padding: '10px',
   fontSize: '20px',
   userSelect: 'none',
@@ -143,10 +143,10 @@ function setupDragAndResize(element) {
       timeDiv.innerHTML = `<p id="local-time"><b><i>Vreme: --:--:--</i></b></p>`;
   Object.assign(timeDiv.style, {
   position: 'absolute',
-  top: '50px',
-  right: '20px',
+  top: '30px',
+  left: '1000px',
   color: 'white',
-  zIndex: '1000',
+  zIndex: '3',
   padding: '10px',
   fontSize: '20px',
   userSelect: 'none',
