@@ -10,7 +10,7 @@ const virtualGuests = [
   { nickname: 'Robot-X', color: 'green' },
   { nickname: 'Security', color: 'blue' },
   { nickname: 'Higijenicar', color: 'olive' },
-  { nickname: 'Emir-Bosanac', color: 'navy' },
+  { nickname: 'Emir-Bosanac', color: 'lightyellow' },
   { nickname: 'Jasmina', color: 'hotpink' },
   { nickname: 'Can Jaman', color: 'darkslategray' },
   { nickname: 'Elena ukrajinka', color: 'orchid' },
