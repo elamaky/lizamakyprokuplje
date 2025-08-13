@@ -11,7 +11,7 @@ kontrolniProzor.id = 'po';
 kontrolniProzor.style.position = 'fixed';
 kontrolniProzor.style.top = '50px';
 kontrolniProzor.style.right = '20px';
-kontrolniProzor.style.background = '#fff';
+kontrolniProzor.style.background = '#000';
 kontrolniProzor.style.border = '1px solid #ccc';
 kontrolniProzor.style.padding = '10px';
 kontrolniProzor.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
@@ -78,3 +78,17 @@ document.getElementById('aj').addEventListener('click', () => {
 
   console.log('💾 Poruke snimljene');
 });
+
+// MutationObserver koji hvata svaku novu poruku sa stilovima
+const messageArea = document.getElementById('messageArea');
+const observer = new MutationObserver(mutations => {
+  if (!snimanjeAktivno) return;
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.classList && node.classList.contains('message')) {
+        porukeZaSnimanje.push(node.outerHTML); // TAČNO onako kako je prikazana
+      }
+    });
+  });
+});
+observer.observe(messageArea, { childList: true });
