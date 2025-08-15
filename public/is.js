@@ -328,9 +328,11 @@ socket.on('updateDiv', (data) => {
   }, 3000);
 });
 socket.on('usersCount', data => {
-  const currentUsers = document.getElementById('current-users');
-  const totalUsers = document.getElementById('total-users');
-  if (currentUsers) currentUsers.innerHTML = `<b><i>Online: ${data.current}</i></b>`;
-  if (totalUsers) totalUsers.innerHTML = `<b><i>Ukupno: ${data.total}</i></b>`;
+  setTimeout(() => {
+    const currentUsers = document.getElementById('current-users');
+    const totalUsers = document.getElementById('total-users');
+    if (currentUsers) currentUsers.innerHTML = `<b><i>Online: ${data.current}</i></b>`;
+    if (totalUsers) totalUsers.innerHTML = `<b><i>Ukupno: ${data.total}</i></b>`;
+  }, 3000);
 });
-   });
+ });
