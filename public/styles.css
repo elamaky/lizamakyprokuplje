@@ -110,7 +110,7 @@ body {
     top: 55px;
     right: 0;
     bottom: 0;
-    width: 150px;
+    width: 165px;
     overflow-y: auto;
     border: 2px solid white;
     background-color: black;
@@ -414,5 +414,6 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
