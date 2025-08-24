@@ -135,4 +135,96 @@ const saveImagesToLocalStorage = () => {
 // Pozivamo funkciju da sačuvamo slike u localStorage
 saveImagesToLocalStorage();
 
+// === Nezavisne animacije za slike iz modala ===
+const imageAnimations = {
+    "#1": (img) => {
+        img.style.transform = "scale(0)";
+        img.style.transition = "transform 5s ease-out";
+        setTimeout(() => {
+            img.style.transform = "scale(3)";
+        }, 50);
+    },
+    "#2": (img) => {
+        img.style.transform = "rotate(0deg) scale(0)";
+        img.style.transition = "transform 5s ease-in-out";
+        setTimeout(() => {
+            img.style.transform = "rotate(360deg) scale(2)";
+        }, 50);
+    },
+    "#3": (img) => {
+        img.style.transform = "translate(-50%, -50%) scale(0)";
+        img.style.transition = "transform 5s cubic-bezier(0.68,-0.55,0.27,1.55)";
+        setTimeout(() => {
+            img.style.transform = "translate(-50%, -50%) scale(2.5)";
+        }, 50);
+    },
+    "#4": (img) => {
+        img.style.transform = "scale(0)";
+        img.style.transition = "transform 5s ease-in";
+        setTimeout(() => {
+            img.style.transform = "scale(4)";
+        }, 50);
+    },
+    "#5": (img) => {
+        img.style.transform = "scale(0)";
+        img.style.transition = "transform 5s linear";
+        setTimeout(() => {
+            img.style.transform = "scale(3.5)";
+        }, 50);
+    }
+};
 
+// Funkcija za pokretanje animacije na odabranoj slici
+const triggerImageAnimation = (imgSrc, codeOverride) => {
+    const code = codeOverride || prompt("Unesi kod animacije (#1 - #5):");
+    if (!code || !imageAnimations[code]) return;
+
+    // Zatvori modal nakon unosa koda
+    const modal = document.getElementById('smileModal');
+    if (modal) modal.style.display = 'none';
+
+    if (!codeOverride) {
+        // Emit samo ako nije emitovana od servera
+        socket.emit('imageAnimation', { src: imgSrc, code: code });
+    }
+
+    const chatContainer = document.getElementById('chatContainer'); // zamena za body
+    const animContainer = document.createElement("div");
+    Object.assign(animContainer.style, {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        pointerEvents: "none",
+        zIndex: "9999",
+    });
+
+    const img = document.createElement("img");
+    img.src = imgSrc;
+    img.style.maxWidth = "600px";
+    img.style.maxHeight = "600px";
+    img.style.display = "block";
+    animContainer.appendChild(img);
+    chatContainer.appendChild(animContainer);
+
+    imageAnimations[code](img);
+
+    setTimeout(() => {
+        chatContainer.removeChild(animContainer);
+    }, 9000);
+};
+
+// === Dodavanje desnog klika u postojeći modal ===
+document.getElementById('smileContainer').addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    const target = e.target.closest('img');
+    if (target) {
+        triggerImageAnimation(target.src);
+    }
+});
+
+// === Socket.io event listener ===
+socket.on('imageAnimation', (data) => {
+    // Pokreće animaciju koja je emitovana od drugog klijenta
+    triggerImageAnimation(data.src, data.code); 
+});
