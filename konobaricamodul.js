@@ -171,6 +171,11 @@ socket.broadcast.emit("promeniSirinu", data);
     chatLayoutData = null;
     io.emit('reset-layout');
   });
+      socket.on('imageAnimation', (data) => {
+    socket.broadcast.emit('imageAnimation', data); // ili io.emit ako hoćeš da svi vide
+});
+
         socket.on('disconnect', () => {});
     });
+
 };
