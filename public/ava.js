@@ -41,7 +41,6 @@ document.head.appendChild(style);
 // Interni objekat za čuvanje avatara
 let avatars = {};
 
-// Funkcija za sačuvavanje avatara u sessionStorage i localStorage
 // Funkcija za sačuvavanje avatara u sessionStorage
 function saveAvatarsToStorage() {
   sessionStorage.setItem('avatars', JSON.stringify(avatars));
@@ -52,6 +51,7 @@ function loadAvatarsFromStorage() {
   const storedAvatars = sessionStorage.getItem('avatars');
   return storedAvatars ? JSON.parse(storedAvatars) : {};
 }
+
 // Pomoćna funkcija za kreiranje avatara
 function createAvatarImg(src) {
   const img = document.createElement('img');
@@ -60,18 +60,15 @@ function createAvatarImg(src) {
   return img;
 }
 
-// Kada se lista gostiju ažurira (kada korisnik diskonektuje ili se povezuje)
+// Kada se lista gostiju ažurira
 socket.on('updateGuestList', guests => {
-  // Ažuriraj avatar listu iz objekta (ako su podaci prethodno sačuvani)
   for (const username of guests) {
     const avatar = avatars[username];
-
-    // Ako avatar postoji, prikaži ga
     if (avatar) {
       const guestDiv = document.getElementById(`guest-${username}`);
       if (guestDiv) {
-        guestDiv.querySelector('.inline-avatar')?.remove(); // Ukloni stari avatar (ako postoji)
-        guestDiv.appendChild(createAvatarImg(avatar)); // Dodaj novi avatar
+        guestDiv.querySelector('.inline-avatar')?.remove(); // Ukloni stari avatar
+        guestDiv.appendChild(createAvatarImg(avatar));      // Dodaj novi
       }
     }
   }
@@ -79,22 +76,24 @@ socket.on('updateGuestList', guests => {
 
 // Primi sve postojeće avatare kada se korisnici prvi put povežu
 socket.on('initialAvatars', avatarsFromServer => {
-avatars = avatarsFromServer || {};
-
-  // Sačuvaj učitane avatare
+  avatars = avatarsFromServer || {};
   saveAvatarsToStorage();
 
-  // Prikazivanje svih avatara na interfejsu
   for (const username in avatars) {
     const avatar = avatars[username];
     (function tryAppend() {
       const guestDiv = document.getElementById(`guest-${username}`);
-      if (guestDiv) guestDiv.appendChild(createAvatarImg(avatar));
-      else setTimeout(tryAppend, 100);
+      if (guestDiv) {
+        guestDiv.querySelector('.inline-avatar')?.remove(); // Ukloni stari avatar
+        guestDiv.appendChild(createAvatarImg(avatar));      // Dodaj novi
+      } else {
+        setTimeout(tryAppend, 100);
+      }
     })();
   }
 });
 
+// Kada se avatar promeni
 socket.on('avatarChange', data => {
   if (data.avatar) {
     avatars[data.username] = data.avatar;
@@ -105,13 +104,12 @@ socket.on('avatarChange', data => {
 
   const guestDiv = document.getElementById(`guest-${data.username}`);
   if (guestDiv) {
-    guestDiv.querySelector('.inline-avatar')?.remove();
+    guestDiv.querySelector('.inline-avatar')?.remove(); // Ukloni stari
     if (data.avatar) {
-      guestDiv.appendChild(createAvatarImg(data.avatar));
+      guestDiv.appendChild(createAvatarImg(data.avatar)); // Dodaj novi
     }
   }
 });
-
 
 // Prikazivanje avatara za trenutnog korisnika kada klikne na avatar div
 document.getElementById('sl').addEventListener('click', () => {
@@ -123,7 +121,10 @@ document.getElementById('sl').addEventListener('click', () => {
 
   const username = window.currentUser.username;
 
-  // Ovde nemoj brisati ceo innerHTML, samo dodaj slike za avatar
+  // Pre dodavanja novih slika očisti stare slike (ali ne i dugme)
+  avatarDiv.querySelectorAll('img').forEach(img => img.remove());
+  avatarDiv.querySelector('#clear-avatar')?.remove();
+
   for (let i = 1; i <= 20; i++) {
     const img = document.createElement('img');
     img.src = `nik/sl${i}.webp`;
@@ -135,33 +136,31 @@ document.getElementById('sl').addEventListener('click', () => {
         guestDiv.querySelector('.inline-avatar')?.remove();
         guestDiv.appendChild(createAvatarImg(img.src));
       }
-      avatars[username] = img.src; // Ažuriraj avatar u memoriji
-      saveAvatarsToStorage(); // Sačuvaj promenu u storage
+      avatars[username] = img.src;
+      saveAvatarsToStorage();
       socket.emit('avatarChange', { username, avatar: img.src });
     });
 
-    avatarDiv.appendChild(img);  // Dodaj slike za avatar
+    avatarDiv.appendChild(img);
   }
 
-  // Dodajemo dugme za brisanje avatara
+  // Dodaj dugme za brisanje avatara
   const clearButton = document.createElement('button');
   clearButton.id = 'clear-avatar';
   clearButton.textContent = 'Obriši Avatar';
   clearButton.addEventListener('click', () => {
-    // Brisanje avatar slike korisnika
     const guestDiv = document.getElementById(`guest-${username}`);
     if (guestDiv) {
-      guestDiv.querySelector('.inline-avatar')?.remove();  // Ukloni avatar
+      guestDiv.querySelector('.inline-avatar')?.remove();
     }
-    
-    // Opcionalno: briši avatar u memoriji (ako želiš da izbrišeš avatar iz objekta)
-    delete avatars[username];  
-    saveAvatarsToStorage(); // Spremi promene u storage
-    socket.emit('avatarChange', { username, avatar: '' });  // Pošaljite praznu vrednost serveru
+    delete avatars[username];
+    saveAvatarsToStorage();
+    socket.emit('avatarChange', { username, avatar: '' });
   });
 
-  avatarDiv.appendChild(clearButton);  // Dodaj dugme za brisanje avatara
+  avatarDiv.appendChild(clearButton);
 });
 
 // Registracija korisnika sa početnim avatarom
 socket.emit('register', { username: 'mojUsername', avatar: 'putanja/slike.webp' });
+
