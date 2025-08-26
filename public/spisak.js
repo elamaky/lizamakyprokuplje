@@ -49,3 +49,34 @@ window.onload = function () {
         tabela.appendChild(red);
     }
 }
+
+//    ZA ODRZAVANJE KONEKCIJE KADA KORISNIKU TAB NIJE U FOKUSU
+let heartbeatInterval;
+
+function startHeartbeat() {
+  if (!heartbeatInterval) {
+    heartbeatInterval = setInterval(() => {
+      if (window.currentUser?.username) {
+        socket.emit('heartbeat', { username: window.currentUser.username });
+      }
+    }, 5000); // 5 sekundi
+  }
+}
+
+function stopHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+}
+
+// Praćenje promene fokusa taba
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    startHeartbeat();  // Tab nije u fokusu → šalji heartbeat
+  } else {
+    stopHeartbeat();   // Tab je u fokusu → zaustavi heartbeat
+  }
+});
+
+
