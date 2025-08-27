@@ -8,6 +8,7 @@ document.getElementById('smilesBtn').addEventListener('click', () => {
         Object.assign(smileModal.style, {
             top: `${bottom + 5}px`,
             left: `${left}px`,
+             zIndex: '4' ,
             display: 'flex'
         });
 
@@ -370,6 +371,7 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
 
 
