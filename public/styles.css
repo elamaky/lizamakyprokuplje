@@ -9,6 +9,46 @@ body {
     margin: 0;
     overflow-x: hidden;
 }
+/* Stil za ekrane sa širinom manjom od 768px (tablet i mobilni uređaji) */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        background-color: #111; /* Tamnija boja, u skladu sa glavnim dizajnom */
+        height: auto; /* Oslobađamo visinu na manjim ekranima */
+        display: block; /* Možeš ukloniti flex, ili koristiti 'block' da bi raspored bio jednostavniji */
+        justify-content: flex-start; /* Raspored na manjim ekranima, možda želimo da se sadržaj poravna sa vrhom */
+        align-items: flex-start; /* Poravnavanje sadržaja u gornjem levom kutu */
+    }
+
+    h1 {
+        font-size: 1.5em; /* Veća veličina za naslove na manjim ekranima */
+    }
+
+    .container {
+        width: 95%; /* Širina kontejnera sa 95% na manjim ekranima */
+    }
+}
+
+/* Stil za ekrane sa širinom manjom od 480px (mobilni uređaji) */
+@media (max-width: 480px) {
+    body {
+        font-size: 12px; /* Smanjena veličina fonta za mobilne uređaje */
+        background-color: #222; /* Tamnija nijansa za mobilne uređaje */
+        padding: 10px; /* Dodajemo malo paddinga na ivicama, da sadržaj ne bude preblizu ivici ekrana */
+        height: auto; /* Takođe oslobađamo visinu */
+        display: block; /* Ovdje možemo zadržati block display */
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    h1 {
+        font-size: 1.2em; /* Manja veličina naslova za mobilne ekrane */
+    }
+
+    .container {
+        width: 100%; /* Pun ekran za mobilne uređaje */
+    }
+}
 
   #authContainer {
     background-color: black; /* Crna pozadina */
@@ -414,3 +454,4 @@ body {
       z-index: 999;
       display: none;
     }
+
