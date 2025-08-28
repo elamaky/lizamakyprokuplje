@@ -48,35 +48,19 @@ window.onload = function () {
         red.appendChild(input);
         tabela.appendChild(red);
     }
-}
 
-//    ZA ODRZAVANJE KONEKCIJE KADA KORISNIKU TAB NIJE U FOKUSU
-let heartbeatInterval;
+    // --- STREAM DEO ---MIA-DORARADIO
+    const dugmeMia = document.getElementById("mia"); // drugačije ime
+    const playerMia = new Audio("https://stm1.srvif.com:7258/stream");
+    playerMia.id = "playermia";
 
-function startHeartbeat() {
-  if (!heartbeatInterval) {
-    heartbeatInterval = setInterval(() => {
-      if (window.currentUser?.username) {
-        socket.emit('heartbeat', { username: window.currentUser.username });
-      }
-    }, 5000); // 5 sekundi
-  }
-}
-
-function stopHeartbeat() {
-  if (heartbeatInterval) {
-    clearInterval(heartbeatInterval);
-    heartbeatInterval = null;
-  }
-}
-
-// Praćenje promene fokusa taba
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    startHeartbeat();  // Tab nije u fokusu → šalji heartbeat
-  } else {
-    stopHeartbeat();   // Tab je u fokusu → zaustavi heartbeat
-  }
-});
-
-
+    dugmeMia.addEventListener("click", () => {
+        if (playerMia.paused) {
+            playerMia.play();
+            dugmeMia.textContent = "Stop";
+        } else {
+            playerMia.pause();
+            dugmeMia.textContent = "R-Mia";
+        }
+    });
+};
