@@ -187,8 +187,8 @@ const imageAnimations = {
             const dot = document.createElement("div");
             Object.assign(dot.style, {
                 position: "absolute",
-                width: "4px",
-                height: "4px",
+                width: "1px",
+                height: "1px",
                 borderRadius: "50%",
                 background: "white",
                 top: Math.random() * 100 + "%",
@@ -232,10 +232,85 @@ const imageAnimations = {
 let lastAnimTime = 0;
 let animInProgress = false;
 
+// === Custom modal (za unos i obaveštenja) ===
+function showCustomModal(message, options = {}, callback = null) {
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(0,0,0,0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 10000,
+    });
+
+    const box = document.createElement("div");
+    Object.assign(box.style, {
+        background: "black",
+        padding: "20px",
+        borderRadius: "12px",
+        border: "2px solid #0ff",
+        boxShadow: "0 0 15px #0ff",
+        textAlign: "center",
+        minWidth: "320px",
+        color: "#fff",
+        fontFamily: "monospace",
+    });
+
+    const label = document.createElement("div");
+    label.textContent = message;
+    label.style.marginBottom = "15px";
+    box.appendChild(label);
+
+    let input = null;
+    if (options.input) {
+        input = document.createElement("input");
+        input.type = "text";
+        Object.assign(input.style, {
+            width: "100%",
+            padding: "8px",
+            background: "black",
+            color: "#0ff",
+            border: "2px solid #0ff",
+            borderRadius: "6px",
+            outline: "none",
+            boxShadow: "0 0 8px #0ff",
+            textAlign: "center",
+        });
+        box.appendChild(input);
+    }
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    const close = (val = null) => {
+        document.body.removeChild(overlay);
+        if (callback) callback(val);
+    };
+
+    document.addEventListener("keydown", function handler(e) {
+        if (e.key === "Enter") {
+            document.removeEventListener("keydown", handler);
+            if (options.input && input) {
+                close(input.value.trim());
+            } else {
+                close(null);
+            }
+        }
+    });
+
+    if (input) input.focus();
+}
+
+// === Trigger animacije ===
 const triggerImageAnimation = (imgSrc, codeOverride, nickname, userText, color, gradient, isRemote = false) => {
     // === GLOBALNA BLOKADA AKO ANIMACIJA VEĆ TRAJE ===
     if (animInProgress && !isRemote) {
-        alert("Već je u toku animacija – sačekaj da završi.");
+        showCustomModal("Već je u toku animacija – sačekaj da završi.");
         return;
     }
 
@@ -243,119 +318,135 @@ const triggerImageAnimation = (imgSrc, codeOverride, nickname, userText, color, 
     if (!authorizedUsers.has(nickname || myNickname) && !isRemote) {
         const now = Date.now();
         if (now - lastAnimTime < 5 * 60 * 1000) {
-            alert("Možeš poslati samo 1 animaciju na svakih 5 minuta.");
+            showCustomModal("Možeš poslati samo 1 animaciju na svakih 5 minuta.");
             return;
         }
         lastAnimTime = now;
     }
 
-    const code = codeOverride || prompt("Unesi kod animacije (#1 - #5):");
-    if (!code || !imageAnimations[code]) return;
+    const proceedWithCode = (finalCode) => {
+        if (!finalCode) return;
 
-    // prompt samo ako je lokalni korisnik
-    if (!userText && !isRemote) {
-        userText = prompt("Unesi tekst koji želiš da prikažeš:");
-    }
+        // uzima samo prvi token (npr. "#1" od "#1    bla")
+        finalCode = finalCode.split(/\s+/)[0];
+        if (!imageAnimations[finalCode]) return;
 
-    const modal = document.getElementById('smileModal');
-    if (modal) modal.style.display = 'none';
+        const proceedWithText = (finalText) => {
+            const modal = document.getElementById('smileModal');
+            if (modal) modal.style.display = 'none';
+
+            if (!codeOverride && !isRemote) {
+                socket.emit('imageAnimation', { 
+                    src: imgSrc, 
+                    code: finalCode, 
+                    nickname: nickname || myNickname, 
+                    text: finalText, 
+                    color: currentColor, 
+                    gradient: currentGradient 
+                });
+            }
+
+            // === START animacije ===
+            animInProgress = true;
+
+            const chatContainer = document.getElementById('chatContainer');
+            const animContainer = document.createElement("div");
+            Object.assign(animContainer.style, {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none",
+                zIndex: "9999",
+                textAlign: "center",
+            });
+
+            const img = document.createElement("img");
+            img.src = imgSrc;
+            img.style.maxWidth = "600px";
+            img.style.maxHeight = "600px";
+            img.style.display = "block";
+            animContainer.appendChild(img);
+            chatContainer.appendChild(animContainer);
+
+            // Nickname na dnu
+            const nameTag = document.createElement("div");
+            nameTag.innerText = nickname || myNickname;
+            Object.assign(nameTag.style, {
+                position: "absolute",
+                bottom: "40px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                fontSize: "24px",
+                zIndex: "10000",
+                pointerEvents: "none",
+                color: "#fff",
+            });
+
+            // Text ispod nicka
+            const textTag = document.createElement("div");
+            textTag.innerText = finalText || "";
+            Object.assign(textTag.style, {
+                position: "absolute",
+                bottom: "10px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                fontSize: "20px",
+                zIndex: "10000",
+                pointerEvents: "none",
+                color: "#fff",
+            });
+
+            const divId = `guest-${nickname || myNickname}`;
+            const userDiv = document.getElementById(divId);
+
+            if (color) {
+                nameTag.style.color = color;
+                textTag.style.color = color;
+            } else if (gradient || (userDiv && userDiv.classList.contains('use-gradient'))) {
+                const gradientClass = gradient || (userDiv ? Array.from(userDiv.classList).find(c => c.startsWith('gradient-')) : null);
+                if (gradientClass) {
+                    const bg = getComputedStyle(document.querySelector(`.${gradientClass}`)).backgroundImage;
+                    [nameTag, textTag].forEach(tag => {
+                        tag.style.backgroundImage = bg;
+                        tag.style.backgroundClip = 'text';
+                        tag.style.webkitBackgroundClip = 'text';
+                        tag.style.webkitTextFillColor = 'transparent';
+                    });
+                }
+            }
+
+            chatContainer.appendChild(nameTag);
+            chatContainer.appendChild(textTag);
+
+            imageAnimations[finalCode](img);
+
+            setTimeout(() => {
+                chatContainer.removeChild(animContainer);
+                chatContainer.removeChild(nameTag);
+                chatContainer.removeChild(textTag);
+
+                // === KRAJ animacije ===
+                animInProgress = false;
+            }, 9000);
+        };
+
+        if (!userText && !isRemote) {
+            showCustomModal("Unesi tekst koji želiš da prikažeš:", { input: true }, proceedWithText);
+        } else {
+            proceedWithText(userText);
+        }
+    };
 
     if (!codeOverride && !isRemote) {
-        socket.emit('imageAnimation', { 
-            src: imgSrc, 
-            code: code, 
-            nickname: nickname || myNickname, 
-            text: userText, 
-            color: currentColor, 
-            gradient: currentGradient 
-        });
+        showCustomModal("Unesi kod animacije (#1 - #5):", { input: true }, proceedWithCode);
+    } else {
+        proceedWithCode(codeOverride);
     }
-
-    // === START animacije ===
-    animInProgress = true;
-
-    const chatContainer = document.getElementById('chatContainer');
-    const animContainer = document.createElement("div");
-    Object.assign(animContainer.style, {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        pointerEvents: "none",
-        zIndex: "9999",
-        textAlign: "center",
-    });
-
-    const img = document.createElement("img");
-    img.src = imgSrc;
-    img.style.maxWidth = "600px";
-    img.style.maxHeight = "600px";
-    img.style.display = "block";
-    animContainer.appendChild(img);
-    chatContainer.appendChild(animContainer);
-
-    // Nickname na dnu
-    const nameTag = document.createElement("div");
-    nameTag.innerText = nickname || myNickname;
-    Object.assign(nameTag.style, {
-        position: "absolute",
-        bottom: "40px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontWeight: "bold",
-        fontStyle: "italic",
-        fontSize: "24px",
-        zIndex: "10000",
-        pointerEvents: "none",
-    });
-
-    // Text ispod nicka
-    const textTag = document.createElement("div");
-    textTag.innerText = userText;
-    Object.assign(textTag.style, {
-        position: "absolute",
-        bottom: "10px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontWeight: "bold",
-        fontStyle: "italic",
-        fontSize: "20px",
-        zIndex: "10000",
-        pointerEvents: "none",
-    });
-
-    const divId = `guest-${nickname || myNickname}`;
-    const userDiv = document.getElementById(divId);
-
-    if (color) {
-        nameTag.style.color = color;
-        textTag.style.color = color;
-    } else if (gradient || (userDiv && userDiv.classList.contains('use-gradient'))) {
-        const gradientClass = gradient || (userDiv ? Array.from(userDiv.classList).find(c => c.startsWith('gradient-')) : null);
-        if (gradientClass) {
-            const bg = getComputedStyle(document.querySelector(`.${gradientClass}`)).backgroundImage;
-            [nameTag, textTag].forEach(tag => {
-                tag.style.backgroundImage = bg;
-                tag.style.backgroundClip = 'text';
-                tag.style.webkitBackgroundClip = 'text';
-                tag.style.webkitTextFillColor = 'transparent';
-            });
-        }
-    }
-
-    chatContainer.appendChild(nameTag);
-    chatContainer.appendChild(textTag);
-
-    imageAnimations[code](img);
-
-    setTimeout(() => {
-        chatContainer.removeChild(animContainer);
-        chatContainer.removeChild(nameTag);
-        chatContainer.removeChild(textTag);
-
-        // === KRAJ animacije ===
-        animInProgress = false;
-    }, 9000);
 };
 
 // Desni klik
@@ -371,8 +462,3 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
-
-
-
-
-
