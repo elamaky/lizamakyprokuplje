@@ -96,7 +96,7 @@ const addNewItemToLocalStorage = (newItem) => {
 
 // HTML kod za modal
 const smileModalHTML = `
-<div id="smileModal" style="display:none;position:fixed;width:300px;background:black;padding:10px;border:1px solid white;z-index:1000;overflow-y:auto;border-radius:5px;color:white;flex-wrap:wrap;max-height:400px;">
+<div id="smileModal" style="display:none;position:fixed;width:800px;background:black;padding:10px;border:1px solid white;z-index:1000;overflow-y:auto;border-radius:5px;color:white;flex-wrap:wrap;max-height:1000px;">
     <button onclick="closeSmileModal()" style="background:red;color:white;border:none;padding:5px 10px;cursor:pointer;float:right;">X</button>
     <div id="smileContainer" style="display:flex;flex-wrap:wrap;gap:8px;overflow-y:auto;"></div>
 </div>`;
@@ -456,4 +456,5 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
