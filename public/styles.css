@@ -138,7 +138,7 @@ body {
     border-radius: 5px;
     border: 2px solid white;
     background-color: black;
-    color: rgba(200, 200, 200, 0.5); 
+    color: #87CEFA;
     font-size: 17px;
     resize: none;
     overflow: hidden;
@@ -181,7 +181,7 @@ body {
      font-size: 15px;
      font-weight: bold;
      font-style: italic;
-     color: rgba(200, 200, 200, 0.5); 
+     color: #87CEFA;
   }
 
 .guest::before, .virtual-guest::before {
@@ -454,4 +454,5 @@ body {
       z-index: 999;
       display: none;
     }
+
 
