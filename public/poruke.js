@@ -60,12 +60,18 @@ document.addEventListener("DOMContentLoaded", function() {
     var button = document.getElementById('sound');
     var isPlaying = false;
 
+    // Ako je korisnik već kliknuo Play ranije, automatski pokreni stream
+    if (localStorage.getItem('radioPlayed') === 'true') {
+        playStream();
+    }
+
     button.addEventListener('click', function() {
-          button.blur();
+        button.blur();
         if (isPlaying) {
             audio.pause();
-              button.textContent = "Play";
-          isPlaying = false;
+            button.textContent = "Play";
+            isPlaying = false;
+            localStorage.setItem('radioPlayed', 'false'); // pamti da je pauziran
         } else {
             playStream();
         }
@@ -75,8 +81,9 @@ document.addEventListener("DOMContentLoaded", function() {
         audio.src = "https://stream.zeno.fm/krdfduyswxhtv";  
         audio.load();  
         audio.play().then(() => {
-            button.textContent = "Stop";
-          isPlaying = true;
+            button.textContent = "Stop";  // dugme uvek pokazuje Stop kada se emituje
+            isPlaying = true;
+            localStorage.setItem('radioPlayed', 'true'); // pamti da je stream pušten
         }).catch(error => console.error("Greška pri puštanju zvuka:", error));
     }
 
@@ -85,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(playStream, 3000);
     });
 });
-
 //  REGISTRACIJA I LOGIN TABLA
 document.getElementById('NIK').addEventListener('click', function() {
     var container = document.getElementById('authContainer');
