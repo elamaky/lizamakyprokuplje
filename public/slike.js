@@ -6,7 +6,7 @@ document.getElementById('addImage').addEventListener('click', function () {
     wrapper.id = "imgprompt";
     wrapper.style.position = "fixed";
     wrapper.style.top = "30px";   // malo niže od background prompta
-    wrapper.style.left = "600px";
+    wrapper.style.left = "100px";
     wrapper.style.background = "black";
     wrapper.style.padding = "10px";
     wrapper.style.borderRadius = "8px";
