@@ -91,8 +91,8 @@ document.getElementById("pozadina").addEventListener("click", function() {
     let wrapper = document.createElement("div");
     wrapper.id = "backprompt";
     wrapper.style.position = "fixed";
-    wrapper.style.top = "10px";
-    wrapper.style.left = "300px";
+    wrapper.style.top = "60px";
+    wrapper.style.left = "100px";
     wrapper.style.background = "black";
     wrapper.style.padding = "10px";
     wrapper.style.borderRadius = "8px";
@@ -142,3 +142,4 @@ document.getElementById("pozadina").addEventListener("click", function() {
 socket.on("updateBackground", (url) => {
     document.body.style.backgroundImage = "url('" + url + "')";
 });
+
