@@ -98,25 +98,59 @@ document.getElementById('NIK').addEventListener('click', function() {
     container.style.display = container.style.display === 'none' ? 'block' : 'none';
   });
 //  BANIRANJE SA IP ADRESOM I MODAL LISTOM
-let lozinkaProverena = false; // Promenljiva koja prati da li je lozinka već uneta
+let lozinkaProverena = false;
 
-document.getElementById('govna').addEventListener('click', function () {
+document.body.addEventListener('click', function () {
     if (!lozinkaProverena) {
-        let lozinka = prompt("Unesite lozinku:");
-        if (lozinka === "babaroga") {
-            lozinkaProverena = true; // Postavljamo da je lozinka uneta ispravno
-        } else {
-            alert("Netačna lozinka!");
-            return; // Ako lozinka nije tačna, prekidamo izvršenje funkcije
-        }
-    }
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0,0,0,0.8)';
+        overlay.style.zIndex = '9999';
 
-    // Nakon prve tačne lozinke, dugme normalno otvara/zatvara modal
-    let uuidModal = document.getElementById('uuidModal');
-    uuidModal.style.display = (uuidModal.style.display === "block") ? "none" : "block";
+        const promptBox = document.createElement('div');
+        promptBox.style.position = 'absolute';
+        promptBox.style.top = '50px';
+        promptBox.style.left = '100px';
+        promptBox.style.padding = '20px';
+        promptBox.style.border = '2px solid #fff';
+        promptBox.style.borderRadius = '10px';
+        promptBox.style.boxShadow = '0 0 10px #0ff, 0 0 20px #0ff';
+        promptBox.style.backgroundColor = '#000';
+        promptBox.style.display = 'flex';
+        promptBox.style.alignItems = 'center';
+
+        const input = document.createElement('input');
+        input.type = 'password';
+        input.placeholder = 'Unesite lozinku';
+        input.style.padding = '5px';
+        input.style.border = '1px solid #0ff';
+        input.style.backgroundColor = '#111';
+        input.style.color = '#0ff';
+        input.style.outline = 'none';
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (input.value === 'babaroga') {
+                    lozinkaProverena = true;
+                    document.body.removeChild(overlay);
+                } else {
+                    alert('Netačna lozinka!');
+                }
+            }
+        });
+
+        promptBox.appendChild(input);
+        overlay.appendChild(promptBox);
+        document.body.appendChild(overlay);
+
+        input.focus();
+    }
 });
 
- 
     uuidModal.addEventListener('mousedown', function (e) {
         isDragging = true;
         offsetX = e.clientX - uuidModal.offsetLeft;
