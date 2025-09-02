@@ -110,8 +110,8 @@ const allItems = [
     ...['☕', '🖤', '💛', '💚','👀'].map(e => ({ type: 'emoji', content: e })),
     ...[
         
-        'vp.avifs',  'mesa.webp', 'luster.webp', 'bye.webp', 'crveni.webp', 'sl.webp', 
-         'slika9.avifs', 'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs',
+        'tresnja.avifs','vp.avifs',  'mesa.webp', 'luster.webp', 'bye.webp', 'crveni.webp', 
+        'sl.webp', 'slika9.avifs', 'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs',
         'slika1.avifs', 'slika3.avifs', 'slika4.avifs', 'bub.gif', 'ok.gif', 
          'slika5.avifs', 'slika6.avifs', 'slika7.avifs','slika8.avifs', 'nag1.webp', 
         'uzivam.gif', 'stik10.png', 'dance.gif', 'dance1.gif', 'dance2.gif', 
@@ -119,10 +119,10 @@ const allItems = [
         'rg.gif', 'x.gif', 'x1.gif', 'kiss.gif', 'kiss1.gif', 
         'patak1.avifs', 'patak2.avifs', 'jerry1.avifs', 'jerry2.avifs', 'jerry3.avifs', 'jerry.webp', 
         'kiss2.gif', 'srce2.gif', 'srce3.gif', 'srce4.gif', 
-  'nov1.gif', 'nov3.gif', 'nov4.gif', 'nov5.gif', 'nov6.gif', 
-  'nov7.gif', 'nov8.gif', 'nov9.gif', 'nov10.gif', 'nov11.gif', 'nov12.gif', 
-  'nov13.gif', 'nov15.gif', 'nov16.gif', 'nov17.gif', 'nov18.gif', 
-           'nov19.gif', 'nov20.gif', 'nov21.gif'
+        'nov1.gif', 'nov3.gif', 'nov4.gif', 'nov5.gif', 'nov6.gif', 
+        'nov7.gif', 'nov8.gif', 'nov9.gif', 'nov10.gif', 'nov11.gif', 'nov12.gif', 
+        'nov13.gif', 'nov15.gif', 'nov16.gif', 'nov17.gif', 'nov18.gif', 
+        'nov19.gif', 'nov20.gif', 'nov21.gif'
 ].map(img => ({ type: 'image', content: img }))
 ];
 
@@ -456,6 +456,7 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
 
 
