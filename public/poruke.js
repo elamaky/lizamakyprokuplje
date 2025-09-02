@@ -116,10 +116,8 @@ document.getElementById('govna').addEventListener('click', function () {
     const uuidModal = document.getElementById('uuidModal');
 
     if (!lozinkaProverena) {
-        // Proveri da li overlay već postoji
         if (document.getElementById('banprompt')) return;
 
-        // Kreiraj overlay
         const overlay = document.createElement('div');
         overlay.id = 'banprompt';
         overlay.style.position = 'fixed';
@@ -133,7 +131,6 @@ document.getElementById('govna').addEventListener('click', function () {
         overlay.style.justifyContent = 'flex-start';
         overlay.style.alignItems = 'flex-start';
 
-        // Kreiraj prompt box
         const promptBox = document.createElement('div');
         promptBox.style.position = 'absolute';
         promptBox.style.top = '50px';
@@ -144,9 +141,9 @@ document.getElementById('govna').addEventListener('click', function () {
         promptBox.style.boxShadow = '0 0 10px #0ff, 0 0 20px #0ff';
         promptBox.style.backgroundColor = '#000';
         promptBox.style.display = 'flex';
-        promptBox.style.alignItems = 'center';
+        promptBox.style.flexDirection = 'column';
+        promptBox.style.alignItems = 'flex-start';
 
-        // Kreiraj input
         const input = document.createElement('input');
         input.type = 'password';
         input.placeholder = 'Unesite lozinku';
@@ -155,29 +152,32 @@ document.getElementById('govna').addEventListener('click', function () {
         input.style.backgroundColor = '#111';
         input.style.color = '#0ff';
         input.style.outline = 'none';
+        input.style.marginBottom = '10px';
 
-        // Enter događaj
+        const greska = document.createElement('div');
+        greska.id = 'greska-msg';
+        greska.style.color = 'red';
+        greska.style.fontSize = '14px';
+
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 if (input.value === 'babaroga') {
                     lozinkaProverena = true;
                     document.body.removeChild(overlay);
-
-                    // Nakon lozinke, otvori/zatvori modal
                     uuidModal.style.display = (uuidModal.style.display === "block") ? "none" : "block";
                 } else {
-                    alert('Netačna lozinka!');
+                    greska.textContent = 'Netačna lozinka!';
                 }
             }
         });
 
         promptBox.appendChild(input);
+        promptBox.appendChild(greska);
         overlay.appendChild(promptBox);
         document.body.appendChild(overlay);
 
         input.focus();
     } else {
-        // Ako je lozinka već potvrđena, normalno otvori/zatvori modal
         uuidModal.style.display = (uuidModal.style.display === "block") ? "none" : "block";
     }
 });
