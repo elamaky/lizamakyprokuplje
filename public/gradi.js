@@ -151,12 +151,13 @@ const paket = ["openModal", "smilesBtn", "GBtn", "sound", "boldBtn", "italicBtn"
     btn.addEventListener("click", () => prikaziPocetnuListu());
     return btn;
   }
-
 function primeniBoju(id, boja) {
   const targetIds = paket.includes(id) ? paket : [id];
+  
   targetIds.forEach(eid => {
     const el = document.getElementById(eid);
     if (el) {
+      // BORDER
       if (boja.includes("gradient")) {
         el.style.borderImage = boja;
         el.style.borderImageSlice = 1;
@@ -166,15 +167,28 @@ function primeniBoju(id, boja) {
         el.style.borderColor = boja;
       }
 
+      // TEKST (Samo za dugmice iz paketa)
+    if (paket.includes(eid)) {
+  if (boja.includes("gradient")) {
+    el.style.backgroundImage = boja;
+    el.style.backgroundClip = "text";
+    el.style.webkitBackgroundClip = "text";
+    el.style.color = "transparent";
+  } else {
+    el.style.backgroundImage = "";
+    el.style.backgroundClip = "";
+    el.style.webkitBackgroundClip = "";
+    el.style.color = boja;
+  }
+}
+     // guestList specifično
       if (eid === "guestList") {
-        // Promena border-bottom za goste
         document.querySelectorAll('.guest, .virtual-guest').forEach(gost => {
           gost.style.borderBottom = boja.includes("gradient")
             ? "1px solid transparent"
             : `1px solid ${boja}`;
         });
 
-        // Scrollbar stil
         const styleId = 'guestList-scrollbar-style';
         let styleTag = document.getElementById(styleId);
         if (!styleTag) {
@@ -190,39 +204,73 @@ function primeniBoju(id, boja) {
         `;
       }
     }
+
     socket.emit("promeniGradijent", { id: eid, type: "border", gradijent: boja });
   });
 }
 
-  socket.on("promeniGradijent", (data) => {
-    setTimeout(() => {
-      const el = document.getElementById(data.id);
-      if (el) {
-        if (data.gradijent.includes("gradient")) {
-          el.style.borderImage = data.gradijent;
-          el.style.borderImageSlice = 1;
-          el.style.borderColor = "";
-        } else {
-          el.style.borderImage = "";
-          el.style.borderColor = data.gradijent;
-        }
+// Socket - primena boje/gradijenta sa servera
+socket.on("promeniGradijent", (data) => {
+  setTimeout(() => {
+    const el = document.getElementById(data.id);
+    if (el) {
+      // Border
+      if (data.gradijent.includes("gradient")) {
+        el.style.borderImage = data.gradijent;
+        el.style.borderImageSlice = 1;
+        el.style.borderColor = "";
+      } else {
+        el.style.borderImage = "";
+        el.style.borderColor = data.gradijent;
       }
-    }, 5000);  // 5 sekundi čekanja
-  });
 
-  socket.on("pocetnoStanje", (stanje) => {
-    for (const id in stanje) {
-      const el = document.getElementById(id);
-      if (el) {
-        if (stanje[id].gradijent.includes("gradient")) {
-          el.style.borderImage = stanje[id].gradijent;
-          el.style.borderImageSlice = 1;
-          el.style.borderColor = "";
+      // Tekst (samo za dugmice iz paketa)
+      if (paket.includes(data.id)) {
+        if (data.gradijent.includes("gradient")) {
+          el.style.backgroundImage = data.gradijent;
+          el.style.color = "transparent";
+          el.style.webkitBackgroundClip = "text";
+          el.style.backgroundClip = "text";
         } else {
-          el.style.borderImage = "";
-          el.style.borderColor = stanje[id].gradijent;
+          el.style.backgroundImage = "";
+          el.style.color = data.gradijent;
+          el.style.webkitBackgroundClip = "";
+          el.style.backgroundClip = "";
         }
       }
     }
-  });
+  }, 5000); // 5 sekundi čekanja
+});
+
+socket.on("pocetnoStanje", (stanje) => {
+  for (const id in stanje) {
+    const el = document.getElementById(id);
+    if (el) {
+      // Border
+      if (stanje[id].gradijent.includes("gradient")) {
+        el.style.borderImage = stanje[id].gradijent;
+        el.style.borderImageSlice = 1;
+        el.style.borderColor = "";
+      } else {
+        el.style.borderImage = "";
+        el.style.borderColor = stanje[id].gradijent;
+      }
+
+      // Tekst (samo za dugmice iz paketa)
+      if (paket.includes(id)) {
+        if (stanje[id].gradijent.includes("gradient")) {
+          el.style.backgroundImage = stanje[id].gradijent;
+          el.style.color = "transparent";
+          el.style.webkitBackgroundClip = "text";
+          el.style.backgroundClip = "text";
+        } else {
+          el.style.backgroundImage = "";
+          el.style.color = stanje[id].gradijent;
+          el.style.webkitBackgroundClip = "";
+          el.style.backgroundClip = "";
+        }
+      }
+    }
+  }
+});
 });
