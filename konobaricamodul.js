@@ -28,7 +28,7 @@ const Guest = mongoose.model('Guest', GuestSchema);
     socket.emit('initialChatContainerData', chatContainerState);
   });
 socket.on('new_guest', () => {
- const greetingMessage = `Dobro došli, osećajte se kao kod kuće. Vaše muzičke želje potrudiće se da vam ispune DJ LiLi, DJ Sandra i DJ *__X__*.
+ const greetingMessage = `Dobro došli, osećajte se kao kod kuće. Vaše muzičke želje potrudiće se da vam ispune Dj LiLi, Dj Sandra, Dj Muvi i Dj *__X__*.
 Kada nismo na smeni, tu je uvek naš Auto DJ. Uživajte!`;
  io.emit('message', {
     username: '<span class="konobarica">Konobarica</span>',
@@ -179,3 +179,4 @@ socket.broadcast.emit("promeniSirinu", data);
     });
 
 };
+
