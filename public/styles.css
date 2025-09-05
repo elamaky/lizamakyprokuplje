@@ -110,7 +110,7 @@ body {
     flex-direction: column;
     overflow-y: auto;
     word-wrap: break-word;
-    
+    user-select: none;   
 }
 .message {
     margin-bottom: 10px;
@@ -456,6 +456,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
