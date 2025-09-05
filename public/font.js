@@ -75,3 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createFontPicker();
 });
+// BLOKIRANJE DESNOG KLIKA NA BODY osim za chatContainer
+document.body.addEventListener('contextmenu', function(e) {
+    const chatContainer = document.getElementById('chatContainer');
+    if (!chatContainer.contains(e.target)) {
+        e.preventDefault();
+    }
+});
+
+// BLOKIRANJE desnog klika i kopiranja samo u messageArea
+const messageArea = document.getElementById('messageArea');
+messageArea.oncontextmenu = e => false;
+messageArea.oncopy = e => false;
