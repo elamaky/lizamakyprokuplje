@@ -42,31 +42,48 @@ const allDraggables = [
 ];
 
 function dodajSliku() {
-  const url = prompt("Unesi URL slike:");
-  if (!url) return;
-  const img = document.createElement('img');
-  img.src = url;
-  img.id = 'img-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-  img.style.position = 'absolute';
-  img.style.top = '10px';
-  img.style.left = '10px';
-  img.style.width = '150px';
-  img.style.height = '150px';
-  img.style.zIndex = '1600';
-  img.style.cursor = 'move';
-  img.style.userSelect = 'none';
-  img.addEventListener('contextmenu', e => {
-    e.preventDefault();
-    if (confirm('Da li želite da izbrišete ovu sliku?')) {
-      img.remove();
-      const index = allDraggables.indexOf(`#${img.id}`);
-      if (index !== -1) allDraggables.splice(index, 1);
-    }
-  });
-  document.body.appendChild(img);
-  allDraggables.push(`#${img.id}`);
-  setupInteract(img);
+  if (document.getElementById('maskprompt')) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'maskprompt';
+  overlay.style = `
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.85);display:flex;
+    justify-content:center;align-items:center;z-index:9999;
+  `;
+
+  const box = document.createElement('div');
+  box.style = `
+    background:#000;border:2px solid #fff;
+    box-shadow:0 0 10px #fff,0 0 20px #0ff;
+    padding:20px;border-radius:10px;
+  `;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Unesi URL slike';
+  input.style = 'padding:8px;width:250px;border:1px solid #0ff;background:#111;color:#0ff;';
+
+  box.appendChild(input);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  input.focus();
+
+  function dodaj(url) {
+    if (!url) { document.body.removeChild(overlay); return; }
+    const img = document.createElement('img');
+    img.src = url;
+    img.style = 'position:absolute;top:10px;left:10px;width:150px;height:150px;z-index:1600;cursor:move;user-select:none;';
+    document.body.appendChild(img);
+    allDraggables.push(`#${img.id}`);
+    setupInteract(img);
+    document.body.removeChild(overlay);
+  }
+
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') dodaj(input.value.trim()); });
+  overlay.addEventListener('click', e => { if (!box.contains(e.target)) document.body.removeChild(overlay); });
 }
+
 document.getElementById('chatsl').onclick = dodajSliku;
 
 let editMode = false;
@@ -651,3 +668,4 @@ if (chatInput) {
 socket.on('reset-layout', () => {
   performReset();
 });
+
