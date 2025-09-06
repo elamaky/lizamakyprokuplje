@@ -176,7 +176,13 @@ document.getElementById('govna').addEventListener('click', function () {
         overlay.appendChild(promptBox);
         document.body.appendChild(overlay);
 
-        input.focus();
+        // Klik bilo gde van promptBox-a zatvara overlay bez unosa lozinke
+overlay.addEventListener('click', function (e) {
+    if (!promptBox.contains(e.target)) {
+        document.body.removeChild(overlay);
+    }
+});
+      input.focus();
     } else {
         uuidModal.style.display = (uuidModal.style.display === "block") ? "none" : "block";
     }
