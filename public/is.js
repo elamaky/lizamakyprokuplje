@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const authorizedUsers = new Set(['Radio Galaksija', 'ZI ZU', '*__X__*']);
+ const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU', '*___F117___*', '*__X__*']);
   let activeDiv = null;
 
   function isAuthorized() {
@@ -336,3 +336,4 @@ socket.on('usersCount', data => {
   }, 3000);
 });
  });
+
