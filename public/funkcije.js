@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const authorizedUsers = new Set(['Radio Galaksija', 'ZI ZU', '*__X__*']); // Privilegovani korisnici
+   const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU', '*___F117___*', '*__X__*']);
     let hasBanPrivilege = false;
     let isBanned = false; // Praćenje statusa banovanja
 
@@ -99,3 +99,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }); 
     }); 
 }); 
+
