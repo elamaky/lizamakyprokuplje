@@ -87,7 +87,7 @@ function addImageToDOM(imageUrl, position, dimensions) {
         newImage.style.zIndex = "3";
         newImage.classList.add('draggable', 'resizable');
 
-        const authorizedUsers = new Set(['Radio Galaksija', 'ZI ZU', '*__X__*']); 
+      const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU', '*___F117___*', '*__X__*']);
 
         newImage.addEventListener('contextmenu', function (event) {
             event.preventDefault();
