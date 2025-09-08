@@ -1,4 +1,4 @@
-let snimanjeAktivno = false;
+window.snimanjeAktivno = false;
 let porukeZaSnimanje = [];
 let snProzorPrikazan = false;
 
@@ -91,5 +91,6 @@ const observer = new MutationObserver(mutations => {
   });
 });
 observer.observe(messageArea, { childList: true });
+
 
 
