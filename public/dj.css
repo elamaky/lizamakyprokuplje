@@ -172,10 +172,10 @@ iframe {
   display: none; /* <-- dodato */
   position: absolute;
   background-color: black;
-  top: 0px;
-  left: 0px;
-  width: 250px;
-  height: 250px;
+  top: 1000px;
+  left: 200px;
+  width: 1200px;
+  height: 675px;
   border: 5px solid;
   border-image: linear-gradient(to top right, #ff0000, #00ff00, #0000ff) 1;
   z-index: 1;
@@ -185,9 +185,9 @@ iframe {
 #retryBtn {
   display: none; /* možeš promeniti u block ili inline-block kad treba da se prikaže */
   position: absolute;
-  top: 10px;
-  left: 5px;
-  width: 250px;
+  top: 1000px;
+  left: 200px;
+  width: 1200px;
   height: 100px;
   padding: 0;
   font-size: 70px;
@@ -206,6 +206,3 @@ iframe {
   opacity: 1 !important;               /* bez providnosti */
   filter: none !important;             /* ukloni filtere */
 }
-
-
-
