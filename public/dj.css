@@ -38,6 +38,7 @@ background: linear-gradient(45deg, #ff6347, #ffffff, #ff1493, #40e0d0); /* Crven
     box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); /* Neon svetlo oko */
      padding: 5px;
     box-sizing: border-box;
+    isolation: isolate;
 }
 
 .modal-content {
@@ -105,6 +106,7 @@ button:focus {
     padding: 20px;
     text-align: center;
     overflow: auto;
+     isolation: isolate;
 
 }
 
@@ -154,6 +156,7 @@ button:focus {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     overflow: auto; 
     font: italic bold 16px Arial, sans-serif; /* Bold + Italic */
+     isolation: isolate;
 }
 
 /* Lista poruka */
@@ -206,4 +209,5 @@ iframe {
   opacity: 1 !important;               /* bez providnosti */
   filter: none !important;             /* ukloni filtere */
 }
+
 
