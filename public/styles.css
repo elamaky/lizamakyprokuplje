@@ -221,6 +221,7 @@ body {
     bottom: 20px;
     resize: both; /* Omogućava promenu veličine */
     overflow: hidden; /* Održava prikaz unutar okvira */
+    isolation: isolate;
 }
 
 #songList {
@@ -454,4 +455,5 @@ body {
       z-index: 999;
       display: none;
     }
+
 
