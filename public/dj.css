@@ -206,11 +206,3 @@ iframe {
   opacity: 1 !important;               /* bez providnosti */
   filter: none !important;             /* ukloni filtere */
 }
-
-#myXatIframe {
-    position: absolute;
-    top: 1000px;
-    left: 300px;
-    z-index: 1;
-}
-
