@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
       panel.id = "tulipe";
       Object.assign(panel.style, {
         position: "fixed",
-        top: "600px",
+        top: "400px",
         left: "20px",
         backgroundColor: "#000",
         color: "#fff",
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         borderRadius: "10px",
         boxShadow: "0 0 15px #fff",
         fontFamily: "Arial, sans-serif",
-        width: "350px",
+        width: "400px",
         maxHeight: "80vh",
         overflowY: "auto",
         zIndex: "99999",
@@ -127,4 +127,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
 
