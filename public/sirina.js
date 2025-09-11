@@ -3,9 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let panel = null;
 
   const elementi = [
-    "chatContainer", "toolbar", "chatInput", "guestList",
-    "openModal", "smilesBtn", "GBtn", "sound"
-  ];
+    "chatContainer", "toolbar", "chatInput", "guestList"
+     ];
 
   baroBtn.addEventListener("click", () => {
     if (panel && panel.style.display === "block") {
@@ -18,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
       panel.id = "tulipe";
       Object.assign(panel.style, {
         position: "fixed",
-        top: "60px",
+        top: "600px",
         left: "20px",
         backgroundColor: "#000",
         color: "#fff",
@@ -128,3 +127,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
