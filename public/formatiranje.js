@@ -20,6 +20,7 @@ const virtualGuests = [
 let isBold = false;
 let isItalic = false;
 let currentColor = "rgb(168, 168, 168)"; // siva boja
+let defaultColor = "#a8a8a8"; // inicijalna siva boja
 let isUnderline = false;
 let isOverline = false;
 const guestsData = {};
@@ -440,3 +441,4 @@ socket.on('updateDefaultColor', (data) => {
            });
     }, 3000);
 });
+
