@@ -8,7 +8,8 @@ module.exports = (io) => {
 let fullLayoutData = null;   // BEZ MASKE 
 let chatLayoutData = null;
  const sirinaStanje = {};
- 
+ let defaultColor = {};
+  
    // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
@@ -175,8 +176,17 @@ socket.broadcast.emit("promeniSirinu", data);
     socket.broadcast.emit('imageAnimation', data); // ili io.emit ako hoćeš da svi vide
 });
 
-        socket.on('disconnect', () => {});
+    // ADMIN GRADIJENT BIRA
+ if (defaultGradient) {
+        socket.emit('updateDefaultGradient', { gradient: defaultGradient });
+    }
+
+    // Admin menja default gradijent
+    socket.on('updateDefaultGradient', (data) => {
+        defaultGradient = data.gradient; // Zapamti novi default
+        socket.broadcast.emit('updateDefaultGradient', { gradient: data.gradient });
     });
 
+        socket.on('disconnect', () => {});
+    });
 };
-
