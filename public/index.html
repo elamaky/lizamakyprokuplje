@@ -55,28 +55,29 @@
 </div>
 
 <div id="chatContainer">
-    <div id="toolbar">
-         <button id="openModal" class="toolbarBtn">D</button>
- <button class="toolbarBtn" id="NIK">Login</button>
-        <button class="toolbarBtn" id="sound">Play</button>
-        <button class="toolbarBtn" id="smilesBtn">Smiles</button>
-        <button class="toolbarBtn" id="GBtn">G</button>
-  <button class="toolbarBtn" id="boldBtn">Bold</button>
+  <div id="toolbar" style="display: flex;">
+    <button id="openModal" class="toolbarBtn">D</button>
+    <button class="toolbarBtn" id="NIK">Login</button>
+    <button class="toolbarBtn" id="sound">Play</button>
+    <button class="toolbarBtn" id="smilesBtn">Smiles</button>
+    <button class="toolbarBtn" id="GBtn">G</button>
+    <button class="toolbarBtn" id="boldBtn">Bold</button>
     <button class="toolbarBtn" id="italicBtn">Italic</button>
-<button class="toolbarBtn" id="plusBtn" onclick="increaseFontSize()">+</button>
+    <button class="toolbarBtn" id="plusBtn" onclick="increaseFontSize()">+</button>
     <button class="toolbarBtn" id="minusBtn" onclick="decreaseFontSize()">-</button>
-   <button class="toolbarBtn" id="linijadoleBtn">Temelj</button>
-   <button class="toolbarBtn" id="colorBtn">Color</button>
+    <button class="toolbarBtn" id="linijadoleBtn">Temelj</button>
+    <button class="toolbarBtn" id="colorBtn">Color</button>
     <input type="color" id="colorPicker" style="display: none;">
-    </div>
-
+    <input type="color" id="adminColorPicker" style="display: none;">
+  </div>
+</div>
 <!-- Modal -->
 <div id="gostimodal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
 
     <!-- Dugmici unutar modala -->
-    <button class="toolbarBtn" id="font">Font</button>
+<button class="toolbarBtn" id="font">Font</button>
 <button class="toolbarBtn" id="farbe">Farbe</button>
 <button class="toolbarBtn" id="linijagoreBtn">Krov</button>
 <button class="toolbarBtn" id="sl">Slike</button>
@@ -92,17 +93,16 @@
   </div>
 </div>
     
-
 <div id="functionModal" class="modal" style="display: none;" draggable="true">
   <span class="close" id="closeModal">&times;</span>
   <h2>🧡💜🤎Radio Galaksija💚❤💛</h2>
-    
- <button id="up">Uputstvo za DJ-a</button>
-     <button id="vir">Roboti</button>
+
+  <button id="up">Uputstvo za DJ-a</button>
+  <button id="vir">Roboti</button>
   <button id="clearChat">Obriši chat</button>
   <button id="privateMessage">Privat</button>
   <button id="pozadina">Pozadina</button>
-   <button id="addImage"> WebSlike</button>
+  <button id="addImage">WebSlike</button>
   <button id="anitext">Text</button>
   <button id="spisak">Spisak</button>
   <button id="chat">Chat</button>
@@ -112,9 +112,10 @@
   <button id="mem">WebMaska</button>
   <button id="govna">*__X__*</button>
   <button id="maska">ChatMaska</button>
-  <button id="ram">Ram</button>
   <button id="pi">BrisanjeWeba</button>
-  </div>
+  <button id="applyDefaultColor">AdminBoje</button>
+  <button id="ram">Ram</button>
+</div>
 
 
 <div id="uuidModal" style="display: none;">
@@ -205,30 +206,29 @@
   Vaš pregledač ne podržava audio element.
 </audio>
     
-     <script src="regist.js"></script>
- <script src="elementi.js"></script>   
-    <script src="konobarica.js"></script>
-<script src="formatiranje.js"></script> 
- <script src="funkcije.js"></script>
-<script src="smile.js"></script> 
- <script src="poruke.js"></script>
-    <script src="privat.js"></script>
-     <script src="spisak.js"></script>
-       <script src="ava.js"></script>
-      <script src="font.js"></script>
-       <script src="stats.js"></script>
-      <script src="mixer.js"></script>
-     <script src="nikani.js"></script>
-      <script src="gradi.js"></script>
-   <script src="mem.js"></script>
-    <script src="diz.js"></script>
-      <script src="sirina.js"></script>
-      <script src="slike.js"></script>
-  <script src="snimak.js"></script>
-     <script src="uputstvo.js"></script>
-         <script src="is.js"></script>
-     
-  
+<script src="regist.js"></script>
+<script src="elementi.js"></script>
+<script src="konobarica.js"></script>
+<script src="formatiranje.js"></script>
+<script src="funkcije.js"></script>
+<script src="smile.js"></script>
+<script src="poruke.js"></script>
+<script src="privat.js"></script>
+<script src="spisak.js"></script>
+<script src="ava.js"></script>
+<script src="font.js"></script>
+<script src="stats.js"></script>
+<script src="mixer.js"></script>
+<script src="nikani.js"></script>
+<script src="gradi.js"></script>
+<script src="mem.js"></script>
+<script src="diz.js"></script>
+<script src="sirina.js"></script>
+<script src="slike.js"></script>
+<script src="snimak.js"></script>
+<script src="uputstvo.js"></script>
+<script src="is.js"></script>
+
             <!-- Default Statcounter code for Galaksija
 https://radiogalaksija.onrender.com/ -->
 <script type="text/javascript">
