@@ -267,6 +267,9 @@ document.getElementById('colorPicker').addEventListener('input', function() {
     // Postavi novu boju teksta
     myDiv.style.color = currentColor;
 
+    // **Obeleži korisnika da je sam birao boju**
+    myDiv.dataset.userColor = currentColor;
+
     // Ukloni klase za gradijent
     myDiv.classList.forEach(cls => {
         if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
@@ -275,6 +278,7 @@ document.getElementById('colorPicker').addEventListener('input', function() {
 
     updateInputStyle();
 
+    // Emit preko socket-a
     socket.emit('colorChange', { nickname: myNickname, color: currentColor });
 });
 
@@ -288,6 +292,9 @@ socket.on('allColors', (colors) => {
         myDiv.style.webkitBackgroundClip = '';
         myDiv.style.webkitTextFillColor = '';
         myDiv.style.color = colors[nickname];
+
+        // **Održavamo podatak da je korisnik birao svoju boju**
+        myDiv.dataset.userColor = colors[nickname];
 
         myDiv.classList.remove('use-gradient', 'gradient-user');
         myDiv.classList.forEach(cls => {
@@ -306,13 +313,14 @@ socket.on('colorChange', (data) => {
     myDiv.style.webkitTextFillColor = '';
     myDiv.style.color = data.color;
 
+    // **Označavamo da je korisnik birao boju**
+    myDiv.dataset.userColor = data.color;
+
     myDiv.classList.remove('use-gradient', 'gradient-user');
     myDiv.classList.forEach(cls => {
         if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
     });
 });
-
-
 // ZA GRADIJENTE
 document.getElementById('farbe').addEventListener('click', function () {
     const gradijentDiv = document.getElementById('gradijent');
@@ -346,6 +354,7 @@ document.getElementById('farbe').addEventListener('click', function () {
                         myDiv.classList.add('use-gradient');
                         myDiv.classList.add('gradient-user'); // <- nova klasa
                         myDiv.style.backgroundImage = getComputedStyle(this).backgroundImage;
+                        myDiv.dataset.userGradient = currentGradient;
                     }
 
                     updateInputStyle();
@@ -441,4 +450,103 @@ socket.on('updateDefaultColor', (data) => {
            });
     }, 3000);
 });
+// ================= ADMIN - DEFAULT GRADIJENT =================
 
+const applyGradientBtn = document.getElementById('admingradijent');
+const adminGradientDiv = document.getElementById('xgradijentiadmin');
+
+let gradijentOpenAdmin = false;
+
+// Klik na dugme otvara/sakrije gradijent tablu
+applyGradientBtn.addEventListener('click', () => {
+    gradijentOpenAdmin = !gradijentOpenAdmin;
+    adminGradientDiv.style.display = gradijentOpenAdmin ? 'grid' : 'none';
+
+    if (gradijentOpenAdmin) {
+        const boxes = adminGradientDiv.querySelectorAll('.gradijent-box');
+        boxes.forEach(box => {
+            box.onclick = function () {
+                const selectedGradient = this.classList[1];
+                currentGradient = selectedGradient;
+                currentColor = ''; // Resetuj boju
+
+                const bgImage = getComputedStyle(this).backgroundImage; // Sačuvaj backgroundImage
+
+                // Emit socket event svima
+                socket.emit('updateDefaultGradient', { gradient: selectedGradient });
+
+                // Primeni default gradijent sa 3s delay svima koji nisu birali svoj gradijent
+                setTimeout(() => {
+                    document.querySelectorAll('.guest').forEach(el => {
+                        const nickname = el.dataset.nickname || el.id.replace('guest-', '');
+                        const isVirtual = virtualGuests.some(v => v.nickname === nickname);
+                        if (isVirtual) return;
+
+                        if (!('userGradient' in el.dataset)) { // samo ako korisnik nije birao gradijent
+                            // Ukloni stare klase i boje
+                            el.classList.forEach(cls => {
+                                if (cls.startsWith('grad-admin-') || cls.startsWith('gradient-')) {
+                                    el.classList.remove(cls);
+                                }
+                            });
+                            el.classList.remove('use-gradient', 'gradient-user');
+
+                            // Resetuj boju i ukloni prethodni gradijent sa teksta
+                            el.style.color = '';
+                            el.style.background = '';
+                            el.style.webkitBackgroundClip = '';
+                            el.style.webkitTextFillColor = '';
+                            delete el.dataset.userColor;
+
+                            // Dodaj novi gradijent
+                            el.classList.add(selectedGradient);
+                            el.classList.add('use-gradient');
+                            el.dataset.userGradient = selectedGradient;
+                            el.style.backgroundImage = bgImage;
+                        }
+                    });
+                }, 3000);
+
+                // Sakrij tablu
+                adminGradientDiv.style.display = 'none';
+                gradijentOpenAdmin = false;
+            };
+        });
+    }
+});
+
+// Socket event za update default gradijenta
+socket.on('updateDefaultGradient', (data) => {
+    const newDefaultGradient = data.gradient;
+
+    setTimeout(() => {
+        document.querySelectorAll('.guest').forEach(el => {
+            const nickname = el.dataset.nickname || el.id.replace('guest-', '');
+            const isVirtual = virtualGuests.some(v => v.nickname === nickname);
+            if (isVirtual) return;
+
+          if (!('userGradient' in el.dataset) && !('userColor' in el.dataset)) {
+                el.classList.forEach(cls => {
+                    if (cls.startsWith('grad-admin-') || cls.startsWith('gradient-')) {
+                        el.classList.remove(cls);
+                    }
+                });
+                el.classList.remove('use-gradient', 'gradient-user');
+
+                // Resetuj boju i ukloni prethodni gradijent sa teksta
+                el.style.color = '';
+                el.style.background = '';
+                el.style.webkitBackgroundClip = '';
+                el.style.webkitTextFillColor = '';
+                delete el.dataset.userColor;
+
+                // Dodaj novi gradijent
+                el.classList.add(newDefaultGradient);
+                el.classList.add('use-gradient');
+                el.dataset.userGradient = newDefaultGradient;
+                const newBgImage = getComputedStyle(document.querySelector(`.${newDefaultGradient}`)).backgroundImage;
+                el.style.backgroundImage = newBgImage;
+            }
+        });
+    }, 3000);
+});
