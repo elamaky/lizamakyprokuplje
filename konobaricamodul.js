@@ -176,17 +176,17 @@ socket.broadcast.emit("promeniSirinu", data);
     socket.broadcast.emit('imageAnimation', data); // ili io.emit ako hoćeš da svi vide
 });
 
-    // ADMIN GRADIJENT BIRA
- if (defaultGradient) {
-        socket.emit('updateDefaultGradient', { gradient: defaultGradient });
-    }
-
-    // Admin menja default gradijent
-    socket.on('updateDefaultGradient', (data) => {
-        defaultGradient = data.gradient; // Zapamti novi default
-        socket.broadcast.emit('updateDefaultGradient', { gradient: data.gradient });
+   // ZA DEFAULT BOJU KORISNIKA
+  io.emit('updateDefaultColor', { color: defaultColor });
+   
+      socket.on('updateDefaultColor', (data) => {
+        defaultColor = data.color;
+      
+ socket.broadcast.emit('updateDefaultColor', { color: defaultColor });
+        
     });
 
         socket.on('disconnect', () => {});
     });
 };
+
