@@ -83,6 +83,17 @@ function decreaseFontSize() {
     iframe.style.display = visible ? 'none' : 'block';
     retryBtn.style.display = visible ? 'none' : 'inline-block';
   });
+// ZA DRUGU SOBU (Play2-Kam)
+const toggleBtnKam = document.getElementById('kam');
+const retryBtnKam = document.getElementById('retryBtnKam');
+const iframeKam = document.getElementById('iframekam');
+
+toggleBtnKam.addEventListener('click', () => {
+  const visible = iframeKam.style.display === 'block';
+
+  iframeKam.style.display = visible ? 'none' : 'block';
+  retryBtnKam.style.display = visible ? 'none' : 'inline-block';
+});
 //SLIKE ZA POZADINU
 document.getElementById("pozadina").addEventListener("click", function() {
     // Proveri da li vec postoji prompt
@@ -142,4 +153,5 @@ document.getElementById("pozadina").addEventListener("click", function() {
 socket.on("updateBackground", (url) => {
     document.body.style.backgroundImage = "url('" + url + "')";
 });
+
 
