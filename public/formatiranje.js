@@ -390,5 +390,53 @@ socket.on('allGradients', (gradients) => {
     }
 });
 
+// ZA ADMINA 
+const applyBtn = document.getElementById('applyDefaultColor');
+const adminPicker = document.getElementById('adminColorPicker');
 
+// Klik na dugme otvara sakriveni picker
+applyBtn.addEventListener('click', () => {
+    adminPicker.click();
+});
 
+// Kada admin izabere boju
+adminPicker.addEventListener('input', () => {
+    const selectedColor = adminPicker.value;
+    defaultColor = selectedColor;
+
+  socket.emit('updateDefaultColor', { color: defaultColor });
+
+    // Primeni default boju sa 3s delay kako bi svi elementi bili renderovani
+    setTimeout(() => {
+        document.querySelectorAll('.guest').forEach(el => {
+            const nickname = el.dataset.nickname || el.id.replace('guest-', '');
+            const isVirtual = virtualGuests.some(v => v.nickname === nickname);
+            if (isVirtual) {
+           return;
+            }
+            if ('userColor' in el.dataset) {
+               return;
+            }
+            el.style.color = defaultColor;
+          });
+    }, 3000);
+   adminPicker.style.display = 'none';
+   });
+
+// Socket event za update default boje
+socket.on('updateDefaultColor', (data) => {
+    const newDefaultColor = data.color;
+     defaultColor = newDefaultColor;
+
+    setTimeout(() => {
+        document.querySelectorAll('.guest').forEach(el => {
+            const nickname = el.dataset.nickname || el.id.replace('guest-', '');
+            const isVirtual = virtualGuests.some(v => v.nickname === nickname);
+            if (isVirtual) {
+                return;
+            }
+            if ('userColor' in el.dataset) return; // ne dira one koji su birali boju
+            el.style.color = newDefaultColor;
+           });
+    }, 3000);
+});
