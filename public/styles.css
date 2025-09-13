@@ -183,7 +183,7 @@ body {
      font-size: 15px;
      font-weight: bold;
      font-style: italic;
-     color: #87CEFA;
+    color: rgb(168, 168, 168);
   }
 .guest::before, .virtual-guest::before {
     content: "🍹"; 
@@ -455,6 +455,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
