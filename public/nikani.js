@@ -50,6 +50,7 @@ const userAnimations = {
 let allUserAnimations = {};
 let currentAnimation = null;
 let animationSpeed = 2;
+let chosenColor = '#fff'; // ili neka početna boja po izboru
 
 const nikBtn = document.getElementById('nik');
 const popnik = document.createElement('div');
@@ -367,3 +368,4 @@ socket.on('currentAnimations', (allAnimations) => {
     applyAnimationToNickWhenReady(nickname, animation, speed);
   }
 });
+
