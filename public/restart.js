@@ -1,7 +1,6 @@
 (function () {
   const activeKeys = new Set();
 
-  // Kreiraj overlay koji je po defaultu sakriven
   const overlay = document.createElement('div');
   overlay.id = 'admin-overlay';
   overlay.style.display = 'none';
@@ -15,7 +14,6 @@
   overlay.style.alignItems = 'center';
   overlay.style.justifyContent = 'center';
 
-  // Tabla u centru overlaya
   const panel = document.createElement('div');
   panel.style.border = '2px solid #fff';
   panel.style.padding = '30px 40px';
@@ -37,7 +35,6 @@
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
 
-  // Stilovi za dugmad sa belim neon efektom
   const buttons = overlay.querySelectorAll('button');
   buttons.forEach(btn => {
     btn.style.padding = '10px 20px';
@@ -58,7 +55,6 @@
     });
   });
 
-  // Prati pritisnute tastere
   document.addEventListener('keydown', (e) => {
     activeKeys.add(e.key.toUpperCase());
     if (activeKeys.has('R') && activeKeys.has('G') && activeKeys.has('1')) {
@@ -70,17 +66,13 @@
     activeKeys.delete(e.key.toUpperCase());
   });
 
-  // Otkaži dugme sakriva overlay
   document.getElementById('cancel-restart').addEventListener('click', () => {
     overlay.style.display = 'none';
   });
 
-  // Restart dugme šalje POST zahtev i zatvara overlay (BEZ confirm prompta!)
   document.getElementById('confirm-restart').addEventListener('click', () => {
     fetch('/restart', { method: 'POST' })
-      .then(res => res.text())
-      .then(msg => alert(msg || 'Server se restartuje...'))
-      .catch(() => alert('Greška pri restartu servera'));
+      .catch(() => console.error('Greška pri restartu servera'));
     overlay.style.display = 'none';
   });
 })();
