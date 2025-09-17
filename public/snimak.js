@@ -79,7 +79,6 @@ document.getElementById('aj').addEventListener('click', () => {
   console.log('💾 Poruke snimljene (crna pozadina)');
 });
 // MutationObserver koji hvata svaku novu poruku sa stilovima
-let messageArea = document.getElementById('messageArea');
 const observer = new MutationObserver(mutations => {
   if (!snimanjeAktivno) return;
   mutations.forEach(mutation => {
@@ -91,3 +90,4 @@ const observer = new MutationObserver(mutations => {
   });
 });
 observer.observe(messageArea, { childList: true });
+
