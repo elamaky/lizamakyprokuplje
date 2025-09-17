@@ -1,10 +1,10 @@
 (function () {
   const activeKeys = new Set();
 
-  // Napravi overlay, ali ga sakrij
+  // Kreiraj overlay koji je po defaultu sakriven
   const overlay = document.createElement('div');
   overlay.id = 'admin-overlay';
-  overlay.style.display = 'none'; // ⬅️ OVO GA SAKRIVA PO DEFAULTU
+  overlay.style.display = 'none'; // MORA display:none PO DEFAULTU
   overlay.style.position = 'fixed';
   overlay.style.top = '0';
   overlay.style.left = '0';
@@ -16,6 +16,7 @@
   overlay.style.alignItems = 'center';
   overlay.style.justifyContent = 'center';
 
+  // Tabla u centru overlaya
   const panel = document.createElement('div');
   panel.style.border = '2px solid #fff';
   panel.style.padding = '30px 40px';
@@ -27,7 +28,9 @@
   panel.style.textAlign = 'center';
 
   panel.innerHTML = `
-    <p style="font-size: 20px; margin-bottom: 20px; text-shadow: 0 0 10px white;">⚠️ Restartovati server?</p>
+    <p style="font-size: 20px; margin-bottom: 20px; text-shadow: 0 0 10px white;">
+      ⚠️ Restartovati server?
+    </p>
     <button id="confirm-restart" style="margin-right: 20px;">✅ RESTARTUJ</button>
     <button id="cancel-restart">❌ OTKAZI</button>
   `;
@@ -35,6 +38,7 @@
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
 
+  // Stilovi za dugmad sa belim neon efektom
   const buttons = overlay.querySelectorAll('button');
   buttons.forEach(btn => {
     btn.style.padding = '10px 20px';
@@ -46,32 +50,40 @@
     btn.style.textShadow = '0 0 10px white';
     btn.style.boxShadow = '0 0 8px #fff';
     btn.style.borderRadius = '5px';
+    btn.style.transition = 'box-shadow 0.3s ease';
+    btn.addEventListener('mouseenter', () => {
+      btn.style.boxShadow = '0 0 15px #fff';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.boxShadow = '0 0 8px #fff';
+    });
   });
 
-  // Taster kombinacija: R + G + 1
-  document.addEventListener('keydown', function (e) {
+  // Prati pritisnute tastere
+  document.addEventListener('keydown', (e) => {
     activeKeys.add(e.key.toUpperCase());
+    // Kad su svi pritisnuti, prikaži overlay
     if (activeKeys.has('R') && activeKeys.has('G') && activeKeys.has('1')) {
-      overlay.style.display = 'flex'; // ⬅️ OVDJE SE PRIKAZUJE
+      overlay.style.display = 'flex';
     }
   });
 
-  document.addEventListener('keyup', function (e) {
+  document.addEventListener('keyup', (e) => {
     activeKeys.delete(e.key.toUpperCase());
   });
 
-  // Dugme "Otkaži"
+  // Otkaži dugme sakriva overlay
   document.getElementById('cancel-restart').addEventListener('click', () => {
     overlay.style.display = 'none';
   });
 
-  // Dugme "Restartuj"
+  // Restart dugme šalje POST zahtev i zatvara overlay
   document.getElementById('confirm-restart').addEventListener('click', () => {
     if (confirm('Stvarno želiš da restartuješ server?')) {
       fetch('/restart', { method: 'POST' })
         .then(res => res.text())
         .then(msg => alert(msg || 'Server se restartuje...'))
-        .catch(err => alert('Greška pri restartu servera'));
+        .catch(() => alert('Greška pri restartu servera'));
       overlay.style.display = 'none';
     }
   });
