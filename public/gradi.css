@@ -38,7 +38,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  background-size: 200%;
+  background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -277,6 +277,7 @@
 .grad-admin-8 { background-image: radial-gradient(circle, #ffea00, #00ff00); }
 .grad-admin-9 { background-image: linear-gradient(to right, #ff1493, #00f); }
 .grad-admin-10 { background-image: radial-gradient(circle, #00ff00, #ff6347); }
+
 
 
 
