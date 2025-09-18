@@ -259,8 +259,15 @@ document.getElementById('colorPicker').addEventListener('input', function() {
     const myDiv = document.getElementById(`guest-${myNickname}`);
     if (!myDiv) return;
 
-    // Ukloni gradijent sa teksta
+    // Ukloni gradijent sa teksta (user i admin)
+    myDiv.classList.forEach(cls => {
+        if (cls.startsWith('gradient-') || cls.startsWith('grad-admin-')) {
+            myDiv.classList.remove(cls);
+        }
+    });
+    myDiv.classList.remove('use-gradient', 'gradient-user');
     myDiv.style.background = '';
+    myDiv.style.backgroundImage = '';
     myDiv.style.webkitBackgroundClip = '';
     myDiv.style.webkitTextFillColor = '';
 
@@ -269,12 +276,6 @@ document.getElementById('colorPicker').addEventListener('input', function() {
 
     // **Obeleži korisnika da je sam birao boju**
     myDiv.dataset.userColor = currentColor;
-
-    // Ukloni klase za gradijent
-    myDiv.classList.forEach(cls => {
-        if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
-    });
-    myDiv.classList.remove('use-gradient', 'gradient-user');
 
     updateInputStyle();
 
@@ -289,6 +290,7 @@ socket.on('allColors', (colors) => {
         if (!myDiv) continue;
 
         myDiv.style.background = '';
+        myDiv.style.backgroundImage = '';
         myDiv.style.webkitBackgroundClip = '';
         myDiv.style.webkitTextFillColor = '';
         myDiv.style.color = colors[nickname];
@@ -298,7 +300,9 @@ socket.on('allColors', (colors) => {
 
         myDiv.classList.remove('use-gradient', 'gradient-user');
         myDiv.classList.forEach(cls => {
-            if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
+            if (cls.startsWith('gradient-') || cls.startsWith('grad-admin-')) {
+                myDiv.classList.remove(cls);
+            }
         });
     }
 });
@@ -309,6 +313,7 @@ socket.on('colorChange', (data) => {
     if (!myDiv) return;
 
     myDiv.style.background = '';
+    myDiv.style.backgroundImage = '';
     myDiv.style.webkitBackgroundClip = '';
     myDiv.style.webkitTextFillColor = '';
     myDiv.style.color = data.color;
@@ -318,7 +323,9 @@ socket.on('colorChange', (data) => {
 
     myDiv.classList.remove('use-gradient', 'gradient-user');
     myDiv.classList.forEach(cls => {
-        if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
+        if (cls.startsWith('gradient-') || cls.startsWith('grad-admin-')) {
+            myDiv.classList.remove(cls);
+        }
     });
 });
 // ZA GRADIJENTE
@@ -396,7 +403,7 @@ socket.on('allGradients', (gradients) => {
         }
     }
 });
-// ZA ADMINA 
+// ZA ADMINA - DEFAULT COLOR
 const applyBtn = document.getElementById('applyDefaultColor');
 const adminPicker = document.getElementById('adminColorPicker');
 
@@ -410,23 +417,38 @@ adminPicker.addEventListener('input', () => {
     const selectedColor = adminPicker.value;
     defaultColor = selectedColor;
 
+    // Emituj boju svim klijentima
     socket.emit('updateDefaultColor', { color: defaultColor });
 
-    // Primeni default boju sa 3s delay kako bi svi elementi bili renderovani
+    // Primeni default boju sa 3s delay na sve goste
     setTimeout(() => {
         document.querySelectorAll('.guest').forEach(el => {
             const nickname = el.dataset.nickname || el.id.replace('guest-', '');
             const isVirtual = virtualGuests.some(v => v.nickname === nickname);
             if (isVirtual) return;
             if ('userColor' in el.dataset) return; // ne dira one koji su birali boju
+            if ('userGradient' in el.dataset) return; // ne dira user gradijente
 
+            // Ukloni samo admin gradijent
+            el.classList.forEach(cls => {
+                if (cls.startsWith('grad-admin-')) el.classList.remove(cls);
+            });
+            el.classList.remove('use-gradient', 'gradient-user');
+            el.style.background = '';
+            el.style.backgroundImage = '';
+            el.style.webkitBackgroundClip = '';
+            el.style.webkitTextFillColor = '';
+
+            // Postavi admin default boju
             el.style.color = defaultColor;
+            // Obeleži da je admin boja odabrana
+            el.dataset.adminColor = defaultColor;
 
-            // Ako je trenutni korisnik, update currentColor i input polje
+            // Ako je trenutni korisnik, update currentColor i reset currentGradient
             if (el.id === `guest-${myNickname}`) {
                 currentColor = defaultColor;
                 currentGradient = null;
-                updateInputStyle(); // osvežava input polje
+                updateInputStyle();
             }
         });
     }, 3000);
@@ -436,25 +458,129 @@ adminPicker.addEventListener('input', () => {
 
 // Socket event za update default boje od strane drugih admina
 socket.on('updateDefaultColor', (data) => {
-    const newDefaultColor = data.color;
-    defaultColor = newDefaultColor;
+    defaultColor = data.color;
 
     setTimeout(() => {
         document.querySelectorAll('.guest').forEach(el => {
             const nickname = el.dataset.nickname || el.id.replace('guest-', '');
             const isVirtual = virtualGuests.some(v => v.nickname === nickname);
             if (isVirtual) return;
-            if ('userColor' in el.dataset) return; // ne dira one koji su birali boju
+            if ('userColor' in el.dataset) return;
+            if ('userGradient' in el.dataset) return;
 
-            el.style.color = newDefaultColor;
+            // Ukloni samo admin gradijent
+            el.classList.forEach(cls => {
+                if (cls.startsWith('grad-admin-')) el.classList.remove(cls);
+            });
+            el.classList.remove('use-gradient', 'gradient-user');
+            el.style.background = '';
+            el.style.backgroundImage = '';
+            el.style.webkitBackgroundClip = '';
+            el.style.webkitTextFillColor = '';
 
-            // Ako je trenutni korisnik, update currentColor i input polje
+            // Postavi admin default boju
+            el.style.color = defaultColor;
+            // Obeleži da je admin boja odabrana
+            el.dataset.adminColor = defaultColor;
+
             if (el.id === `guest-${myNickname}`) {
-                currentColor = newDefaultColor;
+                currentColor = defaultColor;
                 currentGradient = null;
-                updateInputStyle(); // osvežava input polje
+                updateInputStyle();
             }
         });
     }, 3000);
 });
+// ADMIN GRADIJENT
+const gradBtn = document.getElementById('admingradijent');
+const adminGradTable = document.getElementById('xgradixadmin');
+let adminGradOpen = false;
 
+// Klik na dugme otvara/zatvara tablu
+gradBtn.addEventListener('click', () => {
+    adminGradOpen = !adminGradOpen;
+    adminGradTable.style.display = adminGradOpen ? 'grid' : 'none';
+
+    if (adminGradOpen) {
+        setTimeout(() => {
+            const gradBoxes = document.querySelectorAll('.xgradijentx-xbox');
+            gradBoxes.forEach(box => {
+                box.onclick = function () {
+                    const selectedGrad = this.classList[1]; // npr. "grad-admin-3"
+
+                    // Emitujemo svim klijentima
+                    socket.emit('updateDefaultGradient', { gradient: selectedGrad });
+
+                    // Primeni posle 3s delay
+                    setTimeout(() => {
+                        document.querySelectorAll('.guest').forEach(el => {
+                            const isVirtual = virtualGuests.some(v => v.nickname === (el.dataset.nickname || el.id.replace('guest-', '')));
+                            if (isVirtual) return;
+                            if ('userColor' in el.dataset || 'userGradient' in el.dataset) return;
+
+                            // Ukloni stare admin gradijente
+                            el.classList.forEach(cls => {
+                                if (cls.startsWith('grad-admin-')) el.classList.remove(cls);
+                            });
+                            el.classList.remove('use-gradient', 'gradient-user');
+
+                            // Dodaj novi admin gradijent
+                            el.classList.add(selectedGrad, 'use-gradient');
+                            el.style.backgroundImage = getComputedStyle(this).backgroundImage;
+
+                            // Ako postoji adminColor, ostavi style.color netaknut
+                            if (!('adminColor' in el.dataset)) {
+                                el.style.color = '';
+                            }
+
+                            // Ako je trenutni korisnik, update currentGradient i reset boje
+                            if (el.id === `guest-${myNickname}`) {
+                                currentGradient = selectedGrad;
+                                if (!('adminColor' in el.dataset)) currentColor = '';
+                                updateInputStyle();
+                            }
+                        });
+                    }, 3000);
+
+                    adminGradTable.style.display = 'none';
+                    adminGradOpen = false;
+                };
+            });
+        }, 300);
+    }
+});
+
+// Socket event za update default gradijenta od strane drugih admina
+socket.on('updateDefaultGradient', (data) => {
+    const newGrad = data.gradient;
+
+    setTimeout(() => {
+        document.querySelectorAll('.guest').forEach(el => {
+            const isVirtual = virtualGuests.some(v => v.nickname === (el.dataset.nickname || el.id.replace('guest-', '')));
+            if (isVirtual) return;
+            if ('userColor' in el.dataset || 'userGradient' in el.dataset) return;
+
+            // Ukloni stare admin gradijente
+            el.classList.forEach(cls => {
+                if (cls.startsWith('grad-admin-')) el.classList.remove(cls);
+            });
+            el.classList.remove('use-gradient', 'gradient-user');
+
+            // Dodaj novi admin gradijent
+            el.classList.add(newGrad, 'use-gradient');
+            el.style.backgroundImage = getComputedStyle(document.querySelector(`.${newGrad}`)).backgroundImage;
+
+            // Ako postoji adminColor, ostavi style.color netaknut
+            if (!('adminColor' in el.dataset)) {
+                el.style.color = '';
+            }
+
+            // Ako je trenutni korisnik, update currentGradient i reset boje
+            if (el.id === `guest-${myNickname}`) {
+                currentGradient = newGrad;
+                if (!('adminColor' in el.dataset)) currentColor = '';
+                updateInputStyle();
+            }
+        });
+    }, 3000);
+});
