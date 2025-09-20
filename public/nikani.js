@@ -36,7 +36,7 @@
 
   bounce: `@keyframes bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
+    50% { transform: translateY(-10px); }
   }
   .bounce-letter {
     display: inline-block;
@@ -271,90 +271,89 @@ nikBtn.addEventListener('click', () => {
   popnik.appendChild(stopBtn);
 
 function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
-  const userDiv = document.getElementById(`guest-${nickname}`);
-  if (!userDiv) return;
+    const userDiv = document.getElementById(`guest-${nickname}`);
+    if (!userDiv) return;
 
-  // Vrati originalni tekst bez animacije pre nove
-  userDiv.style.animation = 'none';
-  userDiv.innerHTML = userDiv.textContent || userDiv.innerText;
+    // Resetuj prethodnu animaciju
+    userDiv.style.animation = 'none';
+    userDiv.innerHTML = userDiv.textContent || userDiv.innerText;
 
-  const text = userDiv.textContent || userDiv.innerText;
+    // Provera da li korisnik ima gradijent
+    const isGradient = Array.from(userDiv.classList).some(cls => cls.startsWith('gradient-'));
 
-  userDiv.innerHTML = '';
-
-  // Definiši znakove za koje ne želimo animaciju
-  const problematicChars = [' ', '*', '(', ')', '-', '_', '[', ']', '{', '}', '^', '$', '#', '@', '!', '+', '=', '~', '`', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '"', "'"];
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-
-    if (problematicChars.includes(char)) {
-      // Ubaci običan tekst bez animacije
-      userDiv.appendChild(document.createTextNode(char));
-    } else {
-      // Ubaci span sa animacijom
-      const span = document.createElement('span');
-      span.textContent = char;
-
-      // Dodaj klasu u zavisnosti od animacije
-      if (animationName === 'rotateLetters') {
-        span.classList.add('rotate-letter');
-        span.style.animationIterationCount = '1';
-      } else if (animationName === 'glowBlink') {
-        span.classList.add('glow-letter');
-        span.style.animationIterationCount = 'infinite';
-      } else if (animationName === 'fadeInOut') {
-        span.classList.add('fade-letter');
-        span.style.animationIterationCount = 'infinite';
-      } else if (animationName === 'bounce') {
-        span.classList.add('bounce-letter');
-        span.style.animationIterationCount = 'infinite';
-      } else {
-        // fallback bez klase i animacije
-        span.style.animationIterationCount = 'infinite';
-      }
-
-      span.style.animationDuration = `${speed}s`;
-      span.style.animationDelay = `${i * 0.1}s`;
-
-      span.style.webkitFontSmoothing = 'antialiased';
-      span.style.MozOsxFontSmoothing = 'grayscale';
-      span.style.backfaceVisibility = 'hidden';
-      span.style.transformStyle = 'preserve-3d';
-
-      userDiv.appendChild(span);
+    if (isGradient) {
+        // Animacija na ceo div
+        userDiv.style.animationName = animationName;
+        userDiv.style.animationDuration = `${speed}s`;
+        userDiv.style.animationIterationCount = 'infinite';
+        userDiv.style.animationTimingFunction = 'ease-in-out';
+        return;
     }
-  }
 
-  if (animationName === 'rotateLetters') {
-    let completedSpans = 0;
-    const spans = userDiv.querySelectorAll('.rotate-letter');
-    spans.forEach(span => {
-      span.addEventListener('animationend', () => {
-        completedSpans++;
-        if (completedSpans === spans.length) {
-          setTimeout(() => {
-            if (currentAnimation === 'rotateLetters') {
-              applyAnimationToNick(nickname, animationName, speed);
-            }
-          }, 15000);
+    // --- JS animacija po slovima za obične korisnike ---
+    const text = userDiv.textContent || userDiv.innerText;
+    userDiv.innerHTML = '';
+
+    const problematicChars = [
+        ' ', '*', '(', ')', '-', '_', '[', ']', '{', '}', '^', '$', '#', '@',
+        '!', '+', '=', '~', '`', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '"', "'"
+    ];
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (problematicChars.includes(char)) {
+            userDiv.appendChild(document.createTextNode(char));
+        } else {
+            const span = document.createElement('span');
+            span.textContent = char;
+
+            // Dodaj klasu u zavisnosti od animacije
+            if (animationName === 'rotateLetters') span.classList.add('rotate-letter');
+            else if (animationName === 'glowBlink') span.classList.add('glow-letter');
+            else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
+            else if (animationName === 'bounce') span.classList.add('bounce-letter');
+
+            span.style.animationDuration = `${speed}s`;
+            span.style.animationIterationCount = 'infinite';
+            span.style.animationDelay = `${i * 0.1}s`;
+
+            userDiv.appendChild(span);
         }
-      });
-    });
-  }
+    }
+
+    // Ponovo pokreni rotateLetters ako je potrebno
+    if (animationName === 'rotateLetters') {
+        const spans = userDiv.querySelectorAll('.rotate-letter');
+        let completedSpans = 0;
+
+        spans.forEach(span => {
+            span.addEventListener('animationend', () => {
+                completedSpans++;
+                if (completedSpans === spans.length) {
+                    setTimeout(() => {
+                        if (currentAnimation === 'rotateLetters') {
+                            applyAnimationToNick(nickname, animationName, speed);
+                        }
+                    }, 15000);
+                }
+            });
+        });
+    }
 }
 
 function applyAnimationToNickWhenReady(nickname, animation, speed) {
-  const tryApply = () => {
-    const userDiv = document.getElementById(`guest-${nickname}`);
-    if (userDiv) {
-      applyAnimationToNick(nickname, animation, speed);
-    } else {
-      setTimeout(tryApply, 500);
-    }
-  };
-  tryApply();
+    const tryApply = () => {
+        const userDiv = document.getElementById(`guest-${nickname}`);
+        if (userDiv) {
+            applyAnimationToNick(nickname, animation, speed);
+        } else {
+            setTimeout(tryApply, 500);
+        }
+    };
+    tryApply();
 }
+
 socket.on('animationChange', data => {
   currentAnimation = data.animation;
   animationSpeed = data.speed || 2;
