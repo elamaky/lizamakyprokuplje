@@ -111,8 +111,8 @@ const allItems = [
     ...[
         
         'kj.avifs','tresnja.avifs', 'mesa.webp', 'luster.webp', 'bye.webp', 'crveni.webp','vestica.webp', 
-         'box.avifs', 'gal.avifs', 'gal1.avifs','gal2.avifs', 'sl.webp', 'slika9.avifs', 
-         'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs',
+         'box.avifs', 'gal.avifs', 'gal1.avifs','gal2.avifs', 'sl.webp', 'slika9.avifs', 'himen.webp',
+         'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs','dia.gif', 'dia1.gif', 
           'nov6.gif','slika1.avifs', 'slika3.avifs', 'slika4.avifs', 'bub.gif', 'ok.gif', 
          'slika5.avifs', 'slika6.avifs', 'slika7.avifs','slika8.avifs', 'nag1.webp', 
         'uzivam.gif', 'stik10.png', 'dance.gif', 'dance1.gif', 'dance2.gif', 
@@ -457,6 +457,7 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
 
 
