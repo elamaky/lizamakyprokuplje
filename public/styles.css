@@ -147,16 +147,21 @@ body {
     outline: none;
     
 }
-#guestList {
-    position: absolute;
-    top: 55px;
-    right: 0;
-    bottom: 0;
-    width: 165px;
-    overflow-y: auto;
-    border: 2px solid white;
-    background-color: black;
-    }
+.guest, .virtual-guest {
+    padding: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin: 3px 0;
+    padding-left: 2px;
+    font-size: 15px;
+    font-weight: bold;
+    font-style: italic;
+    color: rgb(168, 168, 168);
+    white-space: nowrap;      
+    overflow: hidden;         
+    text-overflow: ellipsis;  
+}
 
 #guestList::-webkit-scrollbar {
     width: 10px;
@@ -454,6 +459,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
