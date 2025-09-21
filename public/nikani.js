@@ -1,4 +1,4 @@
- const animations = {
+const animations = {
   rotateLetters: `@keyframes rotateLetters {
     0% { transform: rotateY(0deg); }
     100% { transform: rotateY(360deg); }
@@ -44,8 +44,32 @@
     animation-timing-function: ease-in-out;
     animation-fill-mode: forwards;
     animation-iteration-count: infinite;
+  }`,
+
+  superCombo: `@keyframes superCombo {
+    0%   { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1) skew(0deg,0deg); opacity: 1; }
+    10%  { transform: translateY(-4px) rotateX(15deg) rotateY(5deg) rotateZ(-5deg) scale(1.05) skew(2deg,-2deg); opacity: 0.9; }
+    20%  { transform: translateY(5px) rotateX(-15deg) rotateY(-5deg) rotateZ(5deg) scale(1.1) skew(-2deg,2deg); opacity: 0.95; }
+    30%  { transform: translateY(-5px) rotateX(20deg) rotateY(10deg) rotateZ(-10deg) scale(1.08) skew(1deg,-1deg); opacity: 1; }
+    40%  { transform: translateY(3px) rotateX(-20deg) rotateY(-10deg) rotateZ(8deg) scale(1.12) skew(-1deg,1deg); opacity: 0.9; }
+    50%  { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1) skew(0deg,0deg); opacity: 1; }
+    60%  { transform: translateY(-4px) rotateX(12deg) rotateY(6deg) rotateZ(-6deg) scale(1.07) skew(2deg,-2deg); opacity: 0.95; }
+    70%  { transform: translateY(4px) rotateX(-12deg) rotateY(-6deg) rotateZ(6deg) scale(1.09) skew(-2deg,2deg); opacity: 0.9; }
+    80%  { transform: translateY(-3px) rotateX(15deg) rotateY(5deg) rotateZ(-4deg) scale(1.06) skew(1deg,-1deg); opacity: 1; }
+    90%  { transform: translateY(3px) rotateX(-15deg) rotateY(-5deg) rotateZ(4deg) scale(1.08) skew(-1deg,1deg); opacity: 0.95; }
+    100% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1) skew(0deg,0deg); opacity: 1; }
+  }
+  .superCombo-letter {
+    display: inline-block;
+    transform-origin: center center;
+    animation-name: superCombo;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
   }`
 };
+
+const animationAuthorizedUsers = new Set(['Radio Galaksija','R-Galaksija','ZI ZU','*___F117___*','*__X__*','Dia💎','Dia',',,Sandra,,','_L i l i_','ViRuS_LiLi','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊']);
 let allUserAnimations = {};
 let currentAnimation = null;
 let animationSpeed = 2;
@@ -93,6 +117,17 @@ input.style.width = '200px';
 input.style.fontFamily = 'monospace';
 aniprompt.appendChild(input);
 
+// dugme za zatvaranje prompta
+const closeBtn = document.createElement('button');
+closeBtn.textContent = 'Zatvori';
+closeBtn.style.marginTop = '10px';
+closeBtn.style.padding = '5px 12px';
+closeBtn.style.cursor = 'pointer';
+closeBtn.onclick = () => {
+    aniprompt.style.display = 'none';
+};
+aniprompt.appendChild(closeBtn);
+
 document.body.appendChild(aniprompt);
 
 function showAniprompt(correctPassword, callback) {
@@ -133,6 +168,14 @@ let popnikOpen = false;
 let isAuthorized = false;
 
 nikBtn.addEventListener('click', () => {
+  // Ako je korisnik iz ani auth grupe, odmah otvori tablu animacija
+  if (animationAuthorizedUsers.has(myNickname)) {
+      popnik.style.display = 'block';
+      popnikOpen = true;
+      return;
+  }
+
+  // Svi ostali idu na prompt za lozinku
   if (!isAuthorized) {
     showAniprompt('lsx', (success) => {
         if (success) {
@@ -151,6 +194,7 @@ nikBtn.addEventListener('click', () => {
     }
   }
 });
+
   // rotateLetters dugme
   const btnRotate = document.createElement('button');
   btnRotate.textContent = 'rotateLetters';
@@ -223,6 +267,25 @@ nikBtn.addEventListener('click', () => {
   };
   popnik.appendChild(btnBounce);
 
+// superCombo dugme
+const btnSuperCombo = document.createElement('button');
+btnSuperCombo.textContent = 'superCombo';
+btnSuperCombo.style.margin = '5px';
+btnSuperCombo.style.padding = '5px 12px';
+btnSuperCombo.style.cursor = 'pointer';
+btnSuperCombo.onclick = () => {
+  currentAnimation = 'superCombo';
+  applyAnimationToNick(myNickname, 'superCombo', animationSpeed);
+  socket.emit('animationChange', {
+    nickname: myNickname,
+    animation: 'superCombo',
+    speed: animationSpeed
+  });
+  popnik.style.display = 'none';
+};
+popnik.appendChild(btnSuperCombo);
+
+
   // Slider za brzinu animacije
   const speedLabel = document.createElement('label');
   speedLabel.textContent = `Brzina animacije: ${animationSpeed}s`;
@@ -251,7 +314,7 @@ nikBtn.addEventListener('click', () => {
 
   // Dugme za stop animacije
   const stopBtn = document.createElement('button');
-  stopBtn.textContent = 'Stopuj animaciju';
+  stopBtn.textContent = 'Iskljuci Animaciju';
   stopBtn.style.marginTop = '10px';
   stopBtn.style.padding = '5px 12px';
   stopBtn.style.cursor = 'pointer';
@@ -313,6 +376,7 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
             else if (animationName === 'glowBlink') span.classList.add('glow-letter');
             else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
             else if (animationName === 'bounce') span.classList.add('bounce-letter');
+            else if (animationName === 'superCombo') span.classList.add('superCombo-letter');
 
             span.style.animationDuration = `${speed}s`;
             span.style.animationIterationCount = 'infinite';
