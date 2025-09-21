@@ -69,8 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
         chatContainer.style.cursor = cursor;
     });
 
-   function startDrag(event) {
-    if (!authorized) return; // ← dodaj ovo
+ function startDrag(event) {
+    if (!authorizedUsers.has(currentUser)) return;
 
     const offsetX = event.clientX - chatContainer.offsetLeft;
     const offsetY = event.clientY - chatContainer.offsetTop;
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function startResize(event, direction) {
-          if (!authorized) return; 
+         if (!authorizedUsers.has(currentUser)) return;
         const startX = event.clientX;
         const startY = event.clientY;
         const startWidth = chatContainer.offsetWidth;
