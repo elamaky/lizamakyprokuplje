@@ -16,14 +16,14 @@ style.textContent = `
     overflow-y: auto;
   }
   #avatar img {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin: 5px;
     cursor: pointer;
   }
   .inline-avatar {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin-left: 5px;
     vertical-align: middle;
   }
@@ -163,4 +163,5 @@ document.getElementById('sl').addEventListener('click', () => {
 
 // Registracija korisnika sa početnim avatarom
 socket.emit('register', { username: 'mojUsername', avatar: 'putanja/slike.webp' });
+
 
