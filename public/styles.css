@@ -116,8 +116,6 @@ body {
     white-space: normal;
     position: relative;
     color: #fff; /* boja teksta */
-   filter: brightness(2) saturate(2);
-    mix-blend-mode: screen;
     z-index: 1;
 }
 
@@ -475,6 +473,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
