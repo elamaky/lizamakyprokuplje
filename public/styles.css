@@ -103,7 +103,7 @@ body {
     position: absolute;
     top: 100px;
     left: 5px;
-    right: 170px;
+    right: 175px;
     bottom: 0px;
     padding: 10px;
     overflow-y: auto;
@@ -115,8 +115,7 @@ body {
     word-wrap: break-word;
     white-space: normal;
     position: relative;
-    color: #fff; /* boja teksta */
-   filter: brightness(2) saturate(2);
+    filter: brightness(2) saturate(2);
     mix-blend-mode: screen;
     z-index: 1;
 }
@@ -168,7 +167,7 @@ body {
     top: 55px;
     right: 0;
     bottom: 0;
-    width: 165px;
+    width: 170px;
     overflow-y: auto;
     border: 2px solid white;
     background-color: black;
@@ -475,6 +474,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
