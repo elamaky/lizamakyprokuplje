@@ -93,10 +93,9 @@ const addNewItemToLocalStorage = (newItem) => {
     // Ponovno učitavanje slika u modal
     loadImagesFromLocalStorage();
 };
-
 // HTML kod za modal
 const smileModalHTML = `
-<div id="smileModal" style="display:none;position:fixed;width:900px;background:black;padding:10px;border:1px solid white;z-index:1000;overflow-y:auto;border-radius:5px;color:white;flex-wrap:wrap;max-height:600px;">
+<div id="smileModal" style="display:none;position:fixed;width:900px;background:black;padding:10px;border:1px solid white;z-index:1000;overflow-y:auto;overflow-x:auto;border-radius:5px;color:white;flex-wrap:wrap;max-height:600px;">
     <button onclick="closeSmileModal()" style="background:red;color:white;border:none;padding:5px 10px;cursor:pointer;float:right;">X</button>
     <div id="smileContainer" style="display:flex;flex-wrap:wrap;gap:8px;overflow-y:auto;"></div>
 </div>`;
@@ -112,7 +111,7 @@ const allItems = [
         
         'kj.avifs','tresnja.avifs', 'mesa.webp', 'luster.webp', 'bye.webp', 'crveni.webp','vestica.webp', 
          'box.avifs', 'gal.avifs', 'gal1.avifs','gal2.avifs', 'sl.webp', 'slika9.avifs', 'himen.webp',
-         'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs','dia.gif', 'dia1.gif', 
+         'slika10.avifs', 'slika11.avifs','slika12.avifs','slika13.avifs','dia1.gif', 
           'nov6.gif','slika1.avifs', 'slika3.avifs', 'slika4.avifs', 'bub.gif', 'ok.gif', 
          'slika5.avifs', 'slika6.avifs', 'slika7.avifs','slika8.avifs', 'nag1.webp', 
         'uzivam.gif', 'stik10.png', 'dance.gif', 'dance1.gif', 'dance2.gif', 
@@ -123,7 +122,7 @@ const allItems = [
         'nov1.gif', 'nov3.gif', 'nov4.gif', 'nov5.gif', 
         'nov7.gif', 'nov8.gif', 'nov9.gif', 'nov10.gif', 'nov11.gif', 'nov12.gif', 
         'nov13.gif', 'nov15.gif', 'nov16.gif', 'nov17.gif', 'nov18.gif', 
-        'nov19.gif', 'nov20.gif', 'nov21.gif'
+        'nov19.gif', 'nov20.gif', 'nov21.gif','dia.gif'
 ].map(img => ({ type: 'image', content: img }))
 ];
 
@@ -457,6 +456,7 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
 
 
