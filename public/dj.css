@@ -9,20 +9,15 @@
 .konobarica {
     font-weight: bold;
     font-style: italic;
-background: linear-gradient(45deg, #ff6347, #ffffff, #ff1493, #40e0d0); /* Crvena, bela, roza, tirkiz */
-   -webkit-background-clip: text;
-    color: transparent; /* Tekst je transparentan da bi se video gradijent */
+    color: #ff1493; /* sexy pink */
 }
 
 /* Stil za sistemske poruke */
 .system-message {
-  font-weight: bold;
+    font-weight: bold;
     font-style: italic;
- background: linear-gradient(45deg, #ff6347, #ffffff, #ff1493, #40e0d0); /* Crvena, bela, roza, tirkiz */
-   -webkit-background-clip: text;
-    color: transparent; /* Tekst je transparentan da bi se video gradijent */
+    color: #ff1493; /* ista sexy pink boja */
 }
-
 .modal {            /* FUNKCIONMODAL */
     display: none;
     position: fixed;
@@ -249,4 +244,5 @@ iframe {
   opacity: 1 !important;
   filter: none !important;
 }
+
 
