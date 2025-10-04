@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let panel = null;
 
   const elementi = [
-    "chatContainer", "toolbar", "chatInput", "guestList"
-     ];
+    "chatContainer", "toolbar", "chatInput", "guestList", "dugmici"
+  ];
+
+  const dugmiciSelektor = "#openModal, #NIK, #sound, #smilesBtn, #GBtn, #boldBtn, #italicBtn, #plusBtn, #minusBtn, #linijadoleBtn, #colorBtn";
 
   baroBtn.addEventListener("click", () => {
     if (panel && panel.style.display === "block") {
@@ -73,10 +75,17 @@ document.addEventListener("DOMContentLoaded", () => {
         inp.addEventListener("input", () => {
           const vrednost = `${inputFields.Top.value || 0}px ${inputFields.Right.value || 0}px ${inputFields.Bottom.value || 0}px ${inputFields.Left.value || 0}px`;
 
-          const el = document.getElementById(id);
-          if (el) {
-            el.style.borderWidth = vrednost;
-            socket.emit("promeniSirinu", { id, borderWidth: vrednost });
+          if (id === "dugmici") {
+            document.querySelectorAll(dugmiciSelektor).forEach(btn => {
+              btn.style.borderWidth = vrednost;
+            });
+            socket.emit("promeniSirinu", { id: "dugmici", borderWidth: vrednost });
+          } else {
+            const el = document.getElementById(id);
+            if (el) {
+              el.style.borderWidth = vrednost;
+              socket.emit("promeniSirinu", { id, borderWidth: vrednost });
+            }
           }
         });
 
@@ -84,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
         red.appendChild(inp);
       });
 
-      // Reset dugme
       const resetBtn = document.createElement("button");
       resetBtn.textContent = "⭮";
       Object.assign(resetBtn.style, {
@@ -98,9 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       resetBtn.addEventListener("click", () => {
-        const el = document.getElementById(id);
-        if (el) el.style.borderWidth = "";
-        socket.emit("promeniSirinu", { id, borderWidth: "" });
+        if (id === "dugmici") {
+          document.querySelectorAll(dugmiciSelektor).forEach(btn => {
+            btn.style.borderWidth = "";
+          });
+          socket.emit("promeniSirinu", { id: "dugmici", borderWidth: "" });
+        } else {
+          const el = document.getElementById(id);
+          if (el) el.style.borderWidth = "";
+          socket.emit("promeniSirinu", { id, borderWidth: "" });
+        }
         pos.forEach(s => inputFields[s].value = "");
       });
 
@@ -111,21 +126,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   socket.on("promeniSirinu", data => {
     setTimeout(() => {
-      const el = document.getElementById(data.id);
-      if (el) {
-        el.style.borderWidth = data.borderWidth;
+      if (data.id === "dugmici") {
+        document.querySelectorAll(dugmiciSelektor).forEach(btn => {
+          btn.style.borderWidth = data.borderWidth;
+        });
+      } else {
+        const el = document.getElementById(data.id);
+        if (el) {
+          el.style.borderWidth = data.borderWidth;
+        }
       }
     }, 5000);
   });
 
   socket.on("pocetnoStanjeSirina", stanje => {
     for (const id in stanje) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.style.borderWidth = stanje[id];
+      if (id === "dugmici") {
+        document.querySelectorAll(dugmiciSelektor).forEach(btn => {
+          btn.style.borderWidth = stanje[id];
+        });
+      } else {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.borderWidth = stanje[id];
+        }
       }
     }
   });
 });
-
-
