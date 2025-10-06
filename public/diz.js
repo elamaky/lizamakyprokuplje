@@ -24,20 +24,21 @@ document.body.appendChild(popup);
   });
 
 const allDraggables = [
-  '#openModal',
-  '#sound',
-  '#smilesBtn',
-  '#GBtn',
-  '#boldBtn',
-  '#italicBtn',
-  '#plusBtn',
-  '#minusBtn',
-  '#linijadoleBtn',
-  '#colorBtn',
+  'openModal',
+    'NIK',
+    'sound',
+    'smilesBtn',
+    'GBtn',
+    'boldBtn',
+    'italicBtn',
+    'plusBtn',
+    'minusBtn',
+    'linijadoleBtn',
+    'colorBtn'
   '#messageArea',
   '#guestList',
-  '#chatInput',
-  '#NIK'
+  '#chatInput'
+ 
 ];
 let editMode = false;
 
@@ -513,17 +514,17 @@ function performReset() {
 
   // VRATI DUGMIĆE u toolbar sa originalnim tekstom i stilovima
 [
-  'openModal',
-  'sound',
-  'smilesBtn',
-  'GBtn',
-  'boldBtn',
-  'italicBtn',
-  'plusBtn',
-  'minusBtn',
-  'linijadoleBtn',
-  'colorBtn',
-  'NIK',
+   'openModal',
+    'NIK',
+    'sound',
+    'smilesBtn',
+    'GBtn',
+    'boldBtn',
+    'italicBtn',
+    'plusBtn',
+    'minusBtn',
+    'linijadoleBtn',
+    'colorBtn',
   'messageArea',
   'guestList',
   'chatInput'
@@ -612,6 +613,7 @@ if (chatInput) {
 socket.on('reset-layout', () => {
   performReset();
 });
+
 
 
 
