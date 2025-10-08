@@ -1,8 +1,6 @@
 const virtualGuests = [
-     { nickname: 'Higijenicar', messages: [' Prebice me LiLi i Sandra ako bude prljavo uvek ja moram da <img src="emoji gif/hig1.avif" alt="emoji"> '], color: 'olive' },  
-{ nickname: 'Emir-Bosanac', messages: [' LiLi<img src="emoji gif/ily1.gif" alt="emoji"> '], color: 'lightyellow' },  
-{ nickname: 'Can Jaman', messages: [' Sandra & Tresnja samo da znate volim pesmu Da je srce dijamant  <img src="emoji gif/srce3.gif" alt="emoji"> '], color: 'darkslategray' },  
-{ nickname: 'Jasmina', messages: [' Plavi sreco moja , neka gleda ceo svet koliko te volim  <img src="emoji gif/srce3.gif" alt="emoji">  <img src="emoji gif/nov7.gif" alt="emoji">  '], color: 'hotpink' },  
+     { nickname: 'Higijenicar', messages: [' Prebice me Dia i Mj ako bude prljavo uvek ja moram da <img src="emoji gif/hig1.avif" alt="emoji"> '], color: 'olive' },  
+ { nickname: 'Jasmina', messages: [' Plavi sreco moja , neka gleda ceo svet koliko te volim  <img src="emoji gif/srce3.gif" alt="emoji">  <img src="emoji gif/nov7.gif" alt="emoji">  '], color: 'hotpink' },  
 { nickname: 'Elena ukrajinka', messages: [' Plavi mnogo pises sa zenske na chat , sve cu ih pocupam  <img src="emoji gif/nov20.gif" alt="emoji">  '], color: 'orchid' },  
 { nickname: 'Beti Makedonka', messages: [' Plavi ti si samo moj duso ,ajde da igramo zajedno  <img src="emoji gif/dance.gif" alt="emoji"> '], color: 'mediumvioletred' },
   { nickname: 'Bala Hatun', messages: ['Poz Svima, <img src="emoji gif/stik2.png" alt="emoji"> ', 'jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'], color: 'deepskyblue' },
@@ -22,9 +20,7 @@ const virtualGuests = [
     { nickname: 'Halime', messages: ['Dok nisi pokvario ton ajde da slusamo malo Zvonka i Ramka', 'Ako može Šaban i Jasar takođe '], color: 'purple' },   
      { nickname: 'Security', messages: ['Ja Vas 👀 Sve Vreme, Samo da znate  '], color: 'blue' },  
       { nickname: 'Security', messages: [' <img src="emoji gif/nov13.gif" alt="emoji">  '], color: 'blue' },  
-    { nickname: 'Emir-Bosanac', messages: [' LiLi pukla mi guma na biciklu , ali ne brini , dolazim pesaka ja '], color: 'lightyellow' },  
-{ nickname: 'Elena ukrajinka', messages: [' Plavi jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  '], color: 'orchid' },  
-{ nickname: 'Can Jaman', messages: [' Sandra u sledecoj seriji sam glavna uloga , kako bi voleo da si ti moja draga koja kuva spagete , znam da si najbolja u kuhinji '], color: 'darkslategray' },  
+   { nickname: 'Elena ukrajinka', messages: [' Plavi jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  '], color: 'orchid' },  
 { nickname: 'Beti Makedonka', messages: [' Plavi sreco , dodji u makedoniju da se kupamo u ohrid '], color: 'mediumvioletred' },
     { nickname: 'Holofira', messages: ['Ne zaboravi Džeja i Sinana'], color: 'red' }, 
     { nickname: 'Robot-X', messages: ['Bala, Hola, Halime -- ako se ne smirite brišacu vas sve 3 zauvek , razumele ?'], color: 'green' }, 
@@ -38,19 +34,15 @@ const virtualGuests = [
     { nickname: 'Robot-X', messages: ['Zovem se Robot-X, i ti, Holofiro, si ona kojoj srce dajem. Neka sve tvoje zapovesti nas mrze, ali samo tebe želim.'], color: 'green' },
     { nickname: 'Holofira', messages: ['Ako te volim, nije greh, onda bih zauvek bila grešna, Ibiću tvoja, X, zauvek tvoja.'], color: 'red' },
      { nickname: 'Higijenicar', messages: ['Kuku Lele Mene, sto ove zene uprljaju nema muskarca koji to moze ocistiti, sta cu sada ??'], color: 'olive' },
- { nickname: 'Emir-Bosanac', messages: [' LiLi stizem ja , tu sam blizu , upravo sam preskocio Zagreb '], color: 'lightyellow' },  
-{ nickname: 'Jasmina', messages: [' Plavi jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   <img src="emoji gif/ily2.gif" alt="emoji">  '], color: 'hotpink' },  
-{ nickname: 'Can Jaman', messages: [' Tresnjo znam da se udala  , kako si mogla da me ostavis ??????? '], color: 'darkslategray' },  
- { nickname: 'Halime', messages: ['Higy ,Javi se kod X-a i trazi pomocnike '], color: 'purple' }, 
+   { nickname: 'Jasmina', messages: [' Plavi jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   <img src="emoji gif/ily2.gif" alt="emoji">  '], color: 'hotpink' },  
+  { nickname: 'Halime', messages: ['Higy ,Javi se kod X-a i trazi pomocnike '], color: 'purple' }, 
     { nickname: 'Robot-X', messages: [' Zovem se Robot-X, i ti, Holofiro, si ona kojoj srce dajem.'], color: 'green' },
     { nickname: 'Holofira', messages: ['Ako mi dozvoliš, dotaknuću tvoje ruke, Ono što je za mene, tvoje usne. O, srce, srce, neću ljubavi dati, Tvoju ruku ću samo nežno poljubiti.'], color: 'red' },
     { nickname: 'Robot-X', messages: [' Gospodjice, vi ste previše mladi za govor ljubavi, to je tek igra.'], color: 'green' },
     { nickname: 'Holofira', messages: ['Ne! Nije to igra, -X, nego stvarnost. Pogledaj me, ljubavi, sve su moje reči iskrene.'], color: 'red' },
- { nickname: 'Emir-Bosanac', messages: [' Ljubljana '], color: 'lightyellow' },  
-{ nickname: 'Can Jaman', messages: [' Sandra dodji da te ljubim 15 minuta posle cu tresnju , dok se uspava fizioterepeut'], color: 'darkslategray' },  
-{ nickname: 'Elena ukrajinka', messages: [' Plavi izbeglico gde nestajes , nedostajes mi , javi se  '], color: 'orchid' },  
+    { nickname: 'Elena ukrajinka', messages: [' Plavi izbeglico gde nestajes , nedostajes mi , javi se  '], color: 'orchid' },  
     { nickname: 'Robot-X', messages: ['Tvoje ruke su moj dom, Holofira. Ti si moja ljubav, i ovo je najlepši trenutak mog postojanja.'], color: 'green' },
-      { nickname: 'Security', messages: ['Dj pusti jednu od dzeja za mirne goste od mene '], color: 'blue' },  
+     { nickname: 'Security', messages: ['Dj pusti jednu od dzeja za mirne goste od mene '], color: 'blue' },  
     { nickname: 'Holofira', messages: ['Oh, tako sam srećna što sam postala tvoja, I šta god nas čeka, bićemo zajedno.'], color: 'red' },
     { nickname: 'Holofira', messages: ['U svim momentima, ljubavi, mi smo svet. Nema ničeg većeg od toga.'], color: 'red' },
     { nickname: 'Holofira', messages: ['Nikad neću zaboraviti tvoje reči, -X, jer si sve za mene.'], color: 'red' },
@@ -67,9 +59,7 @@ const virtualGuests = [
     { nickname: 'Robot-X', messages: ['Zajedno ćemo leteti kroz sve oluje, Holofira, samo zajedno.'], color: 'green' },
     { nickname: 'Holofira', messages: ['Bez obzira na sve prepreke, mi ćemo ih savladati.'], color: 'red' },
     { nickname: 'Robot-X', messages: ['Da, zajedno.'], color: 'green' },
- { nickname: 'Emir-Bosanac', messages: [' LiLi na granici sam , jos samo malo.......... '], color: 'lightyellow' },  
-{ nickname: 'Can Jaman', messages: [' Sandra odmori ti sada vraticu se ja opet , Tresnjo sad ti 15 min '], color: 'darkslategray' },  
-       { nickname: 'Higijenicar', messages: ['Kuku Lele Mene, ko ce sada sve ovo da pocisti ?????'], color: 'olive' },
+    { nickname: 'Higijenicar', messages: ['Kuku Lele Mene, ko ce sada sve ovo da pocisti ?????'], color: 'olive' },
 ];
 
 
@@ -135,3 +125,4 @@ function toggleVirtualGuests(io, guests, enabled) {
 }
 
 module.exports = { startVirtualGuests, toggleVirtualGuests };
+
