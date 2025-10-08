@@ -12,33 +12,29 @@ popup.style.border = '5px solid #fff';
 popup.style.zIndex = '1000';
 popup.innerHTML = `
   <button id="startstop">Start - Stop</button>
-   <button id="chatpoz">Maska</button>
+  <button id="chatpoz">Maska</button>
   <button id="save">Save</button>
-   <button id="load">Ucitaj</button>
+  <button id="load">Ucitaj</button>
   <button id="reset">Reset</button>
 `;
 document.body.appendChild(popup);
 
- document.getElementById('maska').addEventListener('click', () => {
-    popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
-  });
+document.getElementById('maska').addEventListener('click', () => {
+  popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+});
 
 const allDraggables = [
   'openModal',
-    'NIK',
-    'sound',
-    'smilesBtn',
-    'GBtn',
-    'boldBtn',
-    'italicBtn',
-    'plusBtn',
-    'minusBtn',
-    'linijadoleBtn',
-    'colorBtn'
+  'NIK',
+  'sound',
+  'smilesBtn',
+  'GBtn',
+  'boldBtn',
+  'italicBtn',
+  'colorBtn',
   '#messageArea',
   '#guestList',
   '#chatInput'
- 
 ];
 let editMode = false;
 
@@ -613,6 +609,7 @@ if (chatInput) {
 socket.on('reset-layout', () => {
   performReset();
 });
+
 
 
 
