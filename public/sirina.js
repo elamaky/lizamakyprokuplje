@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "chatContainer", "toolbar", "chatInput", "guestList", "dugmici"
   ];
 
-  const dugmiciSelektor = "#openModal, #NIK, #sound, #smilesBtn, #GBtn, #boldBtn, #italicBtn, #plusBtn, #minusBtn, #linijadoleBtn, #colorBtn";
+  const dugmiciSelektor = "#openModal, #NIK, #sound, #smilesBtn, #GBtn, #boldBtn, #italicBtn, #colorBtn";
 
   baroBtn.addEventListener("click", () => {
     if (panel && panel.style.display === "block") {
@@ -154,3 +154,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
