@@ -5,7 +5,7 @@ document.getElementById('smilesBtn').addEventListener('click', () => {
     // Ako je modal trenutno skriven, prikaži ga
      if (smileModal.style.display === 'none' || smileModal.style.display === '') {
         Object.assign(smileModal.style, {
-            top: `10px`,                // bliže vrhu ekrana
+            top: `100px`,                // bliže vrhu ekrana
             left: `50%`,                // centrirano horizontalno
             transform: `translateX(-50%)`,
             zIndex: '1000',
@@ -476,25 +476,3 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
