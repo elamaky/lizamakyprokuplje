@@ -267,6 +267,10 @@ function showCustomModal(message, options = {}, callback = null) {
     const box = document.createElement("div");
     Object.assign(box.style, {
         background: "black",
+        position: "fixed",
+        top: "300px",
+        left: "50%",
+        transform: "translateX(-50%)",
         padding: "20px",
         borderRadius: "12px",
         border: "2px solid #0ff",
@@ -377,8 +381,8 @@ const triggerImageAnimation = (imgSrc, codeOverride, nickname, userText, color, 
 
             const img = document.createElement("img");
             img.src = imgSrc;
-            img.style.maxWidth = "600px";
-            img.style.maxHeight = "600px";
+            img.style.maxWidth = "400px";
+            img.style.maxHeight = "400px";
             img.style.display = "block";
             animContainer.appendChild(img);
             chatContainer.appendChild(animContainer);
@@ -476,3 +480,4 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
