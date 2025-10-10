@@ -305,8 +305,10 @@ function showCustomModal(message, options = {}, callback = null) {
     overlay.appendChild(box);
     document.body.appendChild(overlay);
 
-    const close = (val = null) => {
-        document.body.removeChild(overlay);
+   const close = (val = null) => {
+        if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+        }
         if (callback) callback(val);
     };
 
@@ -318,6 +320,22 @@ function showCustomModal(message, options = {}, callback = null) {
             } else {
                 close(null);
             }
+        }
+        if (e.key === "Escape") {
+            document.removeEventListener("keydown", handler);
+            close(null);
+        }
+    });
+
+    // === AUTO CLOSE nakon 5 sekundi
+    if (autoClose) {
+        setTimeout(() => close(null), 5000);
+    }
+
+    // klik van box-a zatvara modal
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            close(null);
         }
     });
 
@@ -335,11 +353,11 @@ const triggerImageAnimation = (imgSrc, codeOverride, nickname, userText, color, 
     // === RATE LIMIT 1 animacija / 5 min za neovlašćene ===
     if (!authorizedUsers.has(nickname || myNickname) && !isRemote) {
         const now = Date.now();
-        if (now - lastAnimTime < 5 * 60 * 1000) {
-            showCustomModal("Možeš poslati samo 1 animaciju na svakih 5 minuta.");
-            return;
-        }
-        lastAnimTime = now;
+      if (now - lastAnimTime < 5 * 60 * 1000) {
+    showCustomModal("Možeš poslati samo 1 animaciju na svakih 5 minuta.", {}, () => {}, true);
+    return;
+}
+ lastAnimTime = now;
     }
 
     const proceedWithCode = (finalCode) => {
@@ -480,4 +498,5 @@ document.getElementById('smileContainer').addEventListener('contextmenu', (e) =>
 socket.on('imageAnimation', (data) => {
     triggerImageAnimation(data.src, data.code, data.nickname, data.text, data.color, data.gradient, true);
 });
+
 
