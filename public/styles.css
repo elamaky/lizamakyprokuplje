@@ -110,11 +110,13 @@ body {
     user-select: none;   
 }
 .message {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     word-wrap: break-word;
     white-space: normal;
     position: relative;
      z-index: 1;
+    filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
+    mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
 }
 #messageArea::-webkit-scrollbar {
   width: 10px;
@@ -186,6 +188,8 @@ body {
     color: rgb(168, 168, 168);
     white-space: nowrap;
     box-sizing: border-box; /* Dodaj ovo da padding ne probije visinu */
+    filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
+    mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
 }
 
 .guest::before, .virtual-guest::before {
@@ -458,6 +462,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
