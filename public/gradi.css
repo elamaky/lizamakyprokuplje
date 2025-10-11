@@ -30,8 +30,6 @@
   transform: scale(1.1);
   box-shadow: 0 0 5px white;
 }
-
-
 /* Gradijenti */
 #gradijent .gradijent-box.gradient-1 {background-image: linear-gradient(45deg, #ff6347, #ffffff, #ff1493, #40e0d0); }
 #gradijent .gradijent-box.gradient-2 { background-image: radial-gradient(circle, #ff6347, #ffea00, #ff1493, #00ff00); }
@@ -97,6 +95,8 @@
   background-size: 200% 100%;
   background-repeat: no-repeat;
   background-position: center;
+  filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
+  mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
  }
 /* ========== Kontejner admin gradijenta ========== */
 #xgradixadmin {
@@ -140,15 +140,17 @@
   background-size: 200%;
   background-repeat: no-repeat;
   background-position: center;
+    filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
+    mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
   }
 
-.grad-admin-1  { background-image: linear-gradient(90deg, #00e5ff, #1de9b6, #aeea00, #ffeb3b); }
-.grad-admin-2  { background-image: linear-gradient(to right, #ff1744, #f50057, #d500f9, #651fff); }
-.grad-admin-3  { background-image: radial-gradient(circle, #4caf50, #8bc34a, #cddc39, #ffeb3b); }
-.grad-admin-4  { background-image: conic-gradient(from 45deg, #ff9800, #ff5722, #e91e63, #9c27b0); }
-.grad-admin-5  { background-image: linear-gradient(to right, #311b92, #512da8, #673ab7, #9575cd, #d1c4e9); }
-.grad-admin-6  { background-image: radial-gradient(circle at top left, #00bcd4, #2196f3, #3f51b5, #1a237e); }
-.grad-admin-7  { background-image: linear-gradient(135deg, #f9a825, #ffb300, #ff8f00, #f57c00); }
-.grad-admin-8  { background-image: conic-gradient(from 0deg, #ff4081, #f50057, #9c27b0, #3f51b5, #2196f3, #00bcd4); }
-.grad-admin-9  { background-image: linear-gradient(to right, #00c853, #64dd17, #aeea00, #ffd600, #ffab00); }
-.grad-admin-10 { background-image: radial-gradient(circle at center, #ff6f00, #ff9100, #ffc107, #ffea00, #ffffff); }
+.grad-admin-1  { background-image: linear-gradient(45deg, #1e90ff, #00ff00, #708090); }
+.grad-admin-2  { background-image: radial-gradient(circle, #4682b4, #c0c0c0, #adff2f, #1e90ff); }
+.grad-admin-3  { background-image: linear-gradient(to right, #add8e6, #9acd32, #708090, #0000cd); }
+.grad-admin-4  { background-image: radial-gradient(circle, #00bfff, #808000, #d3d3d3, #00008b); }
+.grad-admin-5  { background-image: linear-gradient(to right, #6495ed, #ffff00, #2e8b57, #4169e1); }
+.grad-admin-6  { background-image: radial-gradient(circle, #5f9ea0, #9acd32, #1e90ff, #dcdcdc); }
+.grad-admin-7  { background-image: linear-gradient(135deg, #00008b, #adff2f, #c0c0c0, #4682b4); }
+.grad-admin-8  { background-image: radial-gradient(circle, #87ceeb, #808000, #708090); }
+.grad-admin-9  { background-image: linear-gradient(60deg, #4169e1, #9acd32, #d3d3d3); }
+.grad-admin-10 { background-image: radial-gradient(circle, #00bfff, #ffff00, #2f4f4f); }
