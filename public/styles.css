@@ -118,6 +118,10 @@ body {
     filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
     mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
 }
+.message img {
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
 #messageArea::-webkit-scrollbar {
   width: 10px;
 }
@@ -146,7 +150,8 @@ body {
     overflow: hidden;
     outline: none;
     white-space: nowrap;
-    
+    filter: brightness(2) saturate(2); /* pojačava intenzitet boja */
+    mix-blend-mode: screen;           /* omogućava da boje svetle "iznutra" */
 }
 #guestList {
     position: absolute;
@@ -462,6 +467,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
