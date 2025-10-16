@@ -131,8 +131,8 @@ body {
 #chatInput {
     position: absolute;
     top: 60px;
-    left: 120px;
-    width: 500px;
+    left: 100px;
+    width: 400px;
     height: 25px;
     padding: 5px;
     border-radius: 5px;
@@ -457,6 +457,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
