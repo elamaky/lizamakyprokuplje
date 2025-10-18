@@ -137,13 +137,13 @@ body {
     top: 60px;
     left: 50px;
     width: 450px;
-    height: 25px;
-    padding: 5px;
+    height: 20px;
+    padding: 2px;
     border-radius: 5px;
     border: 1px solid white;
     background-color: black;
     color: #87CEFA;
-    font-size: 17px;
+    font-size: 15px;
     resize: none;
     overflow: hidden;
     outline: none;
@@ -461,6 +461,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
