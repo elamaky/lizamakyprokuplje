@@ -68,11 +68,11 @@ body {
     font-style: italic;
 }
 #chatContainer {
-    width: 900px;
+    width: 800px;
     height: 550px;
     position: absolute;
     top: 100px;
-    left: 300px;
+    left: 400px;
     background-color: black;
     margin: auto;
     display: flex;
@@ -114,7 +114,7 @@ body {
     user-select: none;   
 }
 .message {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     word-wrap: break-word;
     white-space: normal;
     position: relative;
@@ -135,7 +135,7 @@ body {
 #chatInput {
     position: absolute;
     top: 60px;
-    left: 50px;
+    left: 30px;
     width: 450px;
     height: 20px;
     padding: 2px;
@@ -192,7 +192,7 @@ body {
  }
 
 .guest::before, .virtual-guest::before {
-    content: "🍹"; 
+    content: "🎧"; 
     margin-right: 5px;
     font-size: 10px;
 }
@@ -461,6 +461,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
