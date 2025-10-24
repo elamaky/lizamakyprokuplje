@@ -180,15 +180,6 @@ socket.on('newGuest', function (nickname) {
     newGuest.id = guestId;
     newGuest.textContent = nickname;
 
-    // Dodeli jedinstveni ban ID
-    const banId = crypto.randomUUID();
-    newGuest.dataset.banid = banId;
-
-    // Ako korisnik nema svoj banId u localStorage, sačuvaj mu ga
-    if (!localStorage.getItem('banid')) {
-        localStorage.setItem('banid', banId);
-    }
-
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
@@ -602,4 +593,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
