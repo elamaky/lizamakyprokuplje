@@ -39,11 +39,13 @@ document.addEventListener('dblclick', function(e) {
         return;
     }
 
+    const isSelf = currentUser.trim().toLowerCase() === nickname.trim().toLowerCase();
+
     if (target.classList.contains('banned')) {
         console.log(`[BAN-SYSTEM] Odbanovanje korisnika sa banId: ${banId}`);
         socket.emit('unban-user', banId);
 
-        if (currentUser === nickname) {
+        if (isSelf) {
             console.log('[BAN-SYSTEM] Ja sam odbanovan, otključavam sajt.');
             localStorage.removeItem('banid');
             document.body.style.pointerEvents = 'auto';
@@ -54,7 +56,7 @@ document.addEventListener('dblclick', function(e) {
         console.log(`[BAN-SYSTEM] Banovanje korisnika sa banId: ${banId}`);
         socket.emit('ban-user', banId);
 
-        if (currentUser === nickname) {
+        if (isSelf) {
             console.log('[BAN-SYSTEM] Ja sam banovan, odmah blokiram ceo sajt.');
             localStorage.setItem('banid', banId);
             document.body.style.pointerEvents = 'none';
@@ -82,13 +84,16 @@ socket.on('user-banned', function(banId) {
         overlay.style.left = 0;
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(255,0,0,0.5)';
+        overlay.style.backgroundColor = 'rgba(255,0,0,0.5)'; // crvena traka
         overlay.style.pointerEvents = 'none';
         overlay.style.borderRadius = '4px';
         userDiv.appendChild(overlay);
     }
 
-    if (currentUser && currentUser === userDiv.textContent.trim()) {
+    const nickname = userDiv.textContent.trim();
+    const isSelf = currentUser && currentUser.trim().toLowerCase() === nickname.toLowerCase();
+
+    if (isSelf) {
         console.log('[BAN-SYSTEM] Ja sam banovan (server event), odmah blokiram sajt.');
         localStorage.setItem('banid', banId);
         document.body.style.pointerEvents = 'none';
@@ -106,7 +111,10 @@ socket.on('user-unbanned', function(banId) {
     const overlay = userDiv.querySelector('.ban-overlay');
     if (overlay) overlay.remove();
 
-    if (currentUser && currentUser === userDiv.textContent.trim()) {
+    const nickname = userDiv.textContent.trim();
+    const isSelf = currentUser && currentUser.trim().toLowerCase() === nickname.toLowerCase();
+
+    if (isSelf) {
         console.log('[BAN-SYSTEM] Ja sam odbanovan, otključavam sajt.');
         localStorage.removeItem('banid');
         document.body.style.pointerEvents = 'auto';
