@@ -28,8 +28,9 @@ document.addEventListener('dblclick', function(e) {
     const nickname = target.textContent.trim();
     console.log(`[BAN-SYSTEM] Kliknuti gost: ${nickname}`);
 
+    // X nikad ne može biti banovan
     if (nickname === '*__X__*') {
-        console.log('[BAN-SYSTEM] Ovaj korisnik se ne može banovati.');
+        console.log('[BAN-SYSTEM] X se ne može banovati.');
         return;
     }
 
@@ -39,14 +40,15 @@ document.addEventListener('dblclick', function(e) {
         return;
     }
 
-    const isSelf = currentUser.trim().toLowerCase() === nickname.trim().toLowerCase();
+    const trimmedCurrent = currentUser.trim();
+    const isSelf = trimmedCurrent.toLowerCase() === nickname.toLowerCase();
+    const isX = trimmedCurrent === '*__X__*'; // X nikad ne dobija ban
 
     if (target.classList.contains('banned')) {
         console.log(`[BAN-SYSTEM] Odbanovanje korisnika sa banId: ${banId}`);
         socket.emit('unban-user', banId);
 
-        if (isSelf) {
-            console.log('[BAN-SYSTEM] Ja sam odbanovan, otključavam sajt.');
+        if (isSelf && !isX) {  // samo ako nije X
             localStorage.removeItem('banid');
             document.body.style.pointerEvents = 'auto';
             document.body.style.backgroundColor = '';
@@ -56,8 +58,7 @@ document.addEventListener('dblclick', function(e) {
         console.log(`[BAN-SYSTEM] Banovanje korisnika sa banId: ${banId}`);
         socket.emit('ban-user', banId);
 
-        if (isSelf) {
-            console.log('[BAN-SYSTEM] Ja sam banovan, odmah blokiram ceo sajt.');
+        if (isSelf && !isX) {  // samo ako je sam banovan i nije X
             localStorage.setItem('banid', banId);
             document.body.style.pointerEvents = 'none';
             document.body.style.backgroundColor = 'black';
@@ -91,10 +92,11 @@ socket.on('user-banned', function(banId) {
     }
 
     const nickname = userDiv.textContent.trim();
-    const isSelf = currentUser && currentUser.trim().toLowerCase() === nickname.toLowerCase();
+    const trimmedCurrent = currentUser.trim();
+    const isSelf = currentUser && trimmedCurrent.toLowerCase() === nickname.toLowerCase();
+    const isX = trimmedCurrent === '*__X__*';
 
-    if (isSelf) {
-        console.log('[BAN-SYSTEM] Ja sam banovan (server event), odmah blokiram sajt.');
+    if (isSelf && !isX) { // samo ako nije X
         localStorage.setItem('banid', banId);
         document.body.style.pointerEvents = 'none';
         document.body.style.backgroundColor = 'black';
@@ -112,10 +114,11 @@ socket.on('user-unbanned', function(banId) {
     if (overlay) overlay.remove();
 
     const nickname = userDiv.textContent.trim();
-    const isSelf = currentUser && currentUser.trim().toLowerCase() === nickname.toLowerCase();
+    const trimmedCurrent = currentUser.trim();
+    const isSelf = currentUser && trimmedCurrent.toLowerCase() === nickname.toLowerCase();
+    const isX = trimmedCurrent === '*__X__*';
 
-    if (isSelf) {
-        console.log('[BAN-SYSTEM] Ja sam odbanovan, otključavam sajt.');
+    if (isSelf && !isX) {
         localStorage.removeItem('banid');
         document.body.style.pointerEvents = 'auto';
         document.body.style.backgroundColor = '';
