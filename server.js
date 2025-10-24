@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { connectDB } = require('./mongo');
 const { register, login } = require('./prijava');
+const { setupSocketEvents } = require('./banmodul'); // Uvoz funkcije iz banmodula
 const konobaricaModul = require('./konobaricamodul'); // Uvoz konobaricamodul.js
 const slikemodul = require('./slikemodul');
 const pingService = require('./ping');
@@ -57,7 +58,7 @@ app.post('/restart', (req, res) => {
 // Lista autorizovanih i banovanih korisnika
 const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU', '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka', 'Dia']);
 const animationAuthorizedUsers = new Set(['Radio Galaksija','R-Galaksija','ZI ZU','*___F117___*','*__X__*','Dia💎','Dia', 'Najlepsa Ciganka',',,Sandra,,','_L i l i_','ViRuS_LiLi','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊']);
-
+const bannedUsers = new Set();
 // Skladištenje informacija o gostima
 const guests = {};
 const guestsData = {};
@@ -65,7 +66,8 @@ const assignedNumbers = new Set(); // Set za generisane brojeve
 const userColors = {}; // Ovdje čuvamo boje korisnika
 const sviAvatari = {};
 const userGradients = {};
-
+// Dodavanje socket događaja iz banmodula
+setupSocketEvents(io, guests, bannedUsers); // Dodavanje guests i bannedUsers u banmodul
 privatmodul(io, guests);
 let currentBackground = "";
 let textElements = [];
@@ -225,6 +227,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
 
 
