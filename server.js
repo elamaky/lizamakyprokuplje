@@ -56,8 +56,8 @@ app.post('/restart', (req, res) => {
 });
 
 // Lista autorizovanih i banovanih korisnika
-const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU', '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka', 'Dia']);
-const animationAuthorizedUsers = new Set(['Radio Galaksija','R-Galaksija','ZI ZU','*___F117___*','*__X__*','Dia💎','Dia', 'Najlepsa Ciganka',',,Sandra,,','_L i l i_','ViRuS_LiLi','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊']);
+const authorizedUsers = new Set(['Radio Galaksija','ZI ZU', '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka', 'Dia']);
+const animationAuthorizedUsers = new Set(['Radio Galaksija','ZI ZU','*___F117___*','*__X__*','Dia💎','Dia','Najlepsa Ciganka', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊']);
 const bannedUsers = new Set();
 // Skladištenje informacija o gostima
 const guests = {};
@@ -227,6 +227,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
 
 
