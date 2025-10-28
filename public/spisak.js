@@ -87,6 +87,8 @@ setupStream("mia", "https://stm1.srvif.com:7258/stream", "Stop", "R-Mia");
 setupStream("pink", "https://edge9.pink.rs/pinkstream", "Stop", "Pinkradio");
 setupStream("rs", "https://stream.radios.rs:9016/;*.mp3", "Stop", "RadioSr");
 setupStream("bg", "https://radio.dukahosting.com/8118/stream", "Stop", "RomaBg");
+setupStream("at", "https://ip232.radyotelekom.com.tr:8318/;stream.mp3", "Stop", "H&A");
 
 };
+
 
