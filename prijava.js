@@ -1,8 +1,11 @@
 const bcrypt = require('bcrypt');
-const { User } = require('./mongo');  // Preporučujem da koristiš User model direktno
+const { User } = require('./mongo');  // Tvoj User model
+
+// Čuva trenutno prijavljene korisnike
+const activeUsers = new Set();
 
 // Funkcija za registraciju
-async function register(req, res, io) {
+async function register(req, res) {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -25,21 +28,29 @@ async function register(req, res, io) {
 // Funkcija za prijavu
 async function login(req, res, io) {
     const { username, password } = req.body;
-    const socketId = req.headers['x-socket-id']; // Socket ID primljen od klijenta u zaglavlju
+    const socketId = req.headers['x-socket-id']; // Socket ID od klijenta
 
     if (!username || !password) {
         return res.status(400).send('Username and password are required.');
     }
 
+    // Sprečava login ako je username već aktivan
+    if (activeUsers.has(username)) {
+        return res.status(400).send('User already logged in');
+    }
+
     try {
         const user = await User.findOne({ username });
         if (user && await bcrypt.compare(password, user.password)) {
+            activeUsers.add(username); // Dodaj u trenutno aktivne
             const role = user.role;
-            const socket = io.sockets.sockets.get(socketId);  // Pronalaženje socket-a po ID-u
+            const socket = io.sockets.sockets.get(socketId);
 
-            // Emitovanje prijavljenom korisniku sa njegovim role podacima
             if (socket) {
                 socket.emit('userLoggedIn', { username, role });
+
+                // Kada korisnik diskonektuje, ukloni ga iz activeUsers
+                socket.on('disconnect', () => activeUsers.delete(username));
             }
 
             res.send(role === 'admin' ? 'Logged in as admin' : 'Logged in as guest');
@@ -53,3 +64,4 @@ async function login(req, res, io) {
 }
 
 module.exports = { register, login };
+
