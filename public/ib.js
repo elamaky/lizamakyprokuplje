@@ -18,7 +18,7 @@ const textEmojiMap = {
   '<3': '❤️',
   '^^': '😄',
   ':*': '😘',
-  ':poop:': '💩',
+  'inx': '🎶🎶🎶🎶🎵🎶🎶🎵',
   ':fire:': '🔥',
   ':star:': '⭐',
   ':ok:': '👌',
@@ -26,7 +26,8 @@ const textEmojiMap = {
   ':thumb:': '👍',
   ':pray:': '🙏',
   ':clap:': '👏',
-  ':100:': '💯',
+   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
+  'ziox': 'Za Inci Biserku Od *__X__*😎',
   ':heart:': '❤️'
 };
 
@@ -36,3 +37,4 @@ function replaceTextEmoji(msg) {
   }
   return msg;
 }
+
