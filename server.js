@@ -197,7 +197,7 @@ socket.on('positionChange', (data) => {
     sviAvatari[username] = data.avatar || 'defaultna/slika.webp';
     
     // Pošalji mu sve trenutno postojeće avatare
-    socket.emit('initialAvatars', sviAvatari);
+    io.emit('initialAvatars', sviAvatari);
   });
 
  // Kad korisnik promeni ili obriše avatar
@@ -227,6 +227,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
 
 
