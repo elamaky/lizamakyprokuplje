@@ -15,23 +15,29 @@ const textEmojiMap = {
   ':-)': '🙂',
   ':-(': '🙁',
   ':-D': '😄',
-  '#1': '❤️',
-  '^^': '😄',
-  ':*': '😘',
+
+   '#0': 'Za Inci Biserku Od *__X__*😎',
+  '#1': 'Dođi ovamo, Pikachu! ⚡',
+ '#2x': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
+ '#3x': '💋💋💋💋💋💋💋',
+ '#4x': '#n jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  '#5x': 'opaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa #n',
+  '#6x': 'ajmo romalen te kela em te gilava',
+  '#7x': 'hey sefe koj ti je vrag??????????',
+  '#8x': 'svega ovoga ne bi bilo da je pera otiso pravo u policiju',
+  '#9x': 'Musketari Galaksije - svi za jednog jedan za sve',
+  '#10x': 'Ko je vas poznavao ni pakao mu nece tesko pasti',
+
   '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
-  ':fire:': '🔥',
-   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
-   '#2': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
-  ':star:': '⭐',
-  ':ok:': '👌',
+  '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
+  '#x': 'Pesma za sve goste u Galaksiji od cika X-a ',
+  '#g': () => new Date().toLocaleTimeString(),
   ':x': '😎',
-  ':thumb:': '👍',
-  ':pray:': '🙏',
-  ':clap:': '👏',
-   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
-  '#3': 'Za Inci Biserku Od *__X__*😎',
+  '#u': () => `Online: ${document.getElementById('current-users')?.textContent.replace(/\D/g,'')||0}, Ukupno: ${document.getElementById('total-users')?.textContent.replace(/\D/g,'')||0}`,
+  '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
   '#ha': 'Hulija❤️Ates'
 };
+
 
 // 2. Tursko → Srpski mapa (bez znakova)
 const turSrMap = {
@@ -372,3 +378,4 @@ function replaceTextEmoji(msg){
 
   return msg;
 }
+
