@@ -21,13 +21,13 @@ const textEmojiMap = {
   '#1': 'Dragi gosti vase primedbe mozete prijaviti upravi Galaksije na broj +511 545 856 957 565 956 354 785 968 652 624',
  '#2': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
  '#3': '💋💋💋💋💋💋💋',
- '#4': '#n jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  '#5': 'opaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa #n',
+ '#4': '#n jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  '#5': 'opaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa #n',
   '#6': 'ajmo romalen te kela em te gilava',
   '#7': 'hey sefe koj ti je vrag??????????',
   '#8': 'svega ovoga ne bi bilo da je pera otiso pravo u policiju',
   '#9': 'Musketari Galaksije - svi za jednog jedan za sve',
-  '#10': 'Ko je vas poznavao ni pakao mu nece tesko pasti',
+  '#a': 'Ko je vas poznavao ni pakao mu nece tesko pasti',
 
   '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
@@ -378,6 +378,7 @@ function replaceTextEmoji(msg){
 
   return msg;
 }
+
 
 
 
