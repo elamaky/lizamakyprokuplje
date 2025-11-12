@@ -1,4 +1,4 @@
-// textEmojiMap.js
+
 const textEmojiMap = {
   ':)': '😊',
   ':(': '☹️',
@@ -15,9 +15,9 @@ const textEmojiMap = {
   ':-)': '🙂',
   ':-(': '🙁',
   ':-D': '😄',
-   ':x': '😎',
-  
- '#0': 'Za Inci Biserku Od *__X__*😎',
+  ':x': '😎',
+
+  '#0': 'Za Inci Biserku Od *__X__*😎',
   '#1': 'Dragi gosti, vaše primedbe možete prijaviti upravi Galaksije na broj +511 545 856 957 565 956 354 785 968 652 624',
   '#2': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
   '#3': '💋💋💋💋💋💋💋',
@@ -31,13 +31,13 @@ const textEmojiMap = {
   '#a1': 'Prevari me jednom – sram te bilo, prevari me dva puta – sram mene bilo.',
   '#a3': 'Biti potpuno iskren prema sebi je dobra vežba.',
   '#a4': 'Ne trčite za ženama da se ne sudarite sa onima koji od njih beže.',
-  '#a5': 'Prodavačica je bila toliko lepa da je bilo smešno njeno pitanje: "Šta želite?"'
-  
+  '#a5': 'Prodavačica je bila toliko lepa da je bilo smešno njeno pitanje: "Šta želite?"',
+
   '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
   '#x': 'Pesma za sve goste u Galaksiji od cika X-a ',
   '#g': () => new Date().toLocaleTimeString(),
-   '#u': () => `Online: ${document.getElementById('current-users')?.textContent.replace(/\D/g,'')||0}, Ukupno: ${document.getElementById('total-users')?.textContent.replace(/\D/g,'')||0}`,
+  '#u': () => `Online: ${document.getElementById('current-users')?.textContent.replace(/\D/g,'')||0}, Ukupno: ${document.getElementById('total-users')?.textContent.replace(/\D/g,'')||0}`,
   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
   '#ha': 'Hulija❤️Ates'
 };
@@ -382,7 +382,6 @@ function replaceTextEmoji(msg){
 
   return msg;
 }
-
 
 
 
