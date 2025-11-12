@@ -1,3 +1,5 @@
+const bannedUsers = new Set();
+
 function setupSocketEvents(io, guests, authorizedUsers) {
     io.on('connection', (socket) => {
         const nickname = guests[socket.id];
@@ -38,4 +40,5 @@ function setupSocketEvents(io, guests, authorizedUsers) {
 }
 
 module.exports = { setupSocketEvents, bannedUsers };
+
 
