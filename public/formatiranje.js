@@ -81,7 +81,11 @@ let lastMessages = {}; // Objekt koji prati poslednju poruku svakog korisnika
 
 socket.on('chatMessage', function(data) {
     if (!myNickname) return;
-
+    
+   // AVATAR U PORUCI
+  let chatAvatar = avatars[data.nickname + '_chat'] || avatars[data.nickname];
+let avatarHTML = chatAvatar ? `<img src="${chatAvatar}" class="inline-avatar">` : '';
+    
     const myName = currentUser ? currentUser : myNickname;
     let text = replaceTextEmoji(data.text).replace(/#n/g, myName);
     if (lastMessages[data.nickname] === text) return;
@@ -113,11 +117,6 @@ socket.on('chatMessage', function(data) {
         newMessage.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
     }
 }
-
-   // AVATAR U PORUCI
-  let chatAvatar = avatars[data.nickname + '_chat'] || avatars[data.nickname];
-let avatarHTML = chatAvatar ? `<img src="${chatAvatar}" class="inline-avatar">` : '';
-
    // Dodavanje sadržaja poruke
 newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text} <span style="font-size: 0.8em; color: gray;">(${data.time})</span> ${avatarHTML}`;
  messageArea.prepend(newMessage);
@@ -597,6 +596,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
