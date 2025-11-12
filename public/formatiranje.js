@@ -81,8 +81,8 @@ let lastMessages = {}; // Objekt koji prati poslednju poruku svakog korisnika
 
 socket.on('chatMessage', function(data) {
     if (!myNickname) return;
-    
-  const myName = currentUser ? currentUser : myNickname;
+
+    const myName = currentUser ? currentUser : myNickname;
     let text = replaceTextEmoji(data.text).replace(/#n/g, myName);
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
@@ -114,7 +114,7 @@ socket.on('chatMessage', function(data) {
     }
 }
 
-    // Dodavanje sadržaja poruke
+   // Dodavanje sadržaja poruke
     newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')} <span style="font-size: 0.8em; color: gray;">(${data.time})</span>`;
     messageArea.prepend(newMessage);
     
@@ -593,10 +593,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
 
 
 
