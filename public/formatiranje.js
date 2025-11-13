@@ -116,9 +116,9 @@ socket.on('chatMessage', function(data) {
 
  // Dodavanje avatara SAMO ako je poruka od auth korisnika i dugme uključeno
   let avatarHTML = '';
-  if (authorizedUsers.has(data.nickname) && showAvatarInChat && avatars[data.nickname]) {
-    avatarHTML = `<img src="${avatars[data.nickname]}" class="inline-avatar">`;
-  }
+if (authorizedUsers.has(data.nickname) && showAvatarInChat && avatars[data.nickname]) {
+  avatarHTML = `<img src="${avatars[data.nickname]}" class="inline-avatar">`;
+}
 newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text.replace(/ /g, '&nbsp;').replace(/\n/g, '<br>')} <span style="font-size:0.8em; color: gray;">(${data.time || ''})</span> ${avatarHTML}`;
 messageArea.prepend(newMessage);
   // Snimi poruku ako je aktivno snimanje
@@ -596,6 +596,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
