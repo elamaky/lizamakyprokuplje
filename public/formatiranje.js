@@ -114,25 +114,14 @@ socket.on('chatMessage', function(data) {
     }
 }
 
-// Dodavanje avatara SAMO ako je poruka od auth korisnika i dugme uključeno
-let avatarHTML = '';
-if (authorizedUsers.has(data.nickname) && showAvatarInChat && avatars[data.nickname]) {
-  avatarHTML = `<img src="${avatars[data.nickname]}" class="inline-avatar">`;
-}
+let chatAvatar = avatars[data.nickname + '_chat'] || avatars[data.nickname];
+let avatarHTML = chatAvatar ? `<img src="${chatAvatar}" class="inline-avatar">` : '';
 
-// Zadrži razmake i prelome linija u tekstu
-const formattedText = text.replace(/ /g, '&nbsp;').replace(/\n/g, '<br>');
-
-// Kreiranje HTML-a za poruku
-newMessage.innerHTML = `
-  <strong>${data.nickname}:</strong> ${formattedText}
-  <span style="font-size:0.8em; color: gray;">(${data.time || ''})</span>
-  ${avatarHTML}
-`;
-
-messageArea.prepend(newMessage);
-
-  // Snimi poruku ako je aktivno snimanje
+   // Dodavanje sadržaja poruke
+newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text} <span style="font-size: 0.8em; color: gray;">(${data.time})</span> ${avatarHTML}`;
+ messageArea.prepend(newMessage);
+    
+      // Snimi poruku ako je aktivno snimanje
 if (window.snimanjeAktivno) {
     porukeZaSnimanje.push(newMessage.outerHTML);
 }
@@ -607,10 +596,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
 
 
