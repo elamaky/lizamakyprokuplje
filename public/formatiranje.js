@@ -83,7 +83,7 @@ socket.on('chatMessage', function(data) {
     if (!myNickname) return;
 
     const myName = currentUser ? currentUser : myNickname;
-    let text = replaceTextEmoji(data.text).replace(/#n/g, myName);
+    let text = data.text.replace(/#n/g, myName);
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
 
@@ -114,12 +114,9 @@ socket.on('chatMessage', function(data) {
     }
 }
 
-let chatAvatar = avatars[data.nickname + '_chat'] || avatars[data.nickname];
-let avatarHTML = chatAvatar ? `<img src="${chatAvatar}" class="inline-avatar">` : '';
-
    // Dodavanje sadržaja poruke
-newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')} <span style="font-size: 0.8em; color: gray;">(${data.time})</span> ${avatarHTML}`;
- messageArea.prepend(newMessage);
+    newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')} <span style="font-size: 0.8em; color: gray;">(${data.time})</span>`;
+    messageArea.prepend(newMessage);
     
       // Snimi poruku ako je aktivno snimanje
 if (window.snimanjeAktivno) {
@@ -136,7 +133,7 @@ socket.on('private_message', function(data) {
     if (!myNickname) return;
 
     const myName = currentUser ? currentUser : myNickname;
-    let text = replaceTextEmoji(data.message).replace(/#n/g, myName);
+    let text = data.message.replace(/#n/g, myName);
     if (lastMessages[data.from] === text) return;
     lastMessages[data.from] = text;
 
@@ -161,8 +158,8 @@ socket.on('private_message', function(data) {
         newMessage.style.backgroundImage = getComputedStyle(document.querySelector(`.${data.gradient}`)).backgroundImage;
     }
 
- newMessage.innerHTML = `<strong>${data.nickname}:</strong> ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')} <span style="font-size: 0.8em; color: gray;">(${data.time})</span> ${avatarHTML}`;
- messageArea.prepend(newMessage);
+    newMessage.innerHTML = `<strong>${data.from}:</strong> ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')} <span style="font-size: 0.8em; color: gray;">(${data.time})</span>`;
+    messageArea.prepend(newMessage);
 
    // Snimi poruku ako je aktivno snimanje
 if (window.snimanjeAktivno) {
@@ -174,6 +171,7 @@ if (window.snimanjeAktivno) {
         messageArea.scrollTop = 0;
     }
 });
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -189,6 +187,7 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
+
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
@@ -596,8 +595,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
