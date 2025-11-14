@@ -105,7 +105,30 @@ socket.on('avatarChange', data => {
     if (data.avatar) guestDiv.appendChild(createAvatarImg(data.avatar));
   }
 });
+// --- Avatar prikaz u porukama (ON/OFF) ---
+socket.on('chatAvatarChange', data => {
+    const { username, avatar, showInChat } = data;
 
+    // Uhvati sve poruke tog korisnika
+    const messages = document.querySelectorAll(`.chat-msg[data-user="${username}"]`);
+
+    messages.forEach(msg => {
+        let avatarImg = msg.querySelector('.inline-avatar');
+
+        if (showInChat && avatar) {
+            // Ako treba prikazati avatar
+            if (!avatarImg) {
+                avatarImg = document.createElement('img');
+                avatarImg.className = 'inline-avatar';
+                msg.prepend(avatarImg);
+            }
+            avatarImg.src = avatar;
+        } else {
+            // Ako je OFF → ukloni avatar
+            if (avatarImg) avatarImg.remove();
+        }
+    });
+});
 // --- Glavni panel za izbor avatara ---
 document.getElementById('sl').addEventListener('click', () => {
   const avatarDiv = document.getElementById('avatar');
@@ -195,3 +218,4 @@ if (authorizedUsers.has(username)) {
   avatarDiv.appendChild(chatToggle);
 }
 });
+
