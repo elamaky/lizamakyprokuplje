@@ -83,7 +83,7 @@ socket.on('chatMessage', function(data) {
     if (!myNickname) return;
 
     const myName = currentUser ? currentUser : myNickname;
-     let text = replaceTextEmoji(data.message).replace(/#n/g, myName);
+    let text = replaceTextEmoji(data.text).replace(/#n/g, myName);
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
 
@@ -133,7 +133,7 @@ socket.on('private_message', function(data) {
     if (!myNickname) return;
 
     const myName = currentUser ? currentUser : myNickname;
-    let text = data.message.replace(/#n/g, myName);
+    let text = replaceTextEmoji(data.message).replace(/#n/g, myName);
     if (lastMessages[data.from] === text) return;
     lastMessages[data.from] = text;
 
@@ -171,7 +171,6 @@ if (window.snimanjeAktivno) {
         messageArea.scrollTop = 0;
     }
 });
-
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -187,7 +186,6 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
-
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
@@ -595,4 +593,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
+
 
