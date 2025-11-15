@@ -6,7 +6,7 @@ style.textContent = `
     bottom: 0;
     right: 0;
     width: 300px;
-    height: 500px;
+    height: 250px;
     border: 5px solid;
     border-image: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff) 1;
     background: black;
@@ -165,3 +165,4 @@ if (avatars[username]) {
 } else {
   socket.emit('register', { username, avatar: '' });
 }
+
