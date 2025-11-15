@@ -120,21 +120,23 @@ socket.on('userLoggedIn', (username) => {
 });
         
  // Obrada slanja chat poruka
-    socket.on('chatMessage', (msgData) => {
-     const time = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin' });
-      const messageToSend = {
-            text: msgData.text,
-            bold: msgData.bold,
-            italic: msgData.italic,
-            color: msgData.color,
-             underline: msgData.underline,
-            overline: msgData.overline,
-            nickname: guests[socket.id],
-          gradient: userGradients[guests[socket.id]] || null ,
-            time: time
-          };
-        io.emit('chatMessage', messageToSend);
-    });
+socket.on('chatMessage', (msgData) => {
+    const time = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin' });
+    const nickname = guests[socket.id];
+    const messageToSend = {
+        text: msgData.text,
+        bold: msgData.bold,
+        italic: msgData.italic,
+        color: msgData.color,
+        underline: msgData.underline,
+        overline: msgData.overline,
+        nickname: nickname,
+        gradient: userGradients[nickname] || null,
+        time: time,
+       avatar: msgData.avatar || null
+    };
+    io.emit('chatMessage', messageToSend);
+});
 
   // Obrada za čišćenje chata
     socket.on('clear-chat', () => {
@@ -227,4 +229,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
