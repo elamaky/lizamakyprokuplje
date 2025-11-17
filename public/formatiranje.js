@@ -665,7 +665,7 @@ gradBtn.addEventListener('click', () => {
                     adminGradOpen = false;
                 };
             });
-        }, 300);
+        }, 3000);
     }
 });
 
@@ -706,5 +706,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
