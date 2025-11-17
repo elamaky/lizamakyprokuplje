@@ -115,6 +115,7 @@ function applyAnimationToMessageName(strongElement, nickname) {
         else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
         else if (animationName === 'bounce') span.classList.add('bounce-letter');
         else if (animationName === 'superCombo') span.classList.add('superCombo-letter');
+         else if (animationName === 'guestGradientGlow') span.classList.add('guest-gradient-anim');
 
         span.style.animationDuration = `${speed}s`;
         span.style.animationIterationCount = 'infinite';
@@ -150,6 +151,7 @@ socket.on('chatMessage', function(data) {
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
+    // Postavljanje boje ili gradijenta
     if (data.color) {
         newMessage.style.backgroundImage = '';
         newMessage.style.backgroundClip = '';
@@ -160,9 +162,11 @@ socket.on('chatMessage', function(data) {
         const gradClass = data.gradient || window.defaultAdminGradient;
         const gradElement = document.querySelector(`.${gradClass}`);
         if (gradElement) {
+            // Gradijent + animacija
             newMessage.style.backgroundClip = 'text';
             newMessage.style.webkitBackgroundClip = 'text';
             newMessage.style.webkitTextFillColor = 'transparent';
+            newMessage.style.color = 'transparent';
             newMessage.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
         }
     }
@@ -173,18 +177,31 @@ socket.on('chatMessage', function(data) {
         <span style="font-size: 0.8em; color: gray;">(${data.time})</span>
     `;
 
-    // Animacija imena u poruci — samo za autorizovane korisnike
-    const strongName = newMessage.querySelector('strong');
+ const strongName = newMessage.querySelector('strong');
 
-    // Provera da li poruka koristi gradijent
-    const hasGradient = !!(data.gradient || window.defaultAdminGradient);
+// Provera animacije korisnika
+const userAnim = allUserAnimations[data.nickname];
+if (userAnim && userAnim.animation) {
+    strongName.style.animationName = userAnim.animation;
+    strongName.style.animationDuration = `${userAnim.speed || 1}s`;
+    strongName.style.animationIterationCount = 'infinite';
+    strongName.style.animationTimingFunction = 'ease-in-out';
+    strongName.style.display = 'inline-block';
 
-    // Primeni animaciju samo ako nema gradijenta
-    if (!hasGradient) {
-        applyAnimationToMessageName(strongName, data.nickname);
+    // Ako je gradijent, primeni background clip
+    if (data.gradient || window.defaultAdminGradient) {
+        const gradClass = data.gradient || window.defaultAdminGradient;
+        const gradElement = document.querySelector(`.${gradClass}`);
+        if (gradElement) {
+            strongName.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
+            strongName.style.backgroundClip = 'text';
+            strongName.style.webkitBackgroundClip = 'text';
+            strongName.style.webkitTextFillColor = 'transparent';
+            strongName.style.color = 'transparent';
+        }
     }
+}
 
-    // Dodavanje avatara samo za autorizovane korisnike
     if (authorizedUsers.has(data.nickname) && data.avatar) {
         const img = document.createElement('img');
         img.src = data.avatar;
@@ -204,6 +221,7 @@ socket.on('chatMessage', function(data) {
         messageArea.scrollTop = 0;
     }
 });
+
 
 
 socket.on('private_message', function(data) {
@@ -706,6 +724,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
 
 
