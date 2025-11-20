@@ -12,87 +12,59 @@ popup.style.border = '5px solid #fff';
 popup.style.zIndex = '1000';
 popup.innerHTML = `
   <button id="startstop">Start - Stop</button>
-  <button id="chatpoz">Maska</button>
+    <button id="chatsl">Slike</button>
+   <button id="chatpoz">Maska</button>
   <button id="save">Save</button>
-  <button id="load">Ucitaj</button>
+   <button id="load">Ucitaj</button>
   <button id="reset">Reset</button>
 `;
 document.body.appendChild(popup);
 
-document.getElementById('maska').addEventListener('click', () => {
-  popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
-});
+ document.getElementById('maska').addEventListener('click', () => {
+    popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+  });
 
 const allDraggables = [
-  'openModal',
-  'NIK',
-  'sound',
-  'smilesBtn',
-  'GBtn',
-  'boldBtn',
-  'italicBtn',
-  'colorBtn',
+  '#openModal',
+  '#NIK',
+  '#sound',
+  '#smilesBtn',
+  '#GBtn',
+  '#boldBtn',
+  '#italicBtn',
+  '#colorBtn',
   '#messageArea',
   '#guestList',
   '#chatInput'
 ];
 
-let editMode = false;
-
-function setupInteract(el) {
-  if (!authorizedUsers.has(currentUser)) return;
-
-  el.style.position = 'absolute';
-  el.style.touchAction = 'none';
-
-  // Precizan DRAG
-  interact(el).draggable({
-    allowFrom: el,
-    modifiers: [
-      interact.modifiers.snap({
-        targets: [interact.snappers.grid({ x: 1, y: 1 })],
-        range: Infinity,
-        relativePoints: [{ x: 0, y: 0 }]
-      }),
-      interact.modifiers.restrict({ restriction: 'body', endOnly: true })
-    ],
-    listeners: {
-      move(event) {
-        const target = event.target;
-        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-        target.style.transform = `translate(${x}px, ${y}px)`;
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
-        target.style.cursor = 'move';
-      }
+function dodajSliku() {
+  const url = prompt("Unesi URL slike:");
+  if (!url) return;
+  const img = document.createElement('img');
+  img.src = url;
+  img.id = 'img-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+  img.style.position = 'absolute';
+  img.style.top = '10px';
+  img.style.left = '10px';
+  img.style.width = '150px';
+  img.style.height = '150px';
+  img.style.zIndex = '1600';
+  img.style.cursor = 'move';
+  img.style.userSelect = 'none';
+  img.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    if (confirm('Da li želite da izbrišete ovu sliku?')) {
+      img.remove();
+      const index = allDraggables.indexOf(`#${img.id}`);
+      if (index !== -1) allDraggables.splice(index, 1);
     }
   });
-
-  // Precizan RESIZE
-  interact(el).resizable({
-    edges: { top: true, left: true, bottom: true, right: true },
-    modifiers: [
-      interact.modifiers.snapSize({
-        targets: [interact.snappers.grid({ x: 1, y: 1 })]
-      })
-    ],
-    listeners: {
-      move(event) {
-        let x = parseFloat(event.target.getAttribute('data-x')) || 0;
-        let y = parseFloat(event.target.getAttribute('data-y')) || 0;
-        event.target.style.width = event.rect.width + 'px';
-        event.target.style.height = event.rect.height + 'px';
-        x += event.deltaRect.left;
-        y += event.deltaRect.top;
-        event.target.style.transform = `translate(${x}px, ${y}px)`;
-        event.target.setAttribute('data-x', x);
-        event.target.setAttribute('data-y', y);
-      }
-    }
-  });
+  document.body.appendChild(img);
+  allDraggables.push(`#${img.id}`);
+  setupInteract(img);
 }
-
+document.getElementById('chatsl').onclick = dodajSliku;
 
 document.getElementById('chatpoz').addEventListener('click', () => {
   let imageSource = prompt("Unesi URL slike:");
@@ -117,63 +89,53 @@ allDraggables.forEach(sel => {
   }
 });
 
+let editMode = false;
+
 function startEditMode() {
   editMode = true;
 
+  // Ukloni toolbar ako postoji i rasporedi njegove dugmiće
   const toolbar = document.getElementById('toolbar');
   if (toolbar) {
     while (toolbar.firstChild) {
-      toolbar.parentNode.insertBefore(toolbar.firstChild, toolbar);
+      toolbar.parentNode.insertBefore(toolbar.firstChild, toolbar.nextSibling);
     }
     toolbar.remove();
   }
 
-  let style = document.getElementById('remove-guest-borders');
-  if (!style) {
-    style = document.createElement('style');
-    style.id = 'remove-guest-borders';
-    document.head.appendChild(style);
+  // Sakrij scrollbar u messageArea
+  let hideScrollbarStyle = document.getElementById('hide-scrollbar-style');
+  if (!hideScrollbarStyle) {
+    hideScrollbarStyle = document.createElement('style');
+    hideScrollbarStyle.id = 'hide-scrollbar-style';
+    hideScrollbarStyle.textContent = `
+      #messageArea {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE 10+ */
+      }
+      #messageArea::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+    `;
+    document.head.appendChild(hideScrollbarStyle);
   }
-  style.textContent = `
-    .guest, .virtual-guest {
-      border-bottom: none !important;
-    }
-  `;
 
-let hideScrollbarStyle = document.getElementById('hide-scrollbar-style');
-if (!hideScrollbarStyle) {
-  hideScrollbarStyle = document.createElement('style');
-  hideScrollbarStyle.id = 'hide-scrollbar-style';
-  hideScrollbarStyle.textContent = `
-    #messageArea {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
-    }
-    #messageArea::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
-    }
-  `;
-  document.head.appendChild(hideScrollbarStyle);
-}
-
-
+  // Stilizuj chatContainer
   const chatContainer = document.getElementById('chatContainer');
   if (chatContainer) {
     chatContainer.style.zIndex = '0';
     chatContainer.style.border = 'none';
   }
 
+  // Prođi kroz sve draggable elemente
   allDraggables.forEach((sel) => {
     const el = document.querySelector(sel);
     if (!el) return;
 
-    // Spreči širenje dimenzija
+    // Spreči širenje dimenzija (box-sizing)
     el.style.boxSizing = 'border-box';
 
-    // Zakucaj trenutne dimenzije samo prvi put
-    if (!el.style.width) el.style.width = `${el.offsetWidth}px`;
-    if (!el.style.height) el.style.height = `${el.offsetHeight}px`;
-
+    // Postavi osnovne stilove za edit mod, ali NE diraj CSS pozicije i dimenzije
     el.style.position = 'absolute';
     el.style.margin = '0';
     el.style.boxShadow = '0 0 3px 1px #0ff';
@@ -182,11 +144,13 @@ if (!hideScrollbarStyle) {
     el.style.zIndex = '1000';
     el.style.pointerEvents = 'auto';
 
+    // Transparentnost za određene elemente
     if (el.id === 'messageArea' || el.id === 'guestList' || el.id === 'chatInput') {
       el.style.background = 'transparent';
       el.style.color = '';
     }
 
+    // Dugmad: vrati originalni tekst i blokiraj klik dok je u edit modu
     if (el.tagName.toUpperCase() === 'BUTTON') {
       if (!originalButtonText.has(sel)) {
         originalButtonText.set(sel, el.innerText);
@@ -205,9 +169,11 @@ if (!hideScrollbarStyle) {
       el.addEventListener('click', blockClick, true);
     }
 
+    // Pozovi interact samo sada, u edit modu
     setupInteract(el);
   });
 }
+
 function stopEditMode() {
   editMode = false;
 
@@ -320,7 +286,6 @@ document.getElementById('save').addEventListener('click', () => {
 });
 
 function applyEditModeStyles() {
-  // Sakrij bordere
   const chatContainer = document.getElementById('chatContainer');
   if (chatContainer) chatContainer.style.border = 'none';
 
@@ -330,12 +295,12 @@ function applyEditModeStyles() {
   const guestList = document.getElementById('guestList');
   if (guestList) guestList.style.borderBottom = 'none';
 
-  // Spusti dugmice ispod background-a
- ['openModal','NIK','sound','smilesBtn','GBtn','boldBtn','italicBtn','colorBtn','messageArea','guestList','chatInput'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.style.zIndex = '1000';
-});
-}
+  ['openModal', 'NIK', 'sound', 'smilesBtn', 'GBtn', 'boldBtn', 'italicBtn', 'colorBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.zIndex = '1000';
+  });
+}  // ← NEDOSTAJAO ZAGRADA
+
 // Funkcija za renderovanje layouta
 function renderLayout(data) {
    // Očisti draggable elemente koji nisu deo nove verzije
@@ -486,10 +451,8 @@ document.getElementById('load').addEventListener('click', () => {
 socket.on('chat-layout-update', data => {
   setTimeout(() => {
     renderLayout(data);
-  }, 2500);
+  }, 5000);
 });
-
-
 document.getElementById('reset').addEventListener('click', () => {
   socket.emit('reset-layout');      // emit svima
   performReset();                   // lokalni reset
@@ -509,28 +472,15 @@ function performReset() {
     }
   }
 
-  // VRATI DUGMIĆE u toolbar sa originalnim tekstom i stilovima
-[
-   'openModal',
-    'NIK',
-    'sound',
-    'smilesBtn',
-    'GBtn',
-    'boldBtn',
-    'italicBtn',
-     'colorBtn',
-  'messageArea',
-  'guestList',
-  'chatInput'
-].forEach(id => {
+ // VRATI DUGMIĆE u toolbar sa originalnim tekstom i stilovima
+['openModal', 'NIK', 'sound', 'smilesBtn', 'GBtn', 'boldBtn', 'italicBtn', 'colorBtn', 'messageArea', 'guestList', 'chatInput'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
 
   // Vrati dugmiće u toolbar ako su button, ili ih ostavi na mestu (messageArea, guestList, chatInput)
   if (el.tagName.toUpperCase() === 'BUTTON') {
-    toolbar.appendChild(el);
+    if (toolbar) toolbar.appendChild(el);
   }
-
 
     // Resetuj stilove
     el.style.position = '';
@@ -563,41 +513,35 @@ el.innerText = originalButtonText.get(key) || '';
       }
     }
   });
-const chatContainer = document.getElementById('chatContainer');
-if (chatContainer) {
-  chatContainer.style.zIndex = '';
-  chatContainer.style.border = '';
-  chatContainer.style.backgroundImage = 'none';
-  chatContainer.style.backgroundSize = '';
-  chatContainer.style.backgroundPosition = '';
-  chatContainer.style.backgroundRepeat = 'no-repeat';
-  chatContainer.style.width = '';
-  chatContainer.style.height = '';
-  chatContainer.style.backgroundColor = 'black'; // pošto je u defaultu crna
-  chatContainer.style.position = 'absolute'; // jer je u originalu
-  chatContainer.style.top = '100px';
-  chatContainer.style.left = '300px';
-  chatContainer.style.margin = 'auto';
-  chatContainer.style.display = 'flex';
-  chatContainer.style.flexDirection = 'column';
-  chatContainer.style.overflow = 'hidden';
-}
+
+  // VRATI CHAT CONTAINER
+  const chatContainer = document.getElementById('chatContainer');
+  if (chatContainer) {
+    chatContainer.style.zIndex = '';
+    chatContainer.style.border = '';
+    chatContainer.style.backgroundImage = '';
+    chatContainer.style.backgroundSize = '';
+    chatContainer.style.backgroundPosition = '';
+    chatContainer.style.backgroundRepeat = '';
+    chatContainer.style.width = '';
+    chatContainer.style.height = '';
+  }
 
 if (chatInput) {
   chatInput.style.position = 'absolute';
-  chatInput.style.top = '60px';
-  chatInput.style.left = '120px';
-  chatInput.style.width = '500px';
-  chatInput.style.height = '25px';
-  chatInput.style.padding = '5px';
-  chatInput.style.borderRadius = '5px';
-  chatInput.style.border = '2px solid white';
-  chatInput.style.backgroundColor = 'black';
-  chatInput.style.color = 'white';
-  chatInput.style.fontSize = '17px';
-  chatInput.style.resize = 'none';
-  chatInput.style.overflow = 'hidden';
-  chatInput.style.outline = 'none';
+  chatInput.style.top = '';
+  chatInput.style.left = '';
+  chatInput.style.width = '';
+  chatInput.style.height = '';
+  chatInput.style.padding = '';
+  chatInput.style.borderRadius = '';
+  chatInput.style.border = '';
+  chatInput.style.backgroundColor = '';
+  chatInput.style.color = '';
+  chatInput.style.fontSize = '';
+  chatInput.style.resize = '';
+  chatInput.style.overflow = '';
+  chatInput.style.outline = '';
 }
 
   // Setuj editMode na false
@@ -607,10 +551,88 @@ if (chatInput) {
 socket.on('reset-layout', () => {
   performReset();
 });
+function setupInteract(el) {
+  if (!authorizedUsers.has(currentUser)) return;
 
+  // Zakucaj trenutne realne pozicije
+  el.style.position = 'absolute';
+  el.style.left = el.offsetLeft + 'px';
+  el.style.top = el.offsetTop + 'px';
+  el.style.transform = 'none';
+  el.setAttribute('data-x', 0);
+  el.setAttribute('data-y', 0);
+  el.style.touchAction = 'none';
 
+  interact(el).draggable({
+    modifiers: [
+      interact.modifiers.snap({
+        targets: [interact.snappers.grid({ x: 1, y: 1 })],
+        range: Infinity
+      })
+    ],
+    listeners: {
+      move(event) {
+        const target = event.target;
+        let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+        let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
+        target.style.transform = `translate(${x}px, ${y}px)`;
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+      },
+      end(event) {
+        const target = event.target;
+        let x = parseFloat(target.getAttribute('data-x')) || 0;
+        let y = parseFloat(target.getAttribute('data-y')) || 0;
 
+        // Upis realnih pozicija
+        target.style.left = (parseFloat(target.style.left) + x) + 'px';
+        target.style.top = (parseFloat(target.style.top) + y) + 'px';
 
+        target.style.transform = 'none';
+        target.setAttribute('data-x', 0);
+        target.setAttribute('data-y', 0);
+      }
+    }
+  });
 
+  interact(el).resizable({
+    edges: { top: true, left: true, bottom: true, right: true },
+    modifiers: [
+      interact.modifiers.snapSize({
+        targets: [interact.snappers.grid({ x: 1, y: 1 })]
+      })
+    ],
+    listeners: {
+      move(event) {
+        const target = event.target;
 
+        let x = parseFloat(target.getAttribute('data-x')) || 0;
+        let y = parseFloat(target.getAttribute('data-y')) || 0;
+
+        target.style.width = event.rect.width + 'px';
+        target.style.height = event.rect.height + 'px';
+
+        x += event.deltaRect.left;
+        y += event.deltaRect.top;
+
+        target.style.transform = `translate(${x}px, ${y}px)`;
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+      },
+      end(event) {
+        const target = event.target;
+
+        let x = parseFloat(target.getAttribute('data-x')) || 0;
+        let y = parseFloat(target.getAttribute('data-y')) || 0;
+
+        target.style.left = (parseFloat(target.style.left) + x) + 'px';
+        target.style.top = (parseFloat(target.style.top) + y) + 'px';
+
+        target.style.transform = 'none';
+        target.setAttribute('data-x', 0);
+        target.setAttribute('data-y', 0);
+      }
+    }
+  });
+}
