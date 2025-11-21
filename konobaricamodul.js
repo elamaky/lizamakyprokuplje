@@ -6,6 +6,8 @@ module.exports = (io) => {
   const stanje = {}; //  BORDERI ELEMENATA 
   let allUserAnimations = {}; 
 let fullLayoutData = null;   // BEZ MASKE 
+  let chatLayoutData = null; //  ZA CHATMASKE
+let layoutResetovan = false;  //  ZA CHATMASKE
  const sirinaStanje = {};
  let defaultColor = {};
 let defaultGradient = {};
@@ -182,10 +184,34 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
+
+     socket.on('reset-layout', () => {
+    layoutResetovan = true;
+    chatLayoutData = null;        // POENTA: izbriši stari layout
+    io.emit('reset-layout');
+  });
+
+  // Update layout
+  socket.on('chat-layout-update', data => {
+    chatLayoutData = data;
+    layoutResetovan = false;      // čim stigne novi layout reset više ne važi
+    socket.broadcast.emit('chat-layout-update', chatLayoutData);
+  });
+
+  // Novi korisnik
+  if (layoutResetovan) {
+    socket.emit('reset-layout');
+    return;
+  }
+
+  if (chatLayoutData) {
+    socket.emit('chat-layout-update', chatLayoutData);
+  }
     
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
