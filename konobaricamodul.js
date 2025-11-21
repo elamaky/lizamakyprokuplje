@@ -6,13 +6,10 @@ module.exports = (io) => {
   const stanje = {}; //  BORDERI ELEMENATA 
   let allUserAnimations = {}; 
 let fullLayoutData = null;   // BEZ MASKE 
-let chatLayoutData = null;
  const sirinaStanje = {};
  let defaultColor = {};
 let defaultGradient = {};
-  let layoutData = null;
-let layoutReset = false;
-  
+
    // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
@@ -185,25 +182,11 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
-      socket.on('chat-layout-update', data => {
-    layoutData = data; // sačuvaj layout na serveru
-    socket.broadcast.emit('chat-layout-update', layoutData); // pošalji svima osim pošiljaocu
-  });
-
-  // Pošalji trenutni layout novom korisniku
-if (layoutData) {
-  socket.emit('chat-layout-update', layoutData);
-} else {
-  socket.emit('reset-layout');
-}
- socket.on('reset-layout', () => {
-    io.emit('reset-layout'); // pošalji svim klijentima reset event
-  });
-
-
+    
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
