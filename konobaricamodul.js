@@ -7,7 +7,6 @@ module.exports = (io) => {
   let allUserAnimations = {}; 
 let fullLayoutData = null;   // BEZ MASKE 
   let chatLayoutData = null; //  ZA CHATMASKE
-let layoutResetovan = false;  //  ZA CHATMASKE
  const sirinaStanje = {};
  let defaultColor = {};
 let defaultGradient = {};
@@ -211,6 +210,7 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
