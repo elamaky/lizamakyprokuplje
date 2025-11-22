@@ -184,32 +184,25 @@ if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
 
-     socket.on('reset-layout', () => {
-    layoutResetovan = true;
-    chatLayoutData = null;        // POENTA: izbriši stari layout
-    io.emit('reset-layout');
-  });
-
-  // Update layout
-  socket.on('chat-layout-update', data => {
-    chatLayoutData = data;
-    layoutResetovan = false;      // čim stigne novi layout reset više ne važi
-    socket.broadcast.emit('chat-layout-update', chatLayoutData);
-  });
-
-  // Novi korisnik
-  if (layoutResetovan) {
-    socket.emit('reset-layout');
-    return;
-  }
-
   if (chatLayoutData) {
-    socket.emit('chat-layout-update', chatLayoutData);
+    socket.emit('chat-layout-load', chatLayoutData);
   }
-    
+
+  // Kad klijent pošalje novi layout
+  socket.on('chat-layout-load', data => {
+    chatLayoutData = data;
+    socket.broadcast.emit('chat-layout-load', data);
+  });
+
+  // Reset layout
+  socket.on('chat-layout-reset', () => {
+    chatLayoutData = null;
+    socket.broadcast.emit('chat-layout-reset');
+  });
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
