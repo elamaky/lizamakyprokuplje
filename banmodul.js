@@ -21,14 +21,13 @@ function setupSocketEvents(io, guests, bannedUsers) {
 
         // Banovanje korisnika
         socket.on('banUser', (nickname) => {
-            const username = userSockets.get(socket.id); // Dobavi username iz mape
+            const username = userSockets.get(socket.id);
 
             if (!privilegedUsers.has(username)) {
                 socket.emit('error', "Nemate prava za banovanje.");
                 return;
             }
 
-            // Pronađi socket.id na osnovu nadimka iz `guests` objekta
             const targetSocketId = Object.keys(guests).find(id => guests[id] === nickname);
 
             if (!targetSocketId) {
@@ -60,16 +59,7 @@ function setupSocketEvents(io, guests, bannedUsers) {
                 io.emit('userUnbanned', nickname);
             }
         });
-
-        // Diskonekcija korisnika
-        socket.on('disconnect', () => {
-            const username = userSockets.get(socket.id);
-            userSockets.delete(socket.id);
-            bannedUsers.delete(socket.id);
-        });
     });
 }
 
 module.exports = { setupSocketEvents };
-
-
