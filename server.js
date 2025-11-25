@@ -219,7 +219,7 @@ socket.on('avatarChange', (data) => {
 socket.on('toggleVirtualGuests', enabled => {
   toggleVirtualGuests(io, guests, enabled);
 });
-  socket.emit('allGlitters', allGlitters);
+  io.emit('allGlitters', allGlitters);
 
     // Kada korisnik promeni glitter
     socket.on('glitterChange', (data) => {
@@ -240,4 +240,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
