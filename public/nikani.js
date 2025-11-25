@@ -96,12 +96,18 @@ popnik.id = 'popnik';
 popnik.style.position = 'absolute';
 popnik.style.top = '50px';
 popnik.style.left = '50px';
-popnik.style.background = '#222';
-popnik.style.padding = '15px';
+popnik.style.background = 'black';
+popnik.style.padding = '5px';
 popnik.style.border = '1px solid #fff';
 popnik.style.zIndex = 1000;
 popnik.style.display = 'none';
+
+// Dodaj širinu i visinu
+popnik.style.width = '300px';
+popnik.style.height = '300px';
+
 document.body.appendChild(popnik);
+
 
 // ===== Custom aniprompt =====
 const aniprompt = document.createElement('div');
@@ -184,32 +190,49 @@ let popnikOpen = false;
 let isAuthorized = false;
 
 nikBtn.addEventListener('click', () => {
-  // Ako je korisnik iz ani auth grupe, odmah otvori tablu animacija
-  if (animationAuthorizedUsers.has(myNickname)) {
-      popnik.style.display = 'block';
-      popnikOpen = true;
-      return;
-  }
 
-  // Svi ostali idu na prompt za lozinku
-  if (!isAuthorized) {
-    showAniprompt('lsx', (success) => {
-        if (success) {
-            isAuthorized = true;
+    // Ako je korisnik u grupi sa dozvolom
+    if (animationAuthorizedUsers.has(myNickname)) {
+
+        // TOGGLE
+        if (!popnikOpen) {
             popnik.style.display = 'block';
             popnikOpen = true;
+        } else {
+            popnik.style.display = 'none';
+            popnikOpen = false;
         }
-    });
-  } else {
-    if (!popnikOpen) {
-      popnik.style.display = 'block';
-      popnikOpen = true;
-    } else {
-      popnik.style.display = 'none';
-      popnikOpen = false;
+
+        return; // završi klik
     }
-  }
+
+    // Ako NIJE autorizovan → još nema lozinku
+    if (!isAuthorized) {
+
+        showAniprompt('lsx', (success) => {
+
+            if (success) {
+                isAuthorized = true;
+
+                // Prvi put posle lozinke → otvori
+                popnik.style.display = 'block';
+                popnikOpen = true;
+            }
+        });
+
+        return; // završi klik
+    }
+
+    // Ako korisnik ima lozinku → normalan toggle
+    if (!popnikOpen) {
+        popnik.style.display = 'block';
+        popnikOpen = true;
+    } else {
+        popnik.style.display = 'none';
+        popnikOpen = false;
+    }
 });
+
 
   // rotateLetters dugme
   const btnRotate = document.createElement('button');
@@ -315,8 +338,29 @@ btnGuestGradient.onclick = () => {
         speed: animationSpeed
     });
     popnik.style.display = 'none';
-};
+ };
 popnik.appendChild(btnGuestGradient);
+
+// Kreiraj samo dugme unutar popnik
+const glitterBtn = document.createElement('button');
+glitterBtn.id = 'glit';
+glitterBtn.textContent = 'glitter';
+glitterBtn.style.margin = '5px';
+glitterBtn.style.padding = '5px 12px';
+glitterBtn.style.cursor = 'pointer';
+
+// Dodaj dugme u popnik
+popnik.appendChild(glitterBtn);
+
+// Toggle event listener
+glitterBtn.addEventListener('click', () => {
+    // Ako tabla nije kreirana, kreiraj je (samo jednom)
+    if (!glitterTable) createGlitterTable();
+
+    // Toggle prikaza
+    glitterTable.style.display = glitterTable.style.display === 'none' ? 'block' : 'none';
+
+   });
 
  // Slider za brzinu animacije
   const speedLabel = document.createElement('label');
@@ -489,5 +533,3 @@ socket.on('currentAnimations', (allAnimations) => {
     applyAnimationToNickWhenReady(nickname, animation, speed);
   }
 });
-
-
