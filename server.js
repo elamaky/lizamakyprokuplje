@@ -134,8 +134,7 @@ socket.on('chatMessage', (msgData) => {
         overline: msgData.overline,
         nickname: nickname,
         gradient: userGradients[nickname] || null,
-        glitter: msgData.glitter,
-          time: time,
+        time: time,
        avatar: msgData.avatar || null
     };
     io.emit('chatMessage', messageToSend);
@@ -219,16 +218,7 @@ socket.on('avatarChange', (data) => {
 socket.on('toggleVirtualGuests', enabled => {
   toggleVirtualGuests(io, guests, enabled);
 });
-  io.emit('allGlitters', allGlitters);
-
-    // Kada korisnik promeni glitter
-    socket.on('glitterChange', (data) => {
-        allGlitters[data.nickname] = data.glitter;
-        // Emituj svim ostalim korisnicima
-        io.emit('glitterChange', data);
-
-    });
-   // Obrada diskonekcije korisnika
+  // Obrada diskonekcije korisnika
     socket.on('disconnect', () => {
         console.log(`${guests[socket.id]} se odjavio. IP adresa korisnika: ${ipAddress}`);
         delete guests[socket.id];
@@ -240,5 +230,6 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
 
