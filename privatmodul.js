@@ -52,7 +52,6 @@ module.exports = function (io, guests, sviAvatari, allGlitters) {
                     italic,
                     color,
                     gradient,
-                    glitter: senderGlitter,  // <-- dodat
                     avatar: senderAvatar,    // <-- dodat
                     underline,
                     overline
@@ -67,7 +66,6 @@ module.exports = function (io, guests, sviAvatari, allGlitters) {
                     italic,
                     color,
                     gradient,
-                    glitter: senderGlitter,  // <-- dodat
                     avatar: senderAvatar,    // <-- dodat
                     underline,
                     overline
