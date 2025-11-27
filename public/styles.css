@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0;
-    overflow-x: hidden;
+  
 }
 /* Stil za ekrane sa širinom manjom od 768px (tablet i mobilni uređaji) */
 @media (max-width: 768px) {
@@ -461,6 +461,7 @@ body {
       z-index: 999;
       display: none;
     }
+
 
 
 
