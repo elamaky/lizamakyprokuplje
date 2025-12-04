@@ -17,7 +17,7 @@ const textEmojiMap = {
   ':-D': '😄',
   ':x': '😎',
 
-  '#0': 'Za Inci Biserku Od *__X__*😎',
+  '#0': 'Sto vise upoznajem ljude sve vise volim zivotinje',
   '#1': 'Dragi gosti, vaše primedbe možete prijaviti upravi Galaksije na broj +511 545 856 957 565 956 354 785 968 652 624',
   '#2': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
   '#3': '💋💋💋💋💋💋💋',
@@ -388,3 +388,4 @@ function replaceTextEmoji(msg){
 
   return msg;
 }
+
