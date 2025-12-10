@@ -77,7 +77,7 @@ function updateInputStyle() {
     }
 }
 
-let lastMessages = {}; // Objekt koji prati poslednju poruku svakog korisnika
+let lastMessages = {};
 
 function applyAnimationToMessageName(strongElement, nickname) {
     if (!strongElement) return;
@@ -95,9 +95,6 @@ function applyAnimationToMessageName(strongElement, nickname) {
     // Očistimo ime
     strongElement.innerHTML = '';
 
-    // Provera da li nick ima gradijent
-    const isGradient = Array.from(strongElement.classList).some(cls => cls.startsWith('gradient-'));
-
     const problematicChars = [
         ' ', '*', '(', ')', '-', '_', '[', ']', '{', '}', '^', '$', '#', '@',
         '!', '+', '=', '~', '`', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '"', "'"
@@ -114,23 +111,16 @@ function applyAnimationToMessageName(strongElement, nickname) {
         const span = document.createElement('span');
         span.textContent = char;
 
-        // Primena glavne animacije
+        // postojeće klase — iste kao u glavnom animacija fajlu
         if (animationName === 'rotateLetters') span.classList.add('rotate-letter');
         else if (animationName === 'glowBlink') span.classList.add('glow-letter');
         else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
         else if (animationName === 'bounce') span.classList.add('bounce-letter');
         else if (animationName === 'superCombo') span.classList.add('superCombo-letter');
+         else if (animationName === 'guestGradientGlow') span.classList.add('guest-gradient-anim');
 
-        // Ako postoji gradijent, dodaj i guestGradientGlow
-        if (isGradient) span.classList.add('guest-gradient-anim');
-
-        // Trajanje animacija
-        span.style.animationDuration = isGradient
-            ? `${speed}s, 1s` // glavna animacija + glow gradijent
-            : `${speed}s`;    // samo glavna animacija
-
-        span.style.animationIterationCount = isGradient ? 'infinite, infinite' : 'infinite';
-        span.style.animationTimingFunction = isGradient ? 'ease-in-out, ease-in-out' : 'ease-in-out';
+        span.style.animationDuration = `${speed}s`;
+        span.style.animationIterationCount = 'infinite';
         span.style.animationDelay = `${i * 0.1}s`;
 
         strongElement.appendChild(span);
@@ -193,21 +183,14 @@ socket.on('chatMessage', function(data) {
     // Animacija imena korisnika
     const strongName = newMessage.querySelector('strong');
     const userAnim = allUserAnimations[data.nickname];
-
     if (userAnim && userAnim.animation) {
-        const animationName = userAnim.animation;
-        const speed = userAnim.speed || 2;
+        strongName.style.animationName = userAnim.animation;
+        strongName.style.animationDuration = `${userAnim.speed || 1}s`;
+        strongName.style.animationIterationCount = 'infinite';
+        strongName.style.animationTimingFunction = 'ease-in-out';
+        strongName.style.display = 'inline-block';
 
-        // Provera da li korisnik ima gradijent
-        const isGradient = data.gradient || window.defaultAdminGradient;
-
-        if (isGradient) {
-            strongName.style.animationName = `${animationName}, guestGradientGlow`;
-            strongName.style.animationDuration = `${speed}s, 1s`;
-            strongName.style.animationIterationCount = 'infinite, infinite';
-            strongName.style.animationTimingFunction = 'ease-in-out, ease-in-out';
-
-            // Postavi gradijent pozadinu
+        if (data.gradient || window.defaultAdminGradient) {
             const gradClass = data.gradient || window.defaultAdminGradient;
             const gradElement = document.querySelector(`.${gradClass}`);
             if (gradElement) {
@@ -217,15 +200,7 @@ socket.on('chatMessage', function(data) {
                 strongName.style.webkitTextFillColor = 'transparent';
                 strongName.style.color = 'transparent';
             }
-        } else {
-            // Samo glavna animacija
-            strongName.style.animationName = animationName;
-            strongName.style.animationDuration = `${speed}s`;
-            strongName.style.animationIterationCount = 'infinite';
-            strongName.style.animationTimingFunction = 'ease-in-out';
         }
-
-        strongName.style.display = 'inline-block';
     }
 
     // Avatar za autorizovane korisnike
@@ -779,8 +754,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
 
 
 
