@@ -424,18 +424,18 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
     if (isGuestGradientAnim) {
         // Animacija sjajnog gradijenta samo za guest listu
         userDiv.style.animationName = 'guestGradientGlow';
-        userDiv.style.animationDuration = `1s`;
+        userDiv.style.animationDuration = `${speed}s`;
         userDiv.style.animationIterationCount = 'infinite';
         userDiv.style.animationTimingFunction = 'ease-in-out';
         return;
     }
 
-    // --- Ako korisnik ima gradijent, dodaj originalnu animaciju + guestGradientGlow (gradijent je konstantno 1s) ---
     if (isGradient) {
-        userDiv.style.animationName = `${animationName}, guestGradientGlow`;
-        userDiv.style.animationDuration = `${speed}s, 1s`;
-        userDiv.style.animationIterationCount = 'infinite, infinite';
-        userDiv.style.animationTimingFunction = 'ease-in-out, ease-in-out';
+        // Animacija na ceo div za obične gradijente, bez sjaja
+        userDiv.style.animationName = animationName;
+        userDiv.style.animationDuration = `${speed}s`;
+        userDiv.style.animationIterationCount = 'infinite';
+        userDiv.style.animationTimingFunction = 'ease-in-out';
         return;
     }
 
@@ -466,9 +466,6 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
             span.style.animationIterationCount = 'infinite';
             span.style.animationDelay = `${i * 0.1}s`;
 
-            // Ako je gradijent, dodaj guestGradientGlow klasu
-            if (isGradient) span.classList.add('guest-gradient-anim');
-
             userDiv.appendChild(span);
         }
     }
@@ -490,7 +487,6 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
         });
     }
 }
-
 function applyAnimationToNickWhenReady(nickname, animation, speed) {
     const tryApply = () => {
         const userDiv = document.getElementById(`guest-${nickname}`);
@@ -503,35 +499,37 @@ function applyAnimationToNickWhenReady(nickname, animation, speed) {
     tryApply();
 }
 
-// --- Socket deo ---
 socket.on('animationChange', data => {
-    if (data && typeof data.nickname === 'string') {
-        if (data.animation) {
-            allUserAnimations[data.nickname] = {
-                animation: data.animation,
-                speed: data.speed || 2
-            };
-        } else {
-            delete allUserAnimations[data.nickname];
-        }
-    }
-
-    currentAnimation = data.animation;
-    animationSpeed = data.speed || 2;
-    applyAnimationToNickWhenReady(data.nickname, data.animation, animationSpeed);
-});
-
-socket.on('currentAnimations', (allAnimations) => {
-    if (allAnimations && typeof allAnimations === 'object') {
-        allUserAnimations = allAnimations;
+  // Sačuvaj animaciju u lokalnoj mapi (koristi se kasnije za poruke)
+  if (data && typeof data.nickname === 'string') {
+    if (data.animation) {
+      allUserAnimations[data.nickname] = {
+        animation: data.animation,
+        speed: data.speed || 2
+      };
     } else {
-        allUserAnimations = {};
+      // Ako server šalje null/false -> ukloni zapis
+      delete allUserAnimations[data.nickname];
     }
+  }
 
-    for (const [nickname, info] of Object.entries(allUserAnimations)) {
-        const animation = info && info.animation ? info.animation : null;
-        const speed = info && info.speed ? info.speed : 2;
-        applyAnimationToNickWhenReady(nickname, animation, speed);
-    }
+  // Postojeći behavior (ne menja se)
+  currentAnimation = data.animation;
+  animationSpeed = data.speed || 2;
+  applyAnimationToNickWhenReady(data.nickname, data.animation, animationSpeed);
 });
+socket.on('currentAnimations', (allAnimations) => {
+  // Sačuvaj celu mapu lokalno, ako je u ispravnom formatu
+  if (allAnimations && typeof allAnimations === 'object') {
+    allUserAnimations = allAnimations;
+  } else {
+    allUserAnimations = {};
+  }
 
+  // Primeni animacije u guest listi kao i pre
+  for (const [nickname, info] of Object.entries(allUserAnimations)) {
+    const animation = info && info.animation ? info.animation : null;
+    const speed = info && info.speed ? info.speed : 2;
+    applyAnimationToNickWhenReady(nickname, animation, speed);
+  }
+});
