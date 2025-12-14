@@ -448,7 +448,7 @@ socket.on('updateGuestList', function (users) {
         }
     });
 });
-// COLOR PICKER - OBICNE BOJE
+
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -532,98 +532,6 @@ socket.on('colorChange', (data) => {
             myDiv.classList.remove(cls);
         }
     });
-});
-
-// ZA GRADIJENTE
-document.getElementById('farbe').addEventListener('click', function () {
-    const gradijentDiv = document.getElementById('gradijent');
-    gradijentOpen = !gradijentOpen;
-    gradijentDiv.style.display = gradijentOpen ? 'grid' : 'none';
-
-    if (gradijentOpen) {
-        setTimeout(() => {
-            const boxes = document.querySelectorAll('.gradijent-box');
-            boxes.forEach(box => {
-                box.onclick = function () {
-                    currentGlitter = null;  
-                    currentColor = '';      
-                    currentGradient = this.classList[1];
-
-                    const myDivId = `guest-${myNickname}`;
-                    const myDiv = document.getElementById(myDivId);
-                    if (myDiv) {
-                        // Uklanjanje stare boje, gradijenata i glittera
-                        myDiv.classList.forEach(cls => {
-                            if (cls.startsWith('gradient-')) {
-                                myDiv.classList.remove(cls);
-                            }
-                        });
-                        myDiv.classList.remove('use-gradient', 'gradient-user');
-                        myDiv.style.color = '';
-                        myDiv.style.backgroundImage = '';
-                        myDiv.style.background = '';
-                        myDiv.style.webkitBackgroundClip = '';
-                        myDiv.style.webkitTextFillColor = '';
-                        myDiv.style.filter = '';
-                        myDiv.dataset.userGlitter = '';
-
-                        // Dodavanje novog gradijenta
-                        myDiv.classList.add(currentGradient, 'use-gradient', 'gradient-user');
-                        myDiv.style.backgroundImage = getComputedStyle(this).backgroundImage;
-
-                        myDiv.dataset.userGradient = currentGradient;
-                    }
-
-                    updateInputStyle();
-
-                    socket.emit('gradientChange', { nickname: myNickname, gradient: currentGradient });
-                };
-            });
-        }, 300);
-    }
-});
-
-socket.on('gradientChange', function (data) {
-    const myDivId = `guest-${data.nickname}`;
-    const myDiv = document.getElementById(myDivId);
-    if (myDiv) {
-        myDiv.classList.forEach(cls => {
-            if (cls.startsWith('gradient-')) myDiv.classList.remove(cls);
-        });
-        myDiv.classList.remove('use-gradient', 'gradient-user');
-        myDiv.style.color = '';
-        myDiv.style.backgroundImage = '';
-        myDiv.style.background = '';
-        myDiv.style.webkitBackgroundClip = '';
-        myDiv.style.webkitTextFillColor = '';
-        myDiv.style.filter = '';
-        myDiv.dataset.userGlitter = '';
-
-        myDiv.classList.add(data.gradient, 'use-gradient', 'gradient-user');
-        myDiv.style.backgroundImage = getComputedStyle(document.querySelector(`.${data.gradient}`)).backgroundImage;
-
-        myDiv.dataset.userGradient = data.gradient;
-    }
-});
-
-// Slušanje svih gradijenata pri povezivanju novih korisnika
-socket.on('allGradients', (gradients) => {
-    for (const nickname in gradients) {
-        const div = document.getElementById(`guest-${nickname}`);
-        if (div) {
-            div.classList.add(gradients[nickname], 'use-gradient', 'gradient-user');
-            div.style.backgroundImage = getComputedStyle(document.querySelector(`.${gradients[nickname]}`)).backgroundImage;
-
-            div.dataset.userGradient = gradients[nickname];
-
-            // Reset glitter i filter
-            div.style.background = '';
-            div.style.webkitBackgroundClip = '';
-            div.style.webkitTextFillColor = '';
-            div.style.filter = '';
-            div.dataset.userGlitter = '';
-        }
-    }
 });
 // ZA ADMINA - DEFAULT COLOR
 const applyBtn = document.getElementById('applyDefaultColor');
@@ -813,4 +721,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
