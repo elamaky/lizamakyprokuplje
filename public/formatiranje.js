@@ -1,3 +1,4 @@
+
 let myNickname = ''; // biće postavljen od servera
 
 socket.off('yourNickname');
@@ -794,6 +795,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
