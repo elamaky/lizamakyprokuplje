@@ -43,26 +43,23 @@ const textEmojiMap = {
 
 // Funkcija replaceTextEmoji koja sada radi i posle <img> tagova
 function replaceTextEmoji(html) {
-  const keys = Object.keys(textEmojiMap).sort((a,b) => b.length - a.length);
+    const keys = Object.keys(textEmojiMap).sort((a,b) => b.length - a.length);
+    const parts = html.split(/(<[^>]+>)/g);
 
-  // Delimo string na HTML tagove i tekst
-  const parts = html.split(/(<[^>]+>)/g);
+    for (let i = 0; i < parts.length; i++) {
+        if (parts[i].startsWith('<') && parts[i].endsWith('>')) continue;
 
-  for (let i = 0; i < parts.length; i++) {
-    // Ako je HTML tag, preskoči
-    if (parts[i].startsWith('<') && parts[i].endsWith('>')) continue;
+        let textPart = parts[i];
 
-    let textPart = parts[i];
+        for (const key of keys) {
+            const replacement = typeof textEmojiMap[key] === 'function' ? textEmojiMap[key]() : textEmojiMap[key];
+            const regex = new RegExp(`(?<=^|\\s)${key}(?=$|\\s)`, 'g');
+            textPart = textPart.replace(regex, replacement);
+        }
 
-    for (const key of keys) {
-      const replacement = typeof textEmojiMap[key] === 'function' ? textEmojiMap[key]() : textEmojiMap[key];
-
-      // Zamena bez granica reči, tako da radi i posle slika
-      textPart = textPart.split(key).join(replacement);
+        parts[i] = textPart;
     }
 
-    parts[i] = textPart;
-  }
-
-  return parts.join('');
+    return parts.join('');
 }
+
