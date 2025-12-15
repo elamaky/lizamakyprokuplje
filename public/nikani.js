@@ -413,16 +413,34 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
     const userDiv = document.getElementById(`guest-${nickname}`);
     if (!userDiv) return;
 
-    // Resetuj prethodnu animaciju
+    // Reset prethodnih animacija i stilova
     userDiv.style.animation = 'none';
-    userDiv.innerHTML = userDiv.textContent || userDiv.innerText;
+    userDiv.style.color = '';
+    userDiv.style.background = '';
+    userDiv.style.webkitTextFillColor = '';
+    userDiv.style.backgroundClip = '';
+    userDiv.style.webkitBackgroundClip = '';
 
-    // Provera da li korisnik ima gradijent
-    const isGradient = Array.from(userDiv.classList).some(cls => cls.startsWith('gradient-'));
-    const isGuestGradientAnim = userDiv.classList.contains('guest-gradient-anim');
+    // --- Glitter na tekstu ---
+    if (userDiv.dataset.userGlitter) {
+        userDiv.style.background = `url('/glit/${userDiv.dataset.userGlitter}')`;
+        userDiv.style.backgroundSize = 'cover';
+        userDiv.style.backgroundRepeat = 'repeat';
+        userDiv.style.backgroundClip = 'text';
+        userDiv.style.webkitBackgroundClip = 'text';
+        userDiv.style.webkitTextFillColor = 'transparent';
 
-    if (isGuestGradientAnim) {
-        // Animacija sjajnog gradijenta samo za guest listu
+        if (animationName && animationName !== 'guestGradientGlow') {
+            userDiv.style.animationName = animationName;
+            userDiv.style.animationDuration = `${speed}s`;
+            userDiv.style.animationIterationCount = 'infinite';
+            userDiv.style.animationTimingFunction = 'ease-in-out';
+        }
+        return;
+    }
+
+    // --- Guest sjajni gradijent ---
+    if (userDiv.classList.contains('guest-gradient-anim')) {
         userDiv.style.animationName = 'guestGradientGlow';
         userDiv.style.animationDuration = `${speed}s`;
         userDiv.style.animationIterationCount = 'infinite';
@@ -430,16 +448,7 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
         return;
     }
 
-    if (isGradient) {
-        // Animacija na ceo div za obične gradijente, bez sjaja
-        userDiv.style.animationName = animationName;
-        userDiv.style.animationDuration = `${speed}s`;
-        userDiv.style.animationIterationCount = 'infinite';
-        userDiv.style.animationTimingFunction = 'ease-in-out';
-        return;
-    }
-
-    // --- JS animacija po slovima za obične korisnike ---
+    // --- JS animacije po slovima za obične korisnike ---
     const text = userDiv.textContent || userDiv.innerText;
     userDiv.innerHTML = '';
 
@@ -470,6 +479,7 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
         }
     }
 
+    // --- Optional: loop za rotateLetters ---
     if (animationName === 'rotateLetters') {
         const spans = userDiv.querySelectorAll('.rotate-letter');
         let completedSpans = 0;
@@ -487,6 +497,7 @@ function applyAnimationToNick(nickname, animationName, speed = animationSpeed) {
         });
     }
 }
+
 function applyAnimationToNickWhenReady(nickname, animation, speed) {
     const tryApply = () => {
         const userDiv = document.getElementById(`guest-${nickname}`);
@@ -533,3 +544,4 @@ socket.on('currentAnimations', (allAnimations) => {
     applyAnimationToNickWhenReady(nickname, animation, speed);
   }
 });
+
