@@ -56,25 +56,48 @@ document.getElementById('linijagoreBtn').addEventListener('click', function() {
     updateInputStyle();
 });
 
+function resetInputVisuals(input) {
+    input.style.backgroundImage = 'none';
+    input.style.background = 'none';
+    input.style.backgroundClip = 'initial';
+    input.style.webkitBackgroundClip = 'initial';
+    input.style.webkitTextFillColor = 'initial';
+    input.style.color = 'initial';
+}
 function updateInputStyle() {
-    let inputField = document.getElementById('chatInput');
+    const inputField = document.getElementById('chatInput');
+
+    resetInputVisuals(inputField);
+
     inputField.style.fontWeight = isBold ? 'bold' : 'normal';
     inputField.style.fontStyle = isItalic ? 'italic' : 'normal';
-    inputField.style.textDecoration = (isUnderline ? 'underline ' : '') + (isOverline ? 'overline' : '');
+    inputField.style.textDecoration =
+        (isUnderline ? 'underline ' : '') + (isOverline ? 'overline' : '');
 
-    if (currentGradient) {
+    // GLITTER
+    if (currentGlitter) {
+        inputField.style.background = `url('/glit/${currentGlitter}')`;
+        inputField.style.backgroundSize = 'cover';
         inputField.style.backgroundClip = 'text';
         inputField.style.webkitBackgroundClip = 'text';
-        inputField.style.color = 'transparent'; // važno za rad na FireFox
         inputField.style.webkitTextFillColor = 'transparent';
-        inputField.style.backgroundImage = getComputedStyle(document.querySelector(`.${currentGradient}`)).backgroundImage;
-    } else {
-        inputField.style.backgroundImage = '';
-        inputField.style.backgroundClip = '';
-        inputField.style.webkitBackgroundClip = '';
-        inputField.style.webkitTextFillColor = '';
-        inputField.style.color = currentColor;
+        inputField.style.color = 'transparent';
+        return;
     }
+
+    // GRADIENT
+    if (currentGradient) {
+        inputField.style.backgroundImage =
+            getComputedStyle(document.querySelector(`.${currentGradient}`)).backgroundImage;
+        inputField.style.backgroundClip = 'text';
+        inputField.style.webkitBackgroundClip = 'text';
+        inputField.style.webkitTextFillColor = 'transparent';
+        inputField.style.color = 'transparent';
+        return;
+    }
+
+    // COLOR
+    inputField.style.color = currentColor || '#fff';
 }
 
 let lastMessages = {};
@@ -130,16 +153,14 @@ function applyAnimationToMessageName(strongElement, nickname) {
     strongElement.innerHTML += ': ';
 }
 
-socket.on('chatMessage', function(data) {
+socket.on('chatMessage', function (data) {
     if (!myNickname) return;
 
-    const myName = currentUser ? currentUser : myNickname;
+    const myName = currentUser || myNickname;
 
-    // Prvo zamena #n sa imenom korisnika, pa zamena emoji i kodova iz mape
     let raw = data.text.trim();
     let text = replaceTextEmoji(raw).replace(/#n/g, myName);
 
-    // Čuvamo samo poslednju poruku po korisniku
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
 
@@ -147,63 +168,83 @@ socket.on('chatMessage', function(data) {
     const newMessage = document.createElement('div');
     newMessage.classList.add('message');
 
-    // Stilovi fonta
+    // FONT
     newMessage.style.fontWeight = data.bold ? 'bold' : 'normal';
     newMessage.style.fontStyle = data.italic ? 'italic' : 'normal';
     newMessage.style.textDecoration =
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-    // Boja ili gradijent
-    if (data.color) {
-        newMessage.style.backgroundImage = '';
-        newMessage.style.backgroundClip = '';
-        newMessage.style.webkitBackgroundClip = '';
-        newMessage.style.webkitTextFillColor = '';
-        newMessage.style.color = data.color;
-    } else if (data.gradient || window.defaultAdminGradient) {
+    // ===== RESET =====
+    newMessage.style.background = 'none';
+    newMessage.style.backgroundImage = 'none';
+    newMessage.style.backgroundClip = 'initial';
+    newMessage.style.webkitBackgroundClip = 'initial';
+    newMessage.style.webkitTextFillColor = 'initial';
+    newMessage.style.color = 'initial';
+
+    // ===== GLITTER =====
+    if (data.glitter) {
+        newMessage.style.background = `url('/glit/${data.glitter}')`;
+        newMessage.style.backgroundSize = 'cover';
+        newMessage.style.backgroundClip = 'text';
+        newMessage.style.webkitBackgroundClip = 'text';
+        newMessage.style.webkitTextFillColor = 'transparent';
+        newMessage.style.color = 'transparent';
+    }
+
+    // ===== GRADIENT =====
+    else if (data.gradient || window.defaultAdminGradient) {
         const gradClass = data.gradient || window.defaultAdminGradient;
-        const gradElement = document.querySelector(`.${gradClass}`);
-        if (gradElement) {
+        const gradEl = document.querySelector(`.${gradClass}`);
+        if (gradEl) {
+            newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
             newMessage.style.backgroundClip = 'text';
             newMessage.style.webkitBackgroundClip = 'text';
             newMessage.style.webkitTextFillColor = 'transparent';
             newMessage.style.color = 'transparent';
-            newMessage.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
         }
     }
 
-    // Dodavanje sadržaja poruke
+    // ===== COLOR =====
+    else if (data.color) {
+        newMessage.style.color = data.color;
+    }
+
+    // CONTENT
     newMessage.innerHTML = `
-        <strong>${data.nickname}:</strong> 
+        <strong>${data.nickname}:</strong>
         ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')}
-        <span style="font-size: 0.8em; color: gray;">(${data.time})</span>
+        <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-    // Animacija imena korisnika
+    // NAME ANIMATION
     const strongName = newMessage.querySelector('strong');
     const userAnim = allUserAnimations[data.nickname];
     if (userAnim && userAnim.animation) {
         strongName.style.animationName = userAnim.animation;
         strongName.style.animationDuration = `${userAnim.speed || 1}s`;
         strongName.style.animationIterationCount = 'infinite';
-        strongName.style.animationTimingFunction = 'ease-in-out';
         strongName.style.display = 'inline-block';
 
-        if (data.gradient || window.defaultAdminGradient) {
+        if (data.glitter) {
+            strongName.style.background = `url('/glit/${data.glitter}')`;
+            strongName.style.backgroundSize = 'cover';
+        } else if (data.gradient || window.defaultAdminGradient) {
             const gradClass = data.gradient || window.defaultAdminGradient;
-            const gradElement = document.querySelector(`.${gradClass}`);
-            if (gradElement) {
-                strongName.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
-                strongName.style.backgroundClip = 'text';
-                strongName.style.webkitBackgroundClip = 'text';
-                strongName.style.webkitTextFillColor = 'transparent';
-                strongName.style.color = 'transparent';
+            const gradEl = document.querySelector(`.${gradClass}`);
+            if (gradEl) {
+                strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
             }
         }
+
+        strongName.style.backgroundClip = 'text';
+        strongName.style.webkitBackgroundClip = 'text';
+        strongName.style.webkitTextFillColor = 'transparent';
+        strongName.style.color = 'transparent';
     }
 
-    // Avatar za autorizovane korisnike
+    // AVATAR
     if (authorizedUsers.has(data.nickname) && data.avatar) {
         const img = document.createElement('img');
         img.src = data.avatar;
@@ -213,24 +254,21 @@ socket.on('chatMessage', function(data) {
         newMessage.appendChild(img);
     }
 
-    // Dodavanje poruke na početak chata
     messageArea.prepend(newMessage);
 
-    // Održavanje limita od 100 poruka u DOM-u
     while (messageArea.children.length > 100) {
         messageArea.removeChild(messageArea.lastChild);
     }
 
-    // Snimanje poruka ako je aktivno
     if (window.snimanjeAktivno) {
         porukeZaSnimanje.push(newMessage.outerHTML);
     }
 
-    // Scroll na vrh ako korisnik gleda gore
     if (messageArea.scrollTop < 50) {
         messageArea.scrollTop = 0;
     }
 });
+
 socket.on('private_message', function(data) {
     if (!myNickname) return;
 
@@ -416,6 +454,7 @@ document.getElementById('colorBtn').addEventListener('click', () => {
 });
 
 document.getElementById('colorPicker').addEventListener('input', function() {
+    currentGlitter = null; 
     currentColor = this.value;
     currentGradient = null; // reset gradijenta
 
@@ -502,8 +541,9 @@ document.getElementById('farbe').addEventListener('click', function () {
             const boxes = document.querySelectorAll('.gradijent-box');
             boxes.forEach(box => {
                 box.onclick = function () {
-                    currentGradient = this.classList[1];
-                    currentColor = ''; // Resetuj boju kada izabereš gradijent
+                     currentGlitter = null;  
+                     currentColor = '';      
+                     currentGradient = this.classList[1];
 
                     const myDivId = `guest-${myNickname}`;
                     const myDiv = document.getElementById(myDivId);
