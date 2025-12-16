@@ -1,11 +1,13 @@
 const virtualGuests = [
-  { nickname: 'Higijenicar', messages: [' Prebice me Dia i Mj ako bude prljavo uvek ja moram da '], color: 'olive' },
+  { nickname: 'Higijenicar', messages: [' Prebice me Dia i Mj ako bude prljavo uvek ja moram da cistim '], color: 'olive' },
   { nickname: 'Jasmina', messages: [' Plavi sreco moja , neka gleda ceo svet koliko te volim  '], color: 'hotpink' },
+  { nickname: 'Miki', messages: [' puma ❤❤❤❤❤❤❤, znaj da nisi nikada sama, ja sam uvek sa tobom bez obzira na sve  '], color: 'lightgreen' },
   { nickname: 'Elena ukrajinka', messages: [' Plavi mnogo pises sa zenske na chat , sve cu ih pocupam  '], color: 'orchid' },
   { nickname: 'Beti Makedonka', messages: [' Plavi ti si samo moj duso ,ajde da igramo zajedno  '], color: 'mediumvioletred' },
   { nickname: 'Bala Hatun', messages: ['Poz Svima, ', 'jasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'], color: 'deepskyblue' },
   { nickname: 'Halime', messages: ['Zdravo Sarinenge', 'opaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  '], color: 'purple' },
   { nickname: 'Security', messages: ['Ima li nemirnih???? Igrajte, Pevajte, Muvajte se , Lepo se druzite - Nemoj da lomim koske  '], color: 'blue' },
+   { nickname: 'Miki', messages: [' puma ❤❤❤❤❤❤❤, ti si sve sto mi treba na ovome svetu  '], color: 'lightgreen' },
   { nickname: 'Holofira', messages: ['Selami sarinenge', 'toooooooooooooooooooooooo', '*__X__* Mangava tu ❤️', 'Za svet si možda jedna osoba, ali za jednu osobu si ti (X) ceo svet'], color: 'red' },
   { nickname: 'Halime', messages: ['Nas olestar lolije ili ka sredinav ti frizura, Merava tuke *__X__* ❤️💋', 'Volim te X.  To je početak i kraj svegaa', 'Kad sam imala 8 godina moja sestra je bila upola mlađa od mene, sada imam 40, koliko ima moja sestra? KO POGODI DOBIJA 3 PESME OD DJ-A'], color: 'purple' },
   { nickname: 'Bala Hatun', messages: ['Dzabe tumen cupinen pe taro bala OV TANO SAMO MLO', 'Volim te X ne samo zbog onoga što jesi, već i zbog onoga što sam ja kad sam s tobom', 'Tvoje je, ali ga svi drugi više koriste nego ti. KO POGODI 3 PESME OD DJ-A'], color:'deepskyblue' },
@@ -15,6 +17,7 @@ const virtualGuests = [
   { nickname: 'Holofira', messages: ['X ma te ave tejsa slucajno , o Mehmeti bar kas ulo , ic na ikljovel avrijal'], color: 'red' },
   { nickname: 'Halime', messages: ['Ovaj X samo nesto cacka , uvek nesto pokvari  '], color: 'purple' },
   { nickname: 'Higijenicar', messages: ['Ne pravite lom,da ne zovem security,odrzavajte higijenu kao da ste kod kuce'], color: 'olive' },
+  { nickname: 'Miki', messages: [' puma ❤❤❤❤❤❤❤, ja te 👀i cuvam, nista ne brini , tu sam u uglu i uzivam '], color: 'lightgreen' },
   { nickname: 'Holofira', messages: ['Tacno , svaki dan nesto dira , treba mu zabraniti pc pod hitno , pre nego pokvari ceo radio'], color: 'red' },
   { nickname: 'Bala Hatun', messages: ['Ne dirajte X-a , nije on kriv što nezna šta radi '], color:'deepskyblue' },
   { nickname: 'Halime', messages: ['Dok nisi pokvario ton ajde da slusamo malo Zvonka i Ramka', 'Ako može Šaban i Jasar takođe '], color: 'purple' },
@@ -120,6 +123,7 @@ function toggleVirtualGuests(io, guests, enabled) {
 }
 
 module.exports = { startVirtualGuests, toggleVirtualGuests };
+
 
 
 
