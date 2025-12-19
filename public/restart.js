@@ -58,7 +58,7 @@
 document.addEventListener('keydown', (e) => {
     if (!e.key) return; // sprečava grešku
     activeKeys.add(e.key.toUpperCase());
-    if (activeKeys.has('R') && activeKeys.has('G') && activeKeys.has('1')) {
+    if (activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('1')) {
         overlay.style.display = 'flex';
     }
 });
