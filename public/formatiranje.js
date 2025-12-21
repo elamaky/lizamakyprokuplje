@@ -286,16 +286,25 @@ text = tempDiv.innerHTML;
     }
 });
 
-socket.on('private_message', function(data) {
+socket.on('private_message', function (data) {
     if (!myNickname) return;
 
-    const myName = currentUser ? currentUser : myNickname;
+    const myName = currentUser || myNickname;
 
-    // Prvo zamena #n sa imenom korisnika, pa zamena emoji i kodova iz mape
     let raw = data.message.trim();
     let text = replaceTextEmoji(raw).replace(/#n/g, myName);
 
-    // Čuvamo samo poslednju poruku po korisniku
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = text;
+
+    tempDiv.querySelectorAll('img').forEach(img => {
+        if (img.src.endsWith('lm.avif') && !canSeeHiddenImage(myName)) {
+            img.remove();
+        }
+    });
+
+    text = tempDiv.innerHTML;
+
     if (lastMessages[data.from] === text) return;
     lastMessages[data.from] = text;
 
@@ -303,63 +312,83 @@ socket.on('private_message', function(data) {
     const newMessage = document.createElement('div');
     newMessage.classList.add('message');
 
-    // Stilovi fonta
+    // FONT
     newMessage.style.fontWeight = data.bold ? 'bold' : 'normal';
     newMessage.style.fontStyle = data.italic ? 'italic' : 'normal';
     newMessage.style.textDecoration =
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-    // Boja ili gradijent
-    if (data.color) {
-        newMessage.style.backgroundImage = '';
-        newMessage.style.backgroundClip = '';
-        newMessage.style.webkitBackgroundClip = '';
-        newMessage.style.webkitTextFillColor = '';
-        newMessage.style.color = data.color;
-    } else if (data.gradient || window.defaultAdminGradient) {
+    // ===== RESET =====
+    newMessage.style.background = 'none';
+    newMessage.style.backgroundImage = 'none';
+    newMessage.style.backgroundClip = 'initial';
+    newMessage.style.webkitBackgroundClip = 'initial';
+    newMessage.style.webkitTextFillColor = 'initial';
+    newMessage.style.color = 'initial';
+
+    // ===== GLITTER =====
+    if (data.glitter) {
+        newMessage.style.background = `url('/glit/${data.glitter}')`;
+        newMessage.style.backgroundSize = 'cover';
+        newMessage.style.backgroundClip = 'text';
+        newMessage.style.webkitBackgroundClip = 'text';
+        newMessage.style.webkitTextFillColor = 'transparent';
+        newMessage.style.color = 'transparent';
+    }
+
+    // ===== GRADIENT =====
+    else if (data.gradient || window.defaultAdminGradient) {
         const gradClass = data.gradient || window.defaultAdminGradient;
-        const gradElement = document.querySelector(`.${gradClass}`);
-        if (gradElement) {
+        const gradEl = document.querySelector(`.${gradClass}`);
+        if (gradEl) {
+            newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
             newMessage.style.backgroundClip = 'text';
             newMessage.style.webkitBackgroundClip = 'text';
             newMessage.style.webkitTextFillColor = 'transparent';
             newMessage.style.color = 'transparent';
-            newMessage.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
         }
     }
 
-    // Dodavanje sadržaja poruke
+    // ===== COLOR =====
+    else if (data.color) {
+        newMessage.style.color = data.color;
+    }
+
+    // CONTENT
     newMessage.innerHTML = `
-        <strong>${data.from}:</strong> 
+        <strong>${data.from}:</strong>
         ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')}
-        <span style="font-size: 0.8em; color: gray;">(${data.time})</span>
+        <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-    // Animacija imena korisnika
+    // NAME ANIMATION
     const strongName = newMessage.querySelector('strong');
     const userAnim = allUserAnimations[data.from];
     if (userAnim && userAnim.animation) {
         strongName.style.animationName = userAnim.animation;
         strongName.style.animationDuration = `${userAnim.speed || 1}s`;
         strongName.style.animationIterationCount = 'infinite';
-        strongName.style.animationTimingFunction = 'ease-in-out';
         strongName.style.display = 'inline-block';
 
-        if (data.gradient || window.defaultAdminGradient) {
+        if (data.glitter) {
+            strongName.style.background = `url('/glit/${data.glitter}')`;
+            strongName.style.backgroundSize = 'cover';
+        } else if (data.gradient || window.defaultAdminGradient) {
             const gradClass = data.gradient || window.defaultAdminGradient;
-            const gradElement = document.querySelector(`.${gradClass}`);
-            if (gradElement) {
-                strongName.style.backgroundImage = getComputedStyle(gradElement).backgroundImage;
-                strongName.style.backgroundClip = 'text';
-                strongName.style.webkitBackgroundClip = 'text';
-                strongName.style.webkitTextFillColor = 'transparent';
-                strongName.style.color = 'transparent';
+            const gradEl = document.querySelector(`.${gradClass}`);
+            if (gradEl) {
+                strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
             }
         }
+
+        strongName.style.backgroundClip = 'text';
+        strongName.style.webkitBackgroundClip = 'text';
+        strongName.style.webkitTextFillColor = 'transparent';
+        strongName.style.color = 'transparent';
     }
 
-    // Avatar za autorizovane korisnike
+    // AVATAR
     if (authorizedUsers.has(data.from) && data.avatar) {
         const img = document.createElement('img');
         img.src = data.avatar;
@@ -369,24 +398,21 @@ socket.on('private_message', function(data) {
         newMessage.appendChild(img);
     }
 
-    // Dodavanje poruke na početak chata
     messageArea.prepend(newMessage);
 
-    // Održavanje limita od 100 poruka u DOM-u
     while (messageArea.children.length > 100) {
         messageArea.removeChild(messageArea.lastChild);
     }
 
-    // Snimanje poruka ako je aktivno
     if (window.snimanjeAktivno) {
         porukeZaSnimanje.push(newMessage.outerHTML);
     }
 
-    // Scroll na vrh ako korisnik gleda gore
     if (messageArea.scrollTop < 50) {
         messageArea.scrollTop = 0;
     }
 });
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -811,3 +837,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
