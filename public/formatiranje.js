@@ -1,3 +1,4 @@
+const hiddenImageUsers = new Set(['ZI ZU', '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka','Dia💎', 'Dia']);
 let myNickname = ''; // biće postavljen od servera
 
 socket.off('yourNickname');
@@ -153,6 +154,9 @@ function applyAnimationToMessageName(strongElement, nickname) {
     // vratimo ":" iza animiranog imena
     strongElement.innerHTML += ': ';
 }
+function canSeeHiddenImage(userName) {
+  return hiddenImageUsers.has(userName);
+}
 
 socket.on('chatMessage', function (data) {
     if (!myNickname) return;
@@ -161,6 +165,18 @@ socket.on('chatMessage', function (data) {
 
     let raw = data.text.trim();
     let text = replaceTextEmoji(raw).replace(/#n/g, myName);
+
+const tempDiv = document.createElement('div');
+tempDiv.innerHTML = text;
+
+tempDiv.querySelectorAll('img').forEach(img => {
+    if (img.src.endsWith('lm.avif') && !canSeeHiddenImage(myName)) {
+        img.remove();
+    }
+});
+
+text = tempDiv.innerHTML;
+
 
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
@@ -795,7 +811,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
