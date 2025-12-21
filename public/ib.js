@@ -45,10 +45,12 @@ const textEmojiMap = {
   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
   '#ha': 'Hulija❤️Ates',
 
-  'sandra': '<img src="emoji gif/sandra.webp" alt="emoji">',
+   'sandra': '<img src="emoji gif/sandra.webp" alt="emoji">',
   'puma': '<img src="emoji gif/puma.webp" alt="emoji">',
   'dia': '<img src="emoji gif/nc.webp" alt="emoji">',
-  'hulija': '<img src="emoji gif/ha.webp" alt="emoji">'
+  'hulija': '<img src="emoji gif/ha.webp" alt="emoji">',
+'lm': '<img src="emoji gif/lm.avif" alt="lm">'
+
 };
 
 // escape za regex
@@ -81,3 +83,4 @@ function replaceTextEmoji(html) {
 
   return parts.join('');
 }
+
