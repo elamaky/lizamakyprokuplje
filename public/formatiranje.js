@@ -166,15 +166,17 @@ socket.on('chatMessage', function (data) {
     let raw = data.text.trim();
     let text = replaceTextEmoji(raw).replace(/#n/g, myName);
 
-    // filtriranje slika iz teksta
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = text;
-    tempDiv.querySelectorAll('img').forEach(img => {
-        if (img.src.endsWith('lm.avif') && !canSeeHiddenImage(myName)) {
-            img.remove();
-        }
-    });
-    text = tempDiv.innerHTML;
+const tempDiv = document.createElement('div');
+tempDiv.innerHTML = text;
+
+tempDiv.querySelectorAll('img').forEach(img => {
+    if (img.src.endsWith('lm.avif') && !canSeeHiddenImage(myName)) {
+        img.remove();
+    }
+});
+
+text = tempDiv.innerHTML;
+
 
     if (lastMessages[data.nickname] === text) return;
     lastMessages[data.nickname] = text;
@@ -190,7 +192,7 @@ socket.on('chatMessage', function (data) {
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-    // RESET
+    // ===== RESET =====
     newMessage.style.background = 'none';
     newMessage.style.backgroundImage = 'none';
     newMessage.style.backgroundClip = 'initial';
@@ -198,7 +200,7 @@ socket.on('chatMessage', function (data) {
     newMessage.style.webkitTextFillColor = 'initial';
     newMessage.style.color = 'initial';
 
-    // GLITTER
+    // ===== GLITTER =====
     if (data.glitter) {
         newMessage.style.background = `url('/glit/${data.glitter}')`;
         newMessage.style.backgroundSize = 'cover';
@@ -207,7 +209,8 @@ socket.on('chatMessage', function (data) {
         newMessage.style.webkitTextFillColor = 'transparent';
         newMessage.style.color = 'transparent';
     }
-    // GRADIENT
+
+    // ===== GRADIENT =====
     else if (data.gradient || window.defaultAdminGradient) {
         const gradClass = data.gradient || window.defaultAdminGradient;
         const gradEl = document.querySelector(`.${gradClass}`);
@@ -219,14 +222,15 @@ socket.on('chatMessage', function (data) {
             newMessage.style.color = 'transparent';
         }
     }
-    // COLOR
+
+    // ===== COLOR =====
     else if (data.color) {
         newMessage.style.color = data.color;
     }
 
     // CONTENT
     newMessage.innerHTML = `
-        <strong>${data.nickname}</strong>:
+        <strong>${data.nickname}:</strong>
         ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')}
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
@@ -257,14 +261,14 @@ socket.on('chatMessage', function (data) {
         strongName.style.color = 'transparent';
     }
 
-    // AVATAR (uvek prikazan)
+    // AVATAR
     if (authorizedUsers.has(data.nickname) && data.avatar) {
         const img = document.createElement('img');
         img.src = data.avatar;
         img.className = 'inline-avatar';
         img.style.marginLeft = '5px';
         img.style.verticalAlign = 'middle';
-        strongName.appendChild(img);
+        newMessage.appendChild(img);
     }
 
     messageArea.prepend(newMessage);
@@ -290,14 +294,15 @@ socket.on('private_message', function (data) {
     let raw = data.message.trim();
     let text = replaceTextEmoji(raw).replace(/#n/g, myName);
 
-    // filtriranje slika iz teksta
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = text;
+
     tempDiv.querySelectorAll('img').forEach(img => {
         if (img.src.endsWith('lm.avif') && !canSeeHiddenImage(myName)) {
             img.remove();
         }
     });
+
     text = tempDiv.innerHTML;
 
     if (lastMessages[data.from] === text) return;
@@ -314,7 +319,7 @@ socket.on('private_message', function (data) {
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-    // RESET
+    // ===== RESET =====
     newMessage.style.background = 'none';
     newMessage.style.backgroundImage = 'none';
     newMessage.style.backgroundClip = 'initial';
@@ -322,7 +327,7 @@ socket.on('private_message', function (data) {
     newMessage.style.webkitTextFillColor = 'initial';
     newMessage.style.color = 'initial';
 
-    // GLITTER
+    // ===== GLITTER =====
     if (data.glitter) {
         newMessage.style.background = `url('/glit/${data.glitter}')`;
         newMessage.style.backgroundSize = 'cover';
@@ -331,7 +336,8 @@ socket.on('private_message', function (data) {
         newMessage.style.webkitTextFillColor = 'transparent';
         newMessage.style.color = 'transparent';
     }
-    // GRADIENT
+
+    // ===== GRADIENT =====
     else if (data.gradient || window.defaultAdminGradient) {
         const gradClass = data.gradient || window.defaultAdminGradient;
         const gradEl = document.querySelector(`.${gradClass}`);
@@ -343,14 +349,15 @@ socket.on('private_message', function (data) {
             newMessage.style.color = 'transparent';
         }
     }
-    // COLOR
+
+    // ===== COLOR =====
     else if (data.color) {
         newMessage.style.color = data.color;
     }
 
     // CONTENT
     newMessage.innerHTML = `
-        <strong>${data.from}</strong>:
+        <strong>${data.from}:</strong>
         ${text.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')}
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
@@ -381,14 +388,14 @@ socket.on('private_message', function (data) {
         strongName.style.color = 'transparent';
     }
 
-    // AVATAR uvek unutar strong
+    // AVATAR
     if (authorizedUsers.has(data.from) && data.avatar) {
         const img = document.createElement('img');
         img.src = data.avatar;
         img.className = 'inline-avatar';
         img.style.marginLeft = '5px';
         img.style.verticalAlign = 'middle';
-        strongName.appendChild(img);
+        newMessage.appendChild(img);
     }
 
     messageArea.prepend(newMessage);
@@ -405,6 +412,7 @@ socket.on('private_message', function (data) {
         messageArea.scrollTop = 0;
     }
 });
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -829,5 +837,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
