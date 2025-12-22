@@ -1,4 +1,4 @@
-const hiddenImageUsers = new Set(['ZI ZU', '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka','Dia💎', 'Dia']);
+const hiddenImageUsers = new Set(['ZI ZU', '*___F117___*',-𝔸𝕣𝕝𝕚𝕛𝕒-, '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka','Dia💎', 'Dia']);
 let myNickname = ''; // biće postavljen od servera
 
 socket.off('yourNickname');
@@ -837,3 +837,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
