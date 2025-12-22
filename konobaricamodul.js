@@ -28,13 +28,42 @@ const Guest = mongoose.model('Guest', GuestSchema);
    socket.on('requestInitialChatContainerData', () => {
     socket.emit('initialChatContainerData', chatContainerState);
   });
-socket.on('new_guest', () => {
- const greetingMessage = `Dobro došli, osećajte se kao kod kuće ☕.`;
- io.emit('message', {
-    username: '<span class="konobarica">Konobarica</span>',
-    message: greetingMessage,
-    isSystemMessage: true
-  });
+   // Greeting poruka za novog gosta
+    socket.on('new_guest', () => {
+     const greetingMessage = `Dobro Došli , osećajte se kao kod kuće <img src="emoji gif/nov9.gif" alt="emoji">. Sa vama su Dj Dia, Dj Sandra, Dj Puma, Dj Hulija i Dj X.`;
+
+         io.emit('message', {
+        username: '<span class="konobarica">Konobarica</span>',
+        message: greetingMessage,
+        isSystemMessage: true
+      });
+    });
+
+  
+ // Reakcije Konobarice na ključne reči
+socket.on('chatMessage', (msgData) => {
+  const text = msgData.text.toLowerCase();
+
+  const konobaricaReactions = {
+    'pauza': 'Arlijo nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
+    'red bul': 'Evo stiže odmah <img src="emoji gif/redbul.webp" style="height:40px;">',
+    'viski': 'Evo stiže odmah viski za Lepu i ostale goste <img src="emoji gif/viski.png" style="height:40px;">',
+    'vodka': 'Evo stiže odmah <img src="emoji gif/vodka.webp" style="height:40px;">',
+    'kokta': 'Evo stiže odmah <img src="emoji gif/kokta.webp" style="height:40px;">'
+  };
+
+  for (const key in konobaricaReactions) {
+    if (text.includes(key)) {
+      setTimeout(() => {
+        io.emit('message', {
+          username: '<span class="konobarica">Konobarica</span>',
+          message: konobaricaReactions[key],
+          isSystemMessage: true
+        });
+      }, 300);
+      break;
+    }
+  }
 });
     socket.on('moveChatContainer', (data) => {
     if (typeof data.x === 'number' && typeof data.y === 'number') {
@@ -185,6 +214,7 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
