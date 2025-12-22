@@ -1,8 +1,7 @@
 let io;
 let newImage = [];
 let userImages = {}; // Mapa korisničkih slika
-const authorizedUsers = new Set(['Radio Galaksija','R-Galaksija', 'ZI ZU',-𝔸𝕣𝕝𝕚𝕛𝕒-, '*___F117___*', '*__X__*', '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊', 'Dia']);
-
+const authorizedUsers = new Set(['Radio Galaksija','ZI ZU','*___F117___*','*__X__*','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','-𝔸𝕣𝕝𝕚𝕛𝕒-','Najlepsa Ciganka','Dia💎','Dia']);
 // Funkcija za setovanje io objekta
 function setSocket(serverIo) {
     io = serverIo;
