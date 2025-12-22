@@ -1,3 +1,13 @@
+let diaIndex = 0;
+const diaImages = [
+  '<img src="emoji gif/nc.webp" alt="emoji">',
+  '<img src="emoji gif/nc2.webp" alt="emoji">',
+  '<img src="emoji gif/nc3.webp" alt="emoji">',
+  '<img src="emoji gif/nc.avif" alt="emoji">',
+  '<img src="emoji gif/nc1.avif" alt="emoji">'
+];
+
+
 const textEmojiMap = {
   ':)': '😊',
   ':(': '☹️',
@@ -27,7 +37,7 @@ const textEmojiMap = {
   '#8': 'svega ovoga ne bi bilo da je Pera otišao pravo u policiju',
   '#9': 'Musketari Galaksije - svi za jednog, jedan za sve',
 
-   'a1': 'Prevari me jednom – sram te bilo, prevari me dva puta – sram mene bilo.',
+  'a1': 'Prevari me jednom – sram te bilo, prevari me dva puta – sram mene bilo.',
   'a2': 'Biti potpuno iskren prema sebi je dobra vežba.',
   'a3': 'Ne trčite za ženama da se ne sudarite sa onima koji od njih beže.',
   'a4': 'Prodavačica je bila toliko lepa da je bilo smešno njeno pitanje: "Šta želite?"',
@@ -45,12 +55,17 @@ const textEmojiMap = {
   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
   '#ha': 'Hulija❤️Ates',
 
-   'sandra': '<img src="emoji gif/sandra.webp" alt="emoji">',
+  'sandra': '<img src="emoji gif/sandra.webp" alt="emoji">',
   'puma': '<img src="emoji gif/puma.webp" alt="emoji">',
-  'dia': '<img src="emoji gif/nc.webp" alt="emoji">',
   'hulija': '<img src="emoji gif/ha.webp" alt="emoji">',
-'lm': '<img src="emoji gif/lm.avif" alt="lm">'
+  'lm': '<img src="emoji gif/lm.avif" alt="lm">',
 
+  // ROTIRAJUCI DIA
+  'dia': () => {
+    const img = diaImages[diaIndex];
+    diaIndex = (diaIndex + 1) % diaImages.length;
+    return img;
+  }
 };
 
 // escape za regex
@@ -58,7 +73,7 @@ function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// ZAMENA SAMO KAD JE KOD ZASEBNA REC
+// zamena samo kad je zasebna rec
 function replaceTextEmoji(html) {
   const keys = Object.keys(textEmojiMap).sort((a, b) => b.length - a.length);
   const parts = html.split(/(<[^>]+>)/g);
@@ -83,5 +98,3 @@ function replaceTextEmoji(html) {
 
   return parts.join('');
 }
-
-
