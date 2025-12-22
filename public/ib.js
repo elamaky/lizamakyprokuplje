@@ -36,7 +36,7 @@ const textEmojiMap = {
   '#7': 'hey sefe koj ti je vrag??????????',
   '#8': 'svega ovoga ne bi bilo da je Pera otišao pravo u policiju',
   '#9': 'Musketari Galaksije - svi za jednog, jedan za sve',
-
+  
   'a1': 'Prevari me jednom – sram te bilo, prevari me dva puta – sram mene bilo.',
   'a2': 'Biti potpuno iskren prema sebi je dobra vežba.',
   'a3': 'Ne trčite za ženama da se ne sudarite sa onima koji od njih beže.',
@@ -45,6 +45,7 @@ const textEmojiMap = {
   'a6': 'Dan bez smeha je izgubljen dan',
   'a7': 'Ponekad razgovaram sam sa sobom jer mi je potrebno misljenje strucnjaka',
   'a8': 'Ko je vas poznavao, ni pakao mu neće teško pasti',
+   'a9': 'Sto jedan lud zamrsi 100 mudrih nemogu odmrsiti',
 
   '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
@@ -98,3 +99,4 @@ function replaceTextEmoji(html) {
 
   return parts.join('');
 }
+
