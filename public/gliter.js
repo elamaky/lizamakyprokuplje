@@ -7,7 +7,7 @@ const glitterImages = [
     'g1.gif','g2.gif','g3.gif','g4.gif','g5.gif',
     'g6.gif','g7.gif','g8.gif','g9.gif','g10.gif',
     'g11.gif','g12.gif','g13.gif','g14.gif','g15.gif','g16.gif',
-    'g17.gif','g18.gif','g19.gif','g20.gif'
+    'g17.gif','g18.gif'
 ];
 
 
@@ -83,4 +83,5 @@ socket.on('allGlitters', (glitters) => {
 socket.on('glitterChange', (data) => {
     applyGlitter(data.nickname, data.glitter, false);
 });
+
 
