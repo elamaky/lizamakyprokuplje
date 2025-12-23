@@ -46,8 +46,18 @@ const textEmojiMap = {
   'a7': 'Ponekad razgovaram sam sa sobom jer mi je potrebno misljenje strucnjaka',
   'a8': 'Ko je vas poznavao, ni pakao mu neće teško pasti',
    'a9': 'Sto jedan lud zamrsi 100 mudrih nemogu odmrsiti',
-
-  '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
+ 
+  
+  
+    'b1': 'Versija svakome , Cast nikome - By Arlija',
+    'b2': 'Ko se s nama druzi zivot mu je duzi -By Nezna',
+    'b3': 'U Galaksiji i Vranje nema laganje 100kg svinja 200kg mast -By X',
+    'b4': 'Budala pise Pametan pamti - BY Arlija',
+    'b5': '3 puta secem jednom merim - tako to radi Tresnja -By Tresnja',
+    'b6': 'Budi mudar kao zmija a bezazlen kao golub - By Dia',
+    'b7': 'nekad mi se cini da se moje zelje ostvaruju drugima, neka , steta bi bilo da propadnu ipak su to lepe zelje - By Dia',
+  
+    '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
   '#x': 'Pesma za sve goste u Galaksiji od cika X-a ',
   '#g': () => new Date().toLocaleTimeString(),
@@ -99,4 +109,5 @@ function replaceTextEmoji(html) {
 
   return parts.join('');
 }
+
 
