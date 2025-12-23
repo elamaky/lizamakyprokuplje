@@ -46,9 +46,15 @@ socket.on('chatMessage', (msgData) => {
 
   const konobaricaReactions = {
     'pauza': 'Arlijo nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
+      'umorna': 'Da, bas sam mnogo umorna, sve me boli , X tako bi mi prijale tvoje zlatne ruke sada da mi masiraju noge ',
     'red bul': 'Evo stiže odmah <img src="emoji gif/redbul.webp" style="height:40px;">',
     'viski': 'Evo stiže odmah viski za Lepu i ostale goste <img src="emoji gif/viski.png" style="height:40px;">',
     'vodka': 'Evo stiže odmah <img src="emoji gif/vodka.webp" style="height:40px;">',
+     'pivo': 'Evo stiže odmah <img src="emoji gif/pivo.avif" style="height:40px;">',
+     'caj': 'Evo stiže odmah <img src="emoji gif/caj.avif" style="height:40px;">',
+     'kisela': 'Evo stiže odmah <img src="emoji gif/kisela.avif" style="height:40px;">',
+     'jede': 'Evo stiže odmah <img src="emoji gif/jede.avif" style="height:40px;">',
+     'pije': 'Evo stiže odmah <img src="emoji gif/jede.avif" style="height:40px;">',
     'kokta': 'Evo stiže odmah <img src="emoji gif/kokta.webp" style="height:40px;">'
   };
 
@@ -214,6 +220,7 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
