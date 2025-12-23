@@ -6,8 +6,8 @@ document.getElementById('mem').addEventListener('click', () => {
     sucur = document.createElement('div');
     sucur.id = 'sucur';
     sucur.style.position = 'fixed';
-    sucur.style.top = '50px';
-    sucur.style.right = '50px';
+  sucur.style.left = '50px';    // promenjeno sa right na left
+sucur.style.bottom = '50px';  // promenjeno sa top na bottom
     sucur.style.padding = '20px';
     sucur.style.background = 'black';
     sucur.style.border = '2px solid white';
@@ -271,3 +271,4 @@ socket.on('full-layout-reset', () => {
     images = [];
   }, 5000);
 });
+
