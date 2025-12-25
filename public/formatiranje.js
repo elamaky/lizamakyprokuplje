@@ -275,31 +275,44 @@ text = tempDiv.innerHTML;
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-    // NAME ANIMATION
-    const strongName = newMessage.querySelector('strong');
-    const userAnim = allUserAnimations[data.nickname];
-    if (userAnim && userAnim.animation) {
-        strongName.style.animationName = userAnim.animation;
-        strongName.style.animationDuration = `${userAnim.speed || 1}s`;
-        strongName.style.animationIterationCount = 'infinite';
-        strongName.style.display = 'inline-block';
+      // NAME ANIMATION
+ // NAME ANIMATION
+const strongName = newMessage.querySelector('strong');
+const userAnim = allUserAnimations[data.nickname];
 
-        if (data.glitter) {
-            strongName.style.background = `url('/glit/${data.glitter}')`;
-            strongName.style.backgroundSize = 'cover';
-        } else if (data.gradient || window.defaultAdminGradient) {
-            const gradClass = data.gradient || window.defaultAdminGradient;
-            const gradEl = document.querySelector(`.${gradClass}`);
-            if (gradEl) {
-                strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
-            }
+if (userAnim && userAnim.animation) {
+    strongName.style.animationName = userAnim.animation;
+    strongName.style.animationDuration = `${userAnim.speed || 1}s`;
+    strongName.style.animationIterationCount = 'infinite';
+    strongName.style.display = 'inline-block';
+
+    let hasBackground = false;
+
+    // 🎇 GLITTER
+    if (data.glitter) {
+        strongName.style.background = `url('/glit/${data.glitter}')`;
+        strongName.style.backgroundSize = 'cover';
+        strongName.style.backgroundRepeat = 'repeat';
+        hasBackground = true;
+    }
+    // 🌈 GRADIENT
+    else if (data.gradient || window.defaultAdminGradient) {
+        const gradClass = data.gradient || window.defaultAdminGradient;
+        const gradEl = document.querySelector(`.${gradClass}`);
+        if (gradEl) {
+            strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+            hasBackground = true;
         }
+    }
 
+    // 👉 SAMO AKO IMA BACKGROUND
+    if (hasBackground) {
         strongName.style.backgroundClip = 'text';
         strongName.style.webkitBackgroundClip = 'text';
         strongName.style.webkitTextFillColor = 'transparent';
         strongName.style.color = 'transparent';
     }
+}
 
     // AVATAR
     if (authorizedUsers.has(data.nickname) && data.avatar) {
@@ -877,6 +890,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
