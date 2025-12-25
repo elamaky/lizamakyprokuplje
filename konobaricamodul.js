@@ -10,6 +10,12 @@ let fullLayoutData = null;   // BEZ MASKE
  let defaultColor = {};
 let defaultGradient = {};
 
+  let globalState = {
+  streamBlocked: false,
+  bodyBlocked: false,
+  chatAnimation: "none"
+};
+
    // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
@@ -219,21 +225,13 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
+     // šaljemo trenutno stanje novom korisniku
+  io.emit("globalState", globalState);
+
+  socket.on("globalControl", (data) => {
+    globalState = { ...globalState, ...data };
+    io.emit("globalState", globalState);
+  });
   socket.on('disconnect', () => {});
     });
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
