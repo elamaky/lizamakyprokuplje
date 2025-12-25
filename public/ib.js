@@ -56,7 +56,19 @@ const textEmojiMap = {
     'b5': '3 puta secem jednom merim - tako to radi Tresnja -By Tresnja',
     'b6': 'Budi mudar kao zmija a bezazlen kao golub - By Dia',
     'b7': 'nekad mi se cini da se moje zelje ostvaruju drugima, neka , steta bi bilo da propadnu ipak su to lepe zelje - By Dia',
-  
+     'b8': 'Celavi bez ruku za kosu se vuku da suvu krpu sa dna mora izvuku  -By X',
+     'b9': 'Bez starca nema udarca - By Dia',
+
+     'c1': 'Kad na vrbi rodi Bostan -By X', 
+      'c2': 'Ahaaa u tom zecu lezi grm  -By X',
+      'c3': 'Devojka se razbolela od NeuroSexivitisa, smrt je kucala na vrata i onda se pojavio cudotvorni mladic koji joj predlozio terapiju Primacel i danas ima 69 godina -By X',
+       'c4': 'Zivot je skup vise neostvarenih i manje ostvarenih zelja  -By X',
+         'c5': 'Sta ispadne kad ukrstis Sarplaninca i civavu ?  Ispadnu civavi oci  -By X',
+         'c6': 'Naleti slon na golog coveka i sav zbunjen upita - kako ti covece mozes da dises na tu malu SURLU ????---------By X',
+            'c7': 'Bio na sastanku sa devojkom i morao ici u WC, rekoh sacekaj me tu idem da  se rukujem sa gospodinom kojeg ces kasnije upoznati -By X',
+             'c8': 'Naucni institut Galaksije je utvrdio da zene zive duze od muskaraca jer nemaju ZENE -By X',
+                'c9': 'Klincu 13-ti rodjendan i kaze mu otac , epa sine sad si odraso doslo je vreme da razgovaramo o sexu.  Klinac -  Dobro tata sta hoces da znas ???? -By X',
+
     '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
   '#x': 'Pesma za sve goste u Galaksiji od cika X-a ',
