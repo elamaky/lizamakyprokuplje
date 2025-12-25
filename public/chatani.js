@@ -6,14 +6,6 @@
   /* ================= ELEMENTI ================= */
   const audio = document.getElementById('radioStream');
   const chat = document.getElementById('chatContainer');
-const lastAppliedState = {
-  streamBlocked: null,
-  bodyBlocked: null,
-  animation: null,
-  speed: null,
-  text: null
-};
-
 
   /* ================= GLOBAL TEXT ================= */
   const globalTextOverlay = document.createElement('div');
@@ -75,7 +67,7 @@ const lastAppliedState = {
     /* ZVEZDICE */
     .star {
       position: absolute;
-      color: gold;
+      color: gold,white,red,green;
       animation: twinkle 2s infinite alternate;
       font-size: 14px;
     }
@@ -230,59 +222,34 @@ const lastAppliedState = {
   }
 
   /* ================= SOCKET APPLY ================= */
-socket.on('globalState', (state) => {
+  socket.on('globalState', state => {
 
-  /* STREAM – SAMO AKO SE PROMENIO */
-  if (
-    'streamBlocked' in state &&
-    state.streamBlocked !== lastAppliedState.streamBlocked
-  ) {
-    lastAppliedState.streamBlocked = state.streamBlocked;
-    state.streamBlocked ? audio.pause() : audio.play();
-  }
-
-  /* BODY LOCK */
-  if (
-    'bodyBlocked' in state &&
-    state.bodyBlocked !== lastAppliedState.bodyBlocked
-  ) {
-    lastAppliedState.bodyBlocked = state.bodyBlocked;
-    document.body.classList.toggle('body-locked', state.bodyBlocked);
-  }
-
-  /* CHAT ANIMACIJA */
-  if (
-    'animation' in state &&
-    state.animation !== lastAppliedState.animation
-  ) {
-    lastAppliedState.animation = state.animation;
-
-    chat.className = '';
-    effectLayer.innerHTML = '';
-
-    if (['rotate','mirror','dance'].includes(state.animation)) {
-      chat.classList.add(state.animation);
+    if ('streamBlocked' in state) {
+      state.streamBlocked ? audio.pause() : audio.play();
     }
-    if (state.animation === 'stars') spawnStars();
-    if (state.animation === 'hearts') spawnHearts();
-  }
 
-  /* BRZINA */
-  if (
-    'speed' in state &&
-    state.speed !== lastAppliedState.speed
-  ) {
-    lastAppliedState.speed = state.speed;
-    chat.style.setProperty('--speed', state.speed + 's');
-  }
+    if ('bodyBlocked' in state) {
+      document.body.classList.toggle('body-locked', state.bodyBlocked);
+    }
 
-  /* GLOBAL TEXT */
-  if (
-    'text' in state &&
-    state.text !== lastAppliedState.text
-  ) {
-    lastAppliedState.text = state.text;
-    globalTextOverlay.textContent = state.text || '';
-  }
-});
+    if ('animation' in state) {
+      chat.className = '';
+      clearEffects();
+
+      if (['rotate','mirror','dance'].includes(state.animation)) {
+        chat.classList.add(state.animation);
+      }
+      if (state.animation === 'stars') spawnStars();
+      if (state.animation === 'hearts') spawnHearts();
+    }
+
+    if ('speed' in state) {
+      chat.style.setProperty('--speed', state.speed + 's');
+    }
+
+    if ('text' in state) {
+      globalTextOverlay.textContent = state.text || '';
+    }
+  });
+
 })();
