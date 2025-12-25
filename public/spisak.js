@@ -96,8 +96,9 @@ const kodovi = {
   ':)': '😊', ':(': '☹️', ':D': '😃', 'xD': '😆', ':))': '😁', ':O': '😮',
   ';)': '😉', ':P': '😛', ':/': '😕', ':\'(': '😢', '>:(': '😠', ':|': '😐',
   ':-)': '🙂', ':-(': '🙁', ':-D': '😄', ':x': '😎',
-  '#n': 'Kod koji svakom korisniku emituje njegov broj ili nik ( u slucaju kada je korisnik ulogovan)',
-  '#0': 'Za Inci Biserku Od *__X__*😎',
+  
+  // Poruke i citati
+  '#0': 'Sto vise upoznajem ljude sve vise volim zivotinje',
   '#1': 'Dragi gosti, vaše primedbe možete prijaviti upravi Galaksije na broj +511 545 856 957 565 956 354 785 968 652 624',
   '#2': '❤🧡💛💚💙💜🤎🖤💖💗💓🤍',
   '#3': '💋💋💋💋💋💋💋',
@@ -107,21 +108,68 @@ const kodovi = {
   '#7': 'hey sefe koj ti je vrag??????????',
   '#8': 'svega ovoga ne bi bilo da je Pera otišao pravo u policiju',
   '#9': 'Musketari Galaksije - svi za jednog, jedan za sve',
-  '#a': 'Ko je vas poznavao, ni pakao mu neće teško pasti',
+
+  // Mudre misli
   'a1': 'Prevari me jednom – sram te bilo, prevari me dva puta – sram mene bilo.',
   'a2': 'Biti potpuno iskren prema sebi je dobra vežba.',
   'a3': 'Ne trčite za ženama da se ne sudarite sa onima koji od njih beže.',
   'a4': 'Prodavačica je bila toliko lepa da je bilo smešno njeno pitanje: "Šta želite?"',
+  'a5': 'Toliko sam pametan da ni sam ne razumem sta govorim',
+  'a6': 'Dan bez smeha je izgubljen dan',
+  'a7': 'Ponekad razgovaram sam sa sobom jer mi je potrebno misljenje strucnjaka',
+  'a8': 'Ko je vas poznavao, ni pakao mu neće teško pasti',
+  'a9': 'Sto jedan lud zamrsi 100 mudrih nemogu odmrsiti',
+
+  // Citati sa potpisom
+  'b1': 'Versija svakome , Cast nikome - By Arlija',
+  'b2': 'Ko se s nama druzi zivot mu je duzi -By Nezna',
+  'b3': 'U Galaksiji i Vranje nema laganje 100kg svinja 200kg mast -By X',
+  'b4': 'Budala pise Pametan pamti - BY Arlija',
+  'b5': '3 puta secem jednom merim - tako to radi Tresnja -By Tresnja',
+  'b6': 'Budi mudar kao zmija a bezazlen kao golub - By Dia',
+  'b7': 'nekad mi se cini da se moje zelje ostvaruju drugima, neka , steta bi bilo da propadnu ipak su to lepe zelje - By Dia',
+  'b8': 'Celavi bez ruku za kosu se vuku da suvu krpu sa dna mora izvuku  -By X',
+  'b9': 'Bez starca nema udarca - By Dia',
+
+  // Zabavne
+  'c1': 'Kad na vrbi rodi Bostan -By X', 
+  'c2': 'Ahaaa u tom zecu lezi grm  -By X',
+  'c3': 'Devojka se razbolela od NeuroSexivitisa, smrt je kucala na vrata i onda se pojavio cudotvorni mladic koji joj predlozio terapiju Primacel i danas ima 69 godina -By X',
+  'c4': 'Zivot je skup vise neostvarenih i manje ostvarenih zelja  -By X',
+  'c5': 'Sta ispadne kad ukrstis Sarplaninca i civavu ?  Ispadnu civavi oci  -By X',
+  'c6': 'Naleti slon na golog coveka i sav zbunjen upita - kako ti covece mozes da dises na tu malu SURLU ????---------By X',
+  'c7': 'Bio na sastanku sa devojkom i morao ici u WC, rekoh sacekaj me tu idem da  se rukujem sa gospodinom kojeg ces kasnije upoznati -By X',
+  'c8': 'Naucni institut Galaksije je utvrdio da zene zive duze od muskaraca jer nemaju ZENE -By X',
+  'c9': 'Klincu 13-ti rodjendan i kaze mu otac , epa sine sad si odraso doslo je vreme da razgovaramo o sexu.  Klinac -  Dobro tata sta hoces da znas ???? -By X',
+
+  // Ostalo
   '#iva': '🎶🎶🎶🎶🎵🎶🎶🎵',
   '#dia': '💎💎💎💎💎💎💎💎💎💎💎💎💎💎',
   '#x': 'Pesma za sve goste u Galaksiji od cika X-a ',
-  '#g': 'Pokazuje vreme svakom korisniku u njegovoj vremenskoj zoni',
-  '#u': 'Prikazuje trenutni i ukupan broj gosta u Galaksiji',
+  '#g': () => new Date().toLocaleTimeString(),
+  '#u': () => `Online: ${document.getElementById('current-users')?.textContent.replace(/\D/g,'') || 0}, Ukupno: ${document.getElementById('total-users')?.textContent.replace(/\D/g,'') || 0}`,
   '#dg': '#n Dobro Dosli, Sa Vama Je Dj Dia ',
-  '#xg': '#n Dobro Dosli, Sa Vama Je Dj *__X__* ',
-  '#sg': '#n Dobro Dosli ',
-  '#ha': 'Hulija❤️Ates'
+  '#ha': 'Hulija❤️Ates',
+  
+  // Rotirajući Dia
+  'dia': () => '+ SLIKA'
 };
+
+// REAKCIJE KONOBARICE
+const konobaricaReactions = {
+  'pauza': 'Arlijo nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
+  'umorna': 'Da, bas sam mnogo umorna, sve me boli , X tako bi mi prijale tvoje zlatne ruke sada da mi masiraju noge',
+  'red bul': 'Evo stiže odmah + SLIKA',
+  'viski': 'Evo stiže odmah viski za Lepu i ostale goste + SLIKA',
+  'vodka': 'Dok vi pijete vodku djavo sedi u cose i smeje se + SLIKA',
+  'pivo': 'Naravno, Pivo samo za vas + SLIKA',
+  'caj': 'Caj za Dj Sandru + SLIKA',
+  'kisela': 'Mj kisela je dobra za tebe , stabilizovace ti se pritisak  + SLIKA',
+  'jede': 'Gladni i siti slobodno se posluzite , na racun galaksije  + SLIKA',
+  'pije': 'Nemojte se stideti samo se posluzite  + SLIKA',
+  'kokta': 'Ima kokte dovoljno za sve  + SLIKA'
+};
+
 let tabla;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -134,11 +182,11 @@ document.addEventListener('DOMContentLoaded', () => {
       tabla.style.position = 'fixed';
       tabla.style.top = '100px';
       tabla.style.left = '100px';
-      tabla.style.width = '400px';
+      tabla.style.width = '500px';
       tabla.style.height = '800px';
       tabla.style.backgroundColor = '#000';
       tabla.style.color = '#fff';
-      tabla.style.fontSize = '20px';
+      tabla.style.fontSize = '18px';
       tabla.style.fontWeight = 'bold';
       tabla.style.fontStyle = 'italic';
       tabla.style.border = '2px solid #0ff';
@@ -147,9 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
       tabla.style.overflow = 'auto';
       tabla.style.zIndex = '9999';
       tabla.style.cursor = 'move';
-      tabla.innerHTML = `<h2>Galaksija Kodovi</h2>` + Object.entries(kodovi).map(([k,v]) => {
-        return `<p>${k}: ${typeof v === 'function' ? v() : v}</p>`;
-      }).join('');
+
+      let content = `<h2>Galaksija Kodovi</h2>`;
+      content += Object.entries(kodovi).map(([k,v]) => `<p>${k}: ${typeof v === 'function' ? v() : v}</p>`).join('');
+      content += `<h3>Konobarica - Reakcije</h3>`;
+      content += Object.entries(konobaricaReactions).map(([k,v]) => `<p>${k}: ${v}</p>`).join('');
+
+      tabla.innerHTML = content;
       document.body.appendChild(tabla);
 
       // Drag funkcionalnost
