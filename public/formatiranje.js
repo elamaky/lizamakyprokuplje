@@ -109,17 +109,58 @@ function applyAnimationToMessageName(strongElement, nickname) {
     if (!animationAuthorizedUsers.has(nickname)) return;
 
     const animData = allUserAnimations[nickname];
-    if (!animData || !animData.animation) return;
+    if (!animData) return;
 
     const animationName = animData.animation;
     const speed = animData.speed || 2;
 
-    // Uzmemo tekst imena (bez : )
+    // originalno ime (bez :)
     const originalName = strongElement.textContent.replace(':', '').trim();
 
-    // Očistimo ime
+    // reset
     strongElement.innerHTML = '';
+    strongElement.style.animation = 'none';
+    strongElement.style.background = '';
+    strongElement.style.webkitTextFillColor = '';
+    strongElement.style.backgroundClip = '';
+    strongElement.style.webkitBackgroundClip = '';
 
+    // =========================
+    // 🎇 GLITTER ZA PORUKE
+    // =========================
+    if (animData.glitter) {
+        strongElement.style.background = `url('/glit/${animData.glitter}')`;
+        strongElement.style.backgroundSize = 'cover';
+        strongElement.style.backgroundRepeat = 'repeat';
+        strongElement.style.backgroundClip = 'text';
+        strongElement.style.webkitBackgroundClip = 'text';
+        strongElement.style.webkitTextFillColor = 'transparent';
+
+        if (animationName && animationName !== 'guestGradientGlow') {
+            strongElement.style.animationName = animationName;
+            strongElement.style.animationDuration = `${speed}s`;
+            strongElement.style.animationIterationCount = 'infinite';
+            strongElement.style.animationTimingFunction = 'ease-in-out';
+        }
+
+        strongElement.textContent = originalName + ': ';
+        return;
+    }
+
+    // =========================
+    // 🌈 GUEST GRADIENT GLOW
+    // =========================
+    if (animationName === 'guestGradientGlow') {
+        strongElement.classList.add('guest-gradient-anim');
+        strongElement.style.animationDuration = `${speed}s`;
+        strongElement.style.animationIterationCount = 'infinite';
+        strongElement.textContent = originalName + ': ';
+        return;
+    }
+
+    // =========================
+    // 🔤 ANIMACIJE PO SLOVIMA
+    // =========================
     const problematicChars = [
         ' ', '*', '(', ')', '-', '_', '[', ']', '{', '}', '^', '$', '#', '@',
         '!', '+', '=', '~', '`', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '"', "'"
@@ -136,13 +177,11 @@ function applyAnimationToMessageName(strongElement, nickname) {
         const span = document.createElement('span');
         span.textContent = char;
 
-        // postojeće klase — iste kao u glavnom animacija fajlu
         if (animationName === 'rotateLetters') span.classList.add('rotate-letter');
         else if (animationName === 'glowBlink') span.classList.add('glow-letter');
         else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
         else if (animationName === 'bounce') span.classList.add('bounce-letter');
         else if (animationName === 'superCombo') span.classList.add('superCombo-letter');
-         else if (animationName === 'guestGradientGlow') span.classList.add('guest-gradient-anim');
 
         span.style.animationDuration = `${speed}s`;
         span.style.animationIterationCount = 'infinite';
@@ -151,9 +190,10 @@ function applyAnimationToMessageName(strongElement, nickname) {
         strongElement.appendChild(span);
     }
 
-    // vratimo ":" iza animiranog imena
-    strongElement.innerHTML += ': ';
+    // vrati :
+    strongElement.appendChild(document.createTextNode(': '));
 }
+
 function canSeeHiddenImage(userName) {
   return hiddenImageUsers.has(userName);
 }
@@ -837,5 +877,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
