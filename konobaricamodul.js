@@ -10,15 +10,7 @@ let fullLayoutData = null;   // BEZ MASKE
  let defaultColor = {};
 let defaultGradient = {};
 
-let globalState = {
-  streamBlocked: false,
-  bodyBlocked: false,
-  animation: 'none',
-  speed: 2,
-  text: ''
-};
-
-   // **Šema i model za banovane IP adrese**
+  // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
     });
@@ -227,32 +219,49 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
-     // šaljemo trenutno stanje novom korisniku
- socket.emit('globalState', globalState);
-    
-socket.on('globalControl', data => {
-    const isAdmin = true; // trenutno svi mogu
-
-    if (!isAdmin) return;
-
-    // Toggle samo kada je eksplicitno STREAM dugme kliknuto
-    if ('toggleStream' in data) {
-        globalState.streamBlocked = !globalState.streamBlocked;
+  if (!global.streamState) {
+        global.streamState = {
+            streamBlocked: false,
+            bodyBlocked: false
+        };
     }
 
-    // Animacije, tekst, brzina, body lock
-    if ('animation' in data) globalState.animation = data.animation;
-    if ('speed' in data) globalState.speed = data.speed ?? globalState.speed;
-    if ('text' in data) globalState.text = data.text ?? globalState.text;
-    if ('bodyBlocked' in data) globalState.bodyBlocked = data.bodyBlocked ?? globalState.bodyBlocked;
+    /* ================= EMIT TO NEW USER ================= */
+    socket.emit('streamState', {
+        streamBlocked: global.streamState.streamBlocked,
+        bodyBlocked: global.streamState.bodyBlocked
+    });
 
-    io.emit('globalState', globalState);
-});
+    /* ================= ADMIN CONTROL ================= */
+    socket.on('streamControl', data => {
+
+        let changed = false;
+
+        // TOGGLE STREAM
+        if (data.toggleStream === true) {
+            global.streamState.streamBlocked = !global.streamState.streamBlocked;
+            changed = true;
+        }
+
+        // BODY LOCK
+        if (typeof data.bodyBlocked === 'boolean') {
+            global.streamState.bodyBlocked = data.bodyBlocked;
+            changed = true;
+        }
+
+        if (changed) {
+            io.emit('streamState', {
+                streamBlocked: global.streamState.streamBlocked,
+                bodyBlocked: global.streamState.bodyBlocked
+            });
+        }
+    });
 
 
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
