@@ -183,32 +183,38 @@
     document.body.appendChild(animPanel);
 
     /* ================= KEY COMBO 3s HOLD ================= */
-    document.addEventListener('keydown', (e) => {
-        if(!e.key) return;
-        activeKeys.add(e.key.toUpperCase());
+document.addEventListener('keydown', (e) => {
+    if (!e.key) return;
+    activeKeys.add(e.key.toUpperCase());
 
-        // proveri kombinaciju I+M+2
-        if(activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('2')){
-            if(comboTimer===null){
-                comboTimer = setTimeout(()=>{
-                    adminPanel.style.display = 'block';
-                },3000); // držanje 3 sekunde
-            }
-        }else{
-            if(comboTimer!==null){
-                clearTimeout(comboTimer);
-                comboTimer=null;
-            }
+    // Ako su svi tasteri pritisnuti
+    if (activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('2')) {
+        if (comboTimer === null) {
+            // start timer od 3 sekunde
+            comboTimer = setTimeout(() => {
+                adminPanel.style.display = 'block';
+                comboTimer = null; // resetujemo timer
+            }, 3000);
         }
-    });
-    document.addEventListener('keyup', (e)=>{
-        if(!e.key) return;
-        activeKeys.delete(e.key.toUpperCase());
-        if(comboTimer!==null){
+    } else {
+        // Ako nije kompletan combo, resetuj timer
+        if (comboTimer !== null) {
             clearTimeout(comboTimer);
-            comboTimer=null;
+            comboTimer = null;
         }
-    });
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (!e.key) return;
+    activeKeys.delete(e.key.toUpperCase());
+    // Ako se otpusti bilo koji taster, resetujemo timer
+    if (comboTimer !== null) {
+        clearTimeout(comboTimer);
+        comboTimer = null;
+    }
+});
+
 
     /* ================= BUTTON ACTIONS ================= */
     document.getElementById('close-admin').onclick=()=>{
