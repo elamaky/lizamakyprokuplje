@@ -10,7 +10,13 @@ let fullLayoutData = null;   // BEZ MASKE
  let defaultColor = {};
 let defaultGradient = {};
 
-  // **Šema i model za banovane IP adrese**
+  let globalState = {
+  streamBlocked: false,
+  bodyBlocked: false,
+  chatAnimation: "none"
+};
+
+   // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
     });
@@ -219,49 +225,13 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
-  if (!global.streamState) {
-        global.streamState = {
-            streamBlocked: false,
-            bodyBlocked: false
-        };
-    }
+     // šaljemo trenutno stanje novom korisniku
+  io.emit("globalState", globalState);
 
-    /* ================= EMIT TO NEW USER ================= */
-    socket.emit('streamState', {
-        streamBlocked: global.streamState.streamBlocked,
-        bodyBlocked: global.streamState.bodyBlocked
-    });
-
-    /* ================= ADMIN CONTROL ================= */
-    socket.on('streamControl', data => {
-
-        let changed = false;
-
-        // TOGGLE STREAM
-        if (data.toggleStream === true) {
-            global.streamState.streamBlocked = !global.streamState.streamBlocked;
-            changed = true;
-        }
-
-        // BODY LOCK
-        if (typeof data.bodyBlocked === 'boolean') {
-            global.streamState.bodyBlocked = data.bodyBlocked;
-            changed = true;
-        }
-
-        if (changed) {
-            io.emit('streamState', {
-                streamBlocked: global.streamState.streamBlocked,
-                bodyBlocked: global.streamState.bodyBlocked
-            });
-        }
-    });
-
-
+  socket.on("globalControl", (data) => {
+    globalState = { ...globalState, ...data };
+    io.emit("globalState", globalState);
+  });
   socket.on('disconnect', () => {});
     });
 };
-
-
-
-
