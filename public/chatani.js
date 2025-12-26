@@ -243,27 +243,42 @@ document.addEventListener('keyup', (e) => {
 
     /* ================= SOCKET APPLY ================= */
 socket.on('globalState', state => {
-    // Pauzira audio samo ako se stvarno promenila vrednost
-    if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
-        if(state.streamBlocked){
-            audio.pause();
-        } else {
-            audio.play().catch(()=>{});
-        }
+
+    // ⛔ OVDЕ VIŠE NE DIRAMO AUDIO
+    if ('streamBlocked' in state) {
+        adminStreamBlocked = state.streamBlocked;
         previousStreamBlocked = state.streamBlocked;
     }
 
-    // Ostali update-i
-    if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
-    if('animation' in state){
-        chat.className='';
-        clearEffects();
-        if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
-        if(state.animation==='stars') spawnStars();
-        if(state.animation==='hearts') spawnHearts();
+    // BODY LOCK
+    if ('bodyBlocked' in state) {
+        document.body.classList.toggle('body-locked', state.bodyBlocked);
     }
-    if('speed' in state) chat.style.setProperty('--speed', state.speed+'s');
-    if('text' in state) globalTextOverlay.textContent = state.text || '';
+
+    // ANIMACIJE
+    if ('animation' in state) {
+        chat.className = '';
+        clearEffects();
+
+        if (['rotate','mirror','dance'].includes(state.animation)) {
+            chat.classList.add(state.animation);
+        }
+
+        if (state.animation === 'stars') spawnStars();
+        if (state.animation === 'hearts') spawnHearts();
+        if (state.animation === 'euro') spawnCustomEmoji(20); // tvoja nova animacija
+    }
+
+    // BRZINA (VAŽI I ZA EMOJI)
+    if ('speed' in state) {
+        chat.style.setProperty('--speed', state.speed + 's');
+        window.GLOBAL_ANIM_SPEED = state.speed; // globalno za custom animacije
+    }
+
+    // GLOBAL TEXT
+    if ('text' in state) {
+        globalTextOverlay.textContent = state.text || '';
+    }
 });
 
 
@@ -321,4 +336,5 @@ customStyle.innerHTML = `
 document.head.appendChild(customStyle);
 
 })();
+
 
