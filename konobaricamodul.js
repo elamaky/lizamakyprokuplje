@@ -10,10 +10,12 @@ let fullLayoutData = null;   // BEZ MASKE
  let defaultColor = {};
 let defaultGradient = {};
 
-  let globalState = {
+let globalState = {
   streamBlocked: false,
   bodyBlocked: false,
-  chatAnimation: "none"
+  animation: 'none',
+  speed: 2,
+  text: ''
 };
 
    // **Šema i model za banovane IP adrese**
@@ -226,12 +228,25 @@ if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
      // šaljemo trenutno stanje novom korisniku
-  io.emit("globalState", globalState);
+ socket.emit('globalState', globalState);
 
-  socket.on("globalControl", (data) => {
-    globalState = { ...globalState, ...data };
-    io.emit("globalState", globalState);
+  // Primanje komandi od admin klijenta
+  socket.on('globalControl', data => {
+  const isAdmin = true; // trenutno svaki klijent može slati komande
+
+    if (!isAdmin) return;
+
+    // ================= UPDATE GLOBAL STATE =================
+    if ('toggleStream' in data) globalState.streamBlocked = !globalState.streamBlocked;
+    if ('bodyBlocked' in data) globalState.bodyBlocked = data.bodyBlocked ?? globalState.bodyBlocked;
+    if ('animation' in data) globalState.animation = data.animation ?? globalState.animation;
+    if ('speed' in data) globalState.speed = data.speed ?? globalState.speed;
+    if ('text' in data) globalState.text = data.text ?? globalState.text;
+
+    // ================= EMIT UPDATED STATE =================
+    io.emit('globalState', globalState);
   });
   socket.on('disconnect', () => {});
     });
 };
+
