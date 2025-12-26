@@ -1,13 +1,13 @@
 (function () {
 
-  /* ================= KEYS ================= */
-  const activeKeys = new Set();
+  /* ================= GLOBAL STATE ================= */
+  let adminStreamBlocked = false;
 
-  /* ================= ELEMENTI ================= */
+   /* ================= ELEMENTI ================= */
   const audio = document.getElementById('radioStream');
   const chat = document.getElementById('chatContainer');
 
-  /* ================= GLOBAL TEXT ================= */
+  /* ================= OVERLAY TEXT ================= */
   const globalTextOverlay = document.createElement('div');
   Object.assign(globalTextOverlay.style, {
     position: 'fixed',
@@ -24,7 +24,7 @@
   });
   document.body.appendChild(globalTextOverlay);
 
-  /* ================= EFFECT CONTAINER ================= */
+  /* ================= EFFECT LAYER ================= */
   const effectLayer = document.createElement('div');
   effectLayer.id = 'GLOBAL_EFFECTS';
   Object.assign(effectLayer.style, {
@@ -64,25 +64,24 @@
       50% { transform: translateY(-20px) rotate(5deg); }
     }
 
-    /* ZVEZDICE */
     .star {
       position: absolute;
-      color: gold,white,red,green;
       animation: twinkle 2s infinite alternate;
       font-size: 14px;
     }
+
     @keyframes twinkle {
       from { opacity: .2; transform: scale(.8); }
       to { opacity: 1; transform: scale(1.3); }
     }
 
-    /* SRCA */
     .heart {
       position: absolute;
       color: red;
       animation: fall linear infinite;
       font-size: 20px;
     }
+
     @keyframes fall {
       from { transform: translateY(-10vh); opacity: 1; }
       to { transform: translateY(110vh); opacity: 0; }
@@ -91,6 +90,8 @@
   document.head.appendChild(style);
 
   /* ================= ADMIN PANEL ================= */
+  const activeKeys = new Set();
+
   const adminPanel = document.createElement('div');
   adminPanel.id = 'ADMINBODYPANEL';
   Object.assign(adminPanel.style, {
@@ -155,14 +156,14 @@
     activeKeys.delete(e.key.toUpperCase());
   });
 
-  /* ================= BUTTONS ================= */
+  /* ================= BUTTON ACTIONS ================= */
   document.getElementById('close-admin').onclick = () => {
     adminPanel.style.display = 'none';
     animPanel.style.display = 'none';
   };
 
   document.getElementById('toggle-stream').onclick = () => {
-    socket.emit('globalControl', { streamBlocked: !audio.paused });
+    socket.emit('globalControl', { toggleStream: true });
   };
 
   document.getElementById('toggle-body').onclick = () => {
@@ -197,10 +198,12 @@
 
   function spawnStars() {
     clearEffects();
+    const colors = ['gold', 'white', 'red', 'green'];
     for (let i = 0; i < 50; i++) {
       const s = document.createElement('div');
       s.className = 'star';
       s.textContent = '★';
+      s.style.color = colors[Math.floor(Math.random() * colors.length)];
       s.style.left = Math.random() * 100 + '%';
       s.style.top = Math.random() * 100 + '%';
       s.style.animationDuration = 1 + Math.random() * 2 + 's';
@@ -221,11 +224,14 @@
     }
   }
 
-  /* ================= SOCKET APPLY ================= */
+  /* ================= SOCKET STATE APPLY ================= */
   socket.on('globalState', state => {
 
     if ('streamBlocked' in state) {
-      state.streamBlocked ? audio.pause() : audio.play();
+      adminStreamBlocked = state.streamBlocked;
+      if (adminStreamBlocked) {
+        audio.pause(); // ⛔ ADMIN NIKAD NE PALI
+      }
     }
 
     if ('bodyBlocked' in state) {
