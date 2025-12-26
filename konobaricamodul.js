@@ -229,41 +229,30 @@ if (defaultGradient.value) {
 }
      // šaljemo trenutno stanje novom korisniku
  socket.emit('globalState', globalState);
-
-  // Primanje komandi od admin klijenta
+    
 socket.on('globalControl', data => {
-  const isAdmin = true; // privremeno svi mogu
+    const isAdmin = true; // trenutno svi mogu
 
-  if (!isAdmin) return;
+    if (!isAdmin) return;
 
-  // ================= UPDATE GLOBAL STATE =================
-  if ('toggleStream' in data) {
-    // Menja samo stream kada je eksplicitno toggleStream
-    globalState.streamBlocked = !globalState.streamBlocked;
-  }
+    // Toggle samo kada je eksplicitno STREAM dugme kliknuto
+    if ('toggleStream' in data) {
+        globalState.streamBlocked = !globalState.streamBlocked;
+    }
 
-  if ('bodyBlocked' in data) {
-    globalState.bodyBlocked = data.bodyBlocked ?? globalState.bodyBlocked;
-  }
+    // Animacije, tekst, brzina, body lock
+    if ('animation' in data) globalState.animation = data.animation;
+    if ('speed' in data) globalState.speed = data.speed ?? globalState.speed;
+    if ('text' in data) globalState.text = data.text ?? globalState.text;
+    if ('bodyBlocked' in data) globalState.bodyBlocked = data.bodyBlocked ?? globalState.bodyBlocked;
 
-  if ('animation' in data) {
-    globalState.animation = data.animation ?? globalState.animation;
-  }
-
-  if ('speed' in data) {
-    globalState.speed = data.speed ?? globalState.speed;
-  }
-
-  if ('text' in data) {
-    globalState.text = data.text ?? globalState.text;
-  }
-
-  // ================= EMIT UPDATED STATE =================
-  io.emit('globalState', globalState);
+    io.emit('globalState', globalState);
 });
+
 
   socket.on('disconnect', () => {});
     });
 };
+
 
 
