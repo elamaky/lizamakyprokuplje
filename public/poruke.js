@@ -66,6 +66,7 @@ socket.on('chat-cleared', function() {
 
     chatWindow.prepend(newMessage);
 });
+
 // ZENO PLAYER NA DUGME
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -76,13 +77,11 @@ document.addEventListener("DOMContentLoaded", function() {
     let adminStreamBlocked = false; // ⬅️ GLOBALNA ADMIN BLOKADA
 
     /* ================= USER AUTOPLAY ================= */
-
     if (localStorage.getItem('radioPlayed') === 'true') {
         safePlay('autoload');
     }
 
     /* ================= BUTTON ================= */
-
     button.addEventListener('click', function() {
         button.blur();
 
@@ -98,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     /* ================= SAFE PLAY ================= */
-
     function safePlay(reason) {
         if (adminStreamBlocked) {
             console.log('PLAY BLOCKED BY ADMIN:', reason);
@@ -108,8 +106,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function playStream() {
-        audio.src = "https://stream.zeno.fm/krdfduyswxhtv";
-        audio.load();
+        if (isPlaying) return; // ako već svira, ne reload-uj
+        if (!audio.src) audio.src = "https://stream.zeno.fm/krdfduyswxhtv"; // postavi samo jednom
 
         audio.play().then(() => {
             button.textContent = "Stop";
@@ -121,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     /* ================= ERROR / RECONNECT ================= */
-
     audio.addEventListener('error', function() {
         if (adminStreamBlocked) return; // ⛔ ADMIN IMA PRIORITET
         if (localStorage.getItem('radioPlayed') === 'true') {
@@ -130,27 +127,24 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     /* ================= ADMIN SOCKET ================= */
-
     socket.on('globalState', state => {
 
         if ('streamBlocked' in state) {
             adminStreamBlocked = state.streamBlocked;
 
-            if (adminStreamBlocked) {
+            if (adminStreamBlocked && isPlaying) {
                 audio.pause();
                 button.textContent = "Play";
                 isPlaying = false;
-            } else {
-                // admin je dozvolio — ali NE forsiramo play
-                if (localStorage.getItem('radioPlayed') === 'true') {
-                    safePlay('admin-unblock');
-                }
+            } else if (!adminStreamBlocked && !isPlaying && localStorage.getItem('radioPlayed') === 'true') {
+                safePlay('admin-unblock'); // samo ako audio ne svira
             }
         }
 
     });
 
 });
+
 
 //  REGISTRACIJA I LOGIN TABLA
 document.getElementById('NIK').addEventListener('click', function() {
