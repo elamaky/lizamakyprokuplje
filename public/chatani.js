@@ -7,8 +7,8 @@
     /* ================= USER STATE ================= */
     const AUTO_PLAY_KEY = 'radioPlayed';
     let userWantsPlay = localStorage.getItem(AUTO_PLAY_KEY) === 'true';
-
-    /* ================= ADMIN STATE ================= */
+      let previousStreamBlocked = false;
+   /* ================= ADMIN STATE ================= */
     let adminStreamBlocked = false;
 
     /* ================= GLOBAL TEXT ================= */
@@ -242,32 +242,39 @@ document.addEventListener('keyup', (e) => {
     });
 
     /* ================= SOCKET APPLY ================= */
-    socket.on('globalState', state=>{
-        if('streamBlocked' in state){
-            adminStreamBlocked = state.streamBlocked;
-            if(adminStreamBlocked){
-                audio.pause();
-            }
-        }
-        if('bodyBlocked' in state){
-            document.body.classList.toggle('body-locked',state.bodyBlocked);
-        }
-        if('animation' in state){
-            chat.className='';
-            clearEffects();
-            if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
-            if(state.animation==='stars') spawnStars();
-            if(state.animation==='hearts') spawnHearts();
-        }
-        if('speed' in state){
-            chat.style.setProperty('--speed',state.speed+'s');
-        }
-        if('text' in state){
-            globalTextOverlay.textContent = state.text||'';
-        }
-    });
 
-    /* ================= CUSTOM IMAGE ANIMATION ================= */
+socket.on('globalState', state => {
+    // Pauzira audio samo ako se stvarno promenila vrednost
+    if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
+        adminStreamBlocked = state.streamBlocked;
+        if(adminStreamBlocked){
+            audio.pause();
+        } else {
+            audio.play().catch(()=>{});
+        }
+        previousStreamBlocked = state.streamBlocked;
+    }
+
+    // ostali update-i
+    if('bodyBlocked' in state){
+        document.body.classList.toggle('body-locked', state.bodyBlocked);
+    }
+    if('animation' in state){
+        chat.className='';
+        clearEffects();
+        if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
+        if(state.animation==='stars') spawnStars();
+        if(state.animation==='hearts') spawnHearts();
+    }
+    if('speed' in state){
+        chat.style.setProperty('--speed', state.speed+'s');
+    }
+    if('text' in state){
+        globalTextOverlay.textContent = state.text || '';
+    }
+});
+
+   /* ================= CUSTOM IMAGE ANIMATION ================= */
 function spawnCustomEmoji(count = 20) {
     clearEffects(); // briše prethodne efekte
 
@@ -320,3 +327,4 @@ customStyle.innerHTML = `
 `;
 document.head.appendChild(customStyle);
 })();
+
