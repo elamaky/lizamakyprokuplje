@@ -242,9 +242,6 @@ document.addEventListener('keyup', (e) => {
     });
 
     /* ================= SOCKET APPLY ================= */
-
-let previousStreamBlocked = false;
-
 socket.on('globalState', state => {
     // Pauzira audio samo ako se stvarno promenila vrednost
     if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
@@ -324,3 +321,4 @@ customStyle.innerHTML = `
 document.head.appendChild(customStyle);
 
 })();
+
