@@ -1,8 +1,5 @@
 (function () {
 
-    /* ================= SOCKET ================= */
-    const socket = io();
-
     /* ================= ELEMENTI ================= */
     const audio = document.getElementById('radioStream');
     const chat = document.getElementById('chatContainer');
@@ -262,3 +259,4 @@
     });
 
 })();
+
