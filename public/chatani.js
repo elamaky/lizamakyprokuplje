@@ -159,19 +159,22 @@
     `;
     document.body.appendChild(adminPanel);
 
-    const animPanel = document.createElement('div');
-    Object.assign(animPanel.style,{
-        display:'none',
-        position:'fixed',
-        top:'260px',
-        right:'20px',
-        zIndex:'9999',
-        background:'rgba(0,0,0,0.9)',
-        border:'2px solid #fff',
-        padding:'15px',
-        color:'#fff',
-        fontFamily:'monospace'
-    });
+  const animPanel = document.createElement('div');
+ Object.assign(animPanel.style,{
+    display:'none',
+    position:'fixed',
+    bottom:'0',
+    right:'5px',
+    zIndex:'9999',
+    background:'rgba(0,0,0,0.9)',
+    border:'2px solid #fff',
+    padding:'15px',
+    color:'#fff',
+    width: '250px',
+    height: '250px',
+    fontFamily:'Arial, sans-serif'  // promenio si font
+});
+
     animPanel.innerHTML=`
         <button data-anim="none">NONE</button>
         <button data-anim="rotate">ROTATE</button>
@@ -264,5 +267,56 @@ document.addEventListener('keyup', (e) => {
         }
     });
 
-})();
+    /* ================= CUSTOM IMAGE ANIMATION ================= */
+function spawnCustomEmoji(count = 20) {
+    clearEffects(); // briše prethodne efekte
 
+    // niz sa svim slikama koje želiš koristiti
+    const imagePaths = [
+        'emoji gif/100euro.avif',
+        'emoji gif/500euro.avif',
+        'emoji gif/1000chfb.avif',
+        'emoji gif/1000front.avif'
+    ];
+
+    for(let i=0;i<count;i++){
+        const img = document.createElement('img');
+
+        // random biramo jednu sliku iz niza
+        const path = imagePaths[Math.floor(Math.random()*imagePaths.length)];
+        img.src = path;
+
+        img.style.position = 'absolute';
+        img.style.left = Math.random()*100+'%';
+        img.style.width = (30 + Math.random()*50)+'px'; // random veličina
+        img.style.height = 'auto';
+        img.style.pointerEvents = 'none';
+
+        // Animacija padanja + rotacija random
+        const duration = 3 + Math.random()*4;
+        const rx = Math.random()*360;
+        const ry = Math.random()*360;
+        const rz = Math.random()*360;
+        img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+        img.style.animation = `fall ${duration}s linear infinite`;
+
+        effectLayer.appendChild(img);
+    }
+}
+
+// Dugme u animPanel
+const emojiBtn = document.createElement('button');
+emojiBtn.textContent = 'EURO EMOJI';
+emojiBtn.onclick = () => { spawnCustomEmoji(20); };
+animPanel.appendChild(emojiBtn);
+
+// Novi style tag za keyframes, drugačije ime da nema sukoba
+const customStyle = document.createElement('style');
+customStyle.innerHTML = `
+@keyframes fall {
+    from { transform: translateY(-10vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    to { transform: translateY(110vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+`;
+document.head.appendChild(customStyle);
+})();
