@@ -243,11 +243,12 @@ document.addEventListener('keyup', (e) => {
 
     /* ================= SOCKET APPLY ================= */
 
+let previousStreamBlocked = false;
+
 socket.on('globalState', state => {
     // Pauzira audio samo ako se stvarno promenila vrednost
     if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
-        adminStreamBlocked = state.streamBlocked;
-        if(adminStreamBlocked){
+        if(state.streamBlocked){
             audio.pause();
         } else {
             audio.play().catch(()=>{});
@@ -255,10 +256,8 @@ socket.on('globalState', state => {
         previousStreamBlocked = state.streamBlocked;
     }
 
-    // ostali update-i
-    if('bodyBlocked' in state){
-        document.body.classList.toggle('body-locked', state.bodyBlocked);
-    }
+    // Ostali update-i
+    if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
     if('animation' in state){
         chat.className='';
         clearEffects();
@@ -266,19 +265,15 @@ socket.on('globalState', state => {
         if(state.animation==='stars') spawnStars();
         if(state.animation==='hearts') spawnHearts();
     }
-    if('speed' in state){
-        chat.style.setProperty('--speed', state.speed+'s');
-    }
-    if('text' in state){
-        globalTextOverlay.textContent = state.text || '';
-    }
+    if('speed' in state) chat.style.setProperty('--speed', state.speed+'s');
+    if('text' in state) globalTextOverlay.textContent = state.text || '';
 });
 
-   /* ================= CUSTOM IMAGE ANIMATION ================= */
-function spawnCustomEmoji(count = 20) {
+
+/* ================= CUSTOM IMAGE ANIMATION ================= */
+function spawnCustomEmoji(count = 10) { // count po slici
     clearEffects(); // briše prethodne efekte
 
-    // niz sa svim slikama koje želiš koristiti
     const imagePaths = [
         'emoji gif/100euro.avif',
         'emoji gif/500euro.avif',
@@ -286,38 +281,39 @@ function spawnCustomEmoji(count = 20) {
         'emoji gif/1000front.avif'
     ];
 
-    for(let i=0;i<count;i++){
-        const img = document.createElement('img');
+    // uzimamo trenutnu brzinu sa slidera
+    const speedSlider = document.getElementById('speed-slider');
+    const speed = parseFloat(speedSlider?.value) || 2;
 
-        // random biramo jednu sliku iz niza
-        const path = imagePaths[Math.floor(Math.random()*imagePaths.length)];
-        img.src = path;
+    imagePaths.forEach(path => {
+        for (let i = 0; i < count; i++) {
+            const img = document.createElement('img');
+            img.src = path;
+            img.style.position = 'absolute';
+            img.style.left = Math.random() * 100 + '%';
+            img.style.width = (30 + Math.random() * 50) + 'px';
+            img.style.height = 'auto';
+            img.style.pointerEvents = 'none';
 
-        img.style.position = 'absolute';
-        img.style.left = Math.random()*100+'%';
-        img.style.width = (30 + Math.random()*50)+'px'; // random veličina
-        img.style.height = 'auto';
-        img.style.pointerEvents = 'none';
+            const rx = Math.random() * 360;
+            const ry = Math.random() * 360;
+            const rz = Math.random() * 360;
 
-        // Animacija padanja + rotacija random
-        const duration = 3 + Math.random()*4;
-        const rx = Math.random()*360;
-        const ry = Math.random()*360;
-        const rz = Math.random()*360;
-        img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
-        img.style.animation = `fall ${duration}s linear infinite`;
+            img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+            img.style.animation = `fall ${speed}s linear infinite`;
 
-        effectLayer.appendChild(img);
-    }
+            effectLayer.appendChild(img);
+        }
+    });
 }
 
 // Dugme u animPanel
 const emojiBtn = document.createElement('button');
 emojiBtn.textContent = 'EURO EMOJI';
-emojiBtn.onclick = () => { spawnCustomEmoji(20); };
+emojiBtn.onclick = () => { spawnCustomEmoji(5); }; // 5 slika po putanji
 animPanel.appendChild(emojiBtn);
 
-// Novi style tag za keyframes, drugačije ime da nema sukoba
+// Novi style tag za keyframes
 const customStyle = document.createElement('style');
 customStyle.innerHTML = `
 @keyframes fall {
@@ -326,5 +322,5 @@ customStyle.innerHTML = `
 }
 `;
 document.head.appendChild(customStyle);
-})();
 
+})();
