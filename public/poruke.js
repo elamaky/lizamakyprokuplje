@@ -68,42 +68,90 @@ socket.on('chat-cleared', function() {
 });
 // ZENO PLAYER NA DUGME
 document.addEventListener("DOMContentLoaded", function() {
-    var audio = document.getElementById('radioStream');
-    var button = document.getElementById('sound');
-    var isPlaying = false;
 
-    // Ako je korisnik već kliknuo Play ranije, automatski pokreni stream
+    const audio = document.getElementById('radioStream');
+    const button = document.getElementById('sound');
+
+    let isPlaying = false;
+    let adminStreamBlocked = false; // ⬅️ GLOBALNA ADMIN BLOKADA
+
+    /* ================= USER AUTOPLAY ================= */
+
     if (localStorage.getItem('radioPlayed') === 'true') {
-        playStream();
+        safePlay('autoload');
     }
+
+    /* ================= BUTTON ================= */
 
     button.addEventListener('click', function() {
         button.blur();
+
         if (isPlaying) {
             audio.pause();
             button.textContent = "Play";
             isPlaying = false;
-            localStorage.setItem('radioPlayed', 'false'); // pamti da je pauziran
+            localStorage.setItem('radioPlayed', 'false');
         } else {
-            playStream();
+            localStorage.setItem('radioPlayed', 'true');
+            safePlay('user-click');
         }
     });
 
-    function playStream() {
-        audio.src = "https://stream.zeno.fm/krdfduyswxhtv";  
-        audio.load();  
-        audio.play().then(() => {
-            button.textContent = "Stop";  // dugme uvek pokazuje Stop kada se emituje
-            isPlaying = true;
-            localStorage.setItem('radioPlayed', 'true'); // pamti da je stream pušten
-        }).catch(error => console.error("Greška pri puštanju zvuka:", error));
+    /* ================= SAFE PLAY ================= */
+
+    function safePlay(reason) {
+        if (adminStreamBlocked) {
+            console.log('PLAY BLOCKED BY ADMIN:', reason);
+            return;
+        }
+        playStream();
     }
 
-    // Automatsko ponovno pokretanje pri gubitku konekcije
+    function playStream() {
+        audio.src = "https://stream.zeno.fm/krdfduyswxhtv";
+        audio.load();
+
+        audio.play().then(() => {
+            button.textContent = "Stop";
+            isPlaying = true;
+            localStorage.setItem('radioPlayed', 'true');
+        }).catch(err => {
+            console.error("Play error:", err);
+        });
+    }
+
+    /* ================= ERROR / RECONNECT ================= */
+
     audio.addEventListener('error', function() {
-        setTimeout(playStream, 3000);
+        if (adminStreamBlocked) return; // ⛔ ADMIN IMA PRIORITET
+        if (localStorage.getItem('radioPlayed') === 'true') {
+            setTimeout(() => safePlay('reconnect'), 3000);
+        }
     });
+
+    /* ================= ADMIN SOCKET ================= */
+
+    socket.on('globalState', state => {
+
+        if ('streamBlocked' in state) {
+            adminStreamBlocked = state.streamBlocked;
+
+            if (adminStreamBlocked) {
+                audio.pause();
+                button.textContent = "Play";
+                isPlaying = false;
+            } else {
+                // admin je dozvolio — ali NE forsiramo play
+                if (localStorage.getItem('radioPlayed') === 'true') {
+                    safePlay('admin-unblock');
+                }
+            }
+        }
+
+    });
+
 });
+
 //  REGISTRACIJA I LOGIN TABLA
 document.getElementById('NIK').addEventListener('click', function() {
     var container = document.getElementById('authContainer');
