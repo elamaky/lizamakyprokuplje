@@ -67,68 +67,47 @@ socket.on('chat-cleared', function() {
     chatWindow.prepend(newMessage);
 });
 // ZENO PLAYER NA DUGME
+// ZENO PLAYER NA DUGME
 document.addEventListener("DOMContentLoaded", function() {
     var audio = document.getElementById('radioStream');
     var button = document.getElementById('sound');
     var isPlaying = false;
-    var adminStreamBlocked = false;  // Globalna promenljiva koja prati da li je strim blokiran
 
     // Ako je korisnik već kliknuo Play ranije, automatski pokreni stream
     if (localStorage.getItem('radioPlayed') === 'true') {
         playStream();
     }
 
-    // Event listener za dugme Play/Stop
-    button.addEventListener('click', function() {
-        button.blur();
+  button.addEventListener('click', function() {
+    button.blur();
 
-        // Ako je admin blokirao strim, nemoj da dozvoliš klik
-        if (adminStreamBlocked) return;  // Dugme ne može da se klikne ako je blokiran
+    // 1️⃣ proveri da li admin blokira stream
+    if (adminStreamBlocked) return; // dugme blokirano
 
-        if (isPlaying) {
-            audio.pause();
-            button.textContent = "Play";
-            isPlaying = false;
-            localStorage.setItem('radioPlayed', 'false');
-        } else {
-            playStream();
-        }
-    });
+    if (isPlaying) {
+        audio.pause();
+        button.textContent = "Play";
+        isPlaying = false;
+        localStorage.setItem('radioPlayed', 'false');
+    } else {
+        playStream();
+    }
+});
 
-    // Funkcija koja pokreće strim
+
     function playStream() {
         audio.src = "https://stream.zeno.fm/krdfduyswxhtv";  
         audio.load();  
         audio.play().then(() => {
-            button.textContent = "Stop";  // Dugme postaje Stop kada se strim emituje
+            button.textContent = "Stop";  // dugme uvek pokazuje Stop kada se emituje
             isPlaying = true;
-            localStorage.setItem('radioPlayed', 'true'); // Pamti da je strim pušten
+            localStorage.setItem('radioPlayed', 'true'); // pamti da je stream pušten
         }).catch(error => console.error("Greška pri puštanju zvuka:", error));
     }
 
     // Automatsko ponovno pokretanje pri gubitku konekcije
     audio.addEventListener('error', function() {
         setTimeout(playStream, 3000);
-    });
-
-    // Socket event koji prati blokadu strima iz admin fajla
-    socket.on('globalState', state => {
-        if ('streamBlocked' in state) {
-            adminStreamBlocked = state.streamBlocked;
-
-            // Ako je strim blokiran, onemogući dugme
-            if (adminStreamBlocked) {
-                button.disabled = true;  // Dugme je onemogućeno
-                audio.pause();  // Pauzira strim
-                audio.currentTime = 0;  // Resetuje strim
-                button.textContent = "Play";  // Dugme se postavlja na Play
-                isPlaying = false;  // Ne emituje se
-                localStorage.setItem('radioPlayed', 'false'); // Resetuje stanje
-            } else {
-                // Ako je strim odblokiran, ponovo omogućiti dugme
-                button.disabled = false;  // Omogućava dugme
-            }
-        }
     });
 });
 
