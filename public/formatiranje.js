@@ -418,27 +418,39 @@ socket.on('private_message', function (data) {
     // NAME ANIMATION
     const strongName = newMessage.querySelector('strong');
     const userAnim = allUserAnimations[data.from];
+
     if (userAnim && userAnim.animation) {
         strongName.style.animationName = userAnim.animation;
         strongName.style.animationDuration = `${userAnim.speed || 1}s`;
         strongName.style.animationIterationCount = 'infinite';
         strongName.style.display = 'inline-block';
 
+        let hasBackground = false;
+
+        // 🎇 GLITTER
         if (data.glitter) {
             strongName.style.background = `url('/glit/${data.glitter}')`;
             strongName.style.backgroundSize = 'cover';
-        } else if (data.gradient || window.defaultAdminGradient) {
+            strongName.style.backgroundRepeat = 'repeat';
+            hasBackground = true;
+        }
+        // 🌈 GRADIENT
+        else if (data.gradient || window.defaultAdminGradient) {
             const gradClass = data.gradient || window.defaultAdminGradient;
             const gradEl = document.querySelector(`.${gradClass}`);
             if (gradEl) {
                 strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+                hasBackground = true;
             }
         }
 
-        strongName.style.backgroundClip = 'text';
-        strongName.style.webkitBackgroundClip = 'text';
-        strongName.style.webkitTextFillColor = 'transparent';
-        strongName.style.color = 'transparent';
+        // SAMO AKO IMA BACKGROUND
+        if (hasBackground) {
+            strongName.style.backgroundClip = 'text';
+            strongName.style.webkitBackgroundClip = 'text';
+            strongName.style.webkitTextFillColor = 'transparent';
+            strongName.style.color = 'transparent';
+        }
     }
 
     // AVATAR
@@ -465,6 +477,7 @@ socket.on('private_message', function (data) {
         messageArea.scrollTop = 0;
     }
 });
+
 
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
@@ -890,6 +903,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
