@@ -81,10 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
   button.addEventListener('click', function() {
     button.blur();
 
-    // 1️⃣ proveri da li admin blokira stream
-    if (adminStreamBlocked) return; // dugme blokirano
-
-    if (isPlaying) {
+     if (isPlaying) {
         audio.pause();
         button.textContent = "Play";
         isPlaying = false;
