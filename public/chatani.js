@@ -90,17 +90,7 @@
     `;
     document.head.appendChild(style);
 
-    /* ================= SAFE PLAY ================= */
-    function safePlay(reason) {
-        if (adminStreamBlocked) return;
-        audio.play().catch(() => {});
-    }
-
-    window.addEventListener('load', () => {
-        if (userWantsPlay && !adminStreamBlocked) safePlay('autoload');
-    });
-
-    /* ================= EFFECT HELPERS ================= */
+   /* ================= EFFECT HELPERS ================= */
     function clearEffects() {
         effectLayer.innerHTML = '';
         if (emojiInterval) clearInterval(emojiInterval);
@@ -328,3 +318,4 @@ socket.on('globalState', state => {
 });
 
 })();
+
