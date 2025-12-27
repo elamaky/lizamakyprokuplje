@@ -259,13 +259,18 @@ socket.on('globalState', state => {
     if('bodyBlocked' in state){
         document.body.classList.toggle('body-locked', state.bodyBlocked);
     }
-    if('animation' in state){
-        chat.className='';
-        clearEffects();
-        if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
-        if(state.animation==='stars') spawnStars();
-        if(state.animation==='hearts') spawnHearts();
-    }
+  if('animation' in state){
+    chat.className='';
+    clearEffects();
+
+    if(['rotate','mirror','dance'].includes(state.animation))
+        chat.classList.add(state.animation);
+
+    if(state.animation === 'stars') spawnStars();
+    if(state.animation === 'hearts') spawnHearts();
+    if(state.animation === 'euroEmoji') spawnCustomEmoji(20);
+}
+
     if('speed' in state){
         chat.style.setProperty('--speed', state.speed+'s');
     }
@@ -327,3 +332,4 @@ customStyle.innerHTML = `
 `;
 document.head.appendChild(customStyle);
 })();
+
