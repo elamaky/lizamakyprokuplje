@@ -1,7 +1,19 @@
+
 (function () {
 
-  const chat = document.getElementById('chatContainer');
- /* ================= GLOBAL TEXT ================= */
+    /* ================= ELEMENTI ================= */
+    const audio = document.getElementById('radioStream');
+    const chat = document.getElementById('chatContainer');
+
+    /* ================= USER STATE ================= */
+    const AUTO_PLAY_KEY = 'radioPlayed';
+    let userWantsPlay = localStorage.getItem(AUTO_PLAY_KEY) === 'true';
+    let previousStreamBlocked = false;
+
+    /* ================= ADMIN STATE ================= */
+    let adminStreamBlocked = false;
+
+    /* ================= GLOBAL TEXT ================= */
     const globalTextOverlay = document.createElement('div');
     Object.assign(globalTextOverlay.style, {
         position: 'fixed',
@@ -257,7 +269,38 @@
     `;
     document.head.appendChild(customStyle);
 
-   /* BODY LOCK */
+  // ================= BUTTON STATE UPDATE =================
+function updateButtonState() {
+    const button = document.getElementById('sound');
+    if(adminStreamBlocked){
+        button.disabled = true;
+        button.textContent = "Blocked";
+    } else {
+        button.disabled = false;
+        button.textContent = isPlaying ? "Stop" : "Play";
+    }
+}
+
+// ================= SOCKET APPLY =================
+socket.on('globalState', state => {
+
+    /* STREAM CONTROL */
+    if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
+        adminStreamBlocked = state.streamBlocked;
+        previousStreamBlocked = state.streamBlocked;
+
+        if(adminStreamBlocked){
+            audio.pause();
+            audio.currentTime = 0;
+            isPlaying = false;
+        } else if(userWantsPlay){
+            safePlay('admin-unblock');
+        }
+
+        updateButtonState(); // dugme se blokira ili aktivira
+    }
+
+    /* BODY LOCK */
     if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
 
     /* ANIMACIJE */
@@ -276,5 +319,4 @@
 });
 
 })();
-
 
