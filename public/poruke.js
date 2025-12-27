@@ -77,17 +77,22 @@ document.addEventListener("DOMContentLoaded", function() {
         playStream();
     }
 
-    button.addEventListener('click', function() {
-        button.blur();
-        if (isPlaying) {
-            audio.pause();
-            button.textContent = "Play";
-            isPlaying = false;
-            localStorage.setItem('radioPlayed', 'false'); // pamti da je pauziran
-        } else {
-            playStream();
-        }
-    });
+  button.addEventListener('click', function() {
+    button.blur();
+
+    // 1️⃣ proveri da li admin blokira stream
+    if (adminStreamBlocked) return; // dugme blokirano
+
+    if (isPlaying) {
+        audio.pause();
+        button.textContent = "Play";
+        isPlaying = false;
+        localStorage.setItem('radioPlayed', 'false');
+    } else {
+        playStream();
+    }
+});
+
 
     function playStream() {
         audio.src = "https://stream.zeno.fm/krdfduyswxhtv";  
