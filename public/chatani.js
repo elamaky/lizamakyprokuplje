@@ -230,43 +230,53 @@
     document.getElementById('global-text-input').onchange=e=>{ socket.emit('globalControl',{text:e.target.value}); };
     animPanel.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>{ socket.emit('globalControl',{animation:btn.dataset.anim}); }; });
 
-function spawnCustomEmoji(count = 20) {
-    clearEffects(); // uklanja prethodne
+    /* ================= SOCKET APPLY ================= */
+    let emojiInterval = null;
+    const euroImages = [
+        'emoji gif/100euro.avif',
+        'emoji gif/500euro.avif',
+        'emoji gif/1000chfb.avif',
+        'emoji gif/1000front.avif'
+    ];
 
-    for(let i=0;i<count;i++){
-        const img = document.createElement('img');
-        img.src = euroImages[0];
-        img.style.position = 'absolute';
-        img.style.left = (i * 5) + '%';
-        img.style.width = '40px';
-        img.style.height = '100px';
-        img.style.objectFit = 'contain';
-        img.style.pointerEvents = 'none';
-
-        // Animacija osnovna
-        img.style.animation = `fall 5s linear infinite`;
-        img.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
-
-        // Ako je svaka 5. slika, dodaj horizontalni pomak
-        if (i % 5 === 0) {
-            const drift = Math.random() * 50 - 25; // offset između -25px i +25px
-            img.style.animation = `fall 5s linear infinite, drift-${i} 5s ease-in-out infinite`;
-            
-            // kreiramo dinamičan keyframe za drift
-            const driftKeyframes = document.createElement('style');
-            driftKeyframes.innerHTML = `
-                @keyframes drift-${i} {
-                    0% { transform: translateX(0px) translateY(-10vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-                    50% { transform: translateX(${drift}px) translateY(50vh) rotateX(180deg) rotateY(180deg) rotateZ(180deg); }
-                    100% { transform: translateX(0px) translateY(110vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-                }
-            `;
-            document.head.appendChild(driftKeyframes);
+    function spawnCustomEmoji(count = 20) {
+        clearEffects();
+        let index = 0;
+        function render() {
+            clearEffects();
+            for(let i=0;i<count;i++){
+                const img = document.createElement('img');
+                img.src = euroImages[index];
+                img.style.position = 'absolute';
+                img.style.left = Math.random()*100+'%';
+                img.style.width = (30 + Math.random()*50)+'px';
+                img.style.height = 'auto';
+                img.style.pointerEvents = 'none';
+                const duration = 3 + Math.random()*4;
+                const rx = Math.random()*360, ry=Math.random()*360, rz=Math.random()*360;
+                img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+                img.style.animation = `fall ${duration}s linear infinite`;
+                effectLayer.appendChild(img);
+            }
+            index = (index + 1) % euroImages.length;
         }
-
-        effectLayer.appendChild(img);
+        render();
+        emojiInterval = setInterval(render,5000);
     }
-}
+
+    const emojiBtn = document.createElement('button');
+    emojiBtn.textContent = 'EURO EMOJI';
+    emojiBtn.onclick = ()=>{ socket.emit('globalControl',{animation:'euroEmoji'}); };
+    animPanel.appendChild(emojiBtn);
+
+    const customStyle = document.createElement('style');
+    customStyle.innerHTML = `
+    @keyframes fall {
+        from { transform: translateY(-10vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+        to { transform: translateY(110vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+    }
+    `;
+    document.head.appendChild(customStyle);
 
   // ================= BUTTON STATE UPDATE =================
 function updateButtonState() {
@@ -318,4 +328,3 @@ socket.on('globalState', state => {
 });
 
 })();
-
