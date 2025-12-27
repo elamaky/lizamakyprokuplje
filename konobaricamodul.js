@@ -10,10 +10,14 @@ let fullLayoutData = null;   // BEZ MASKE
  let defaultColor = {};
 let defaultGradient = {};
 
-  let globalState = {
-  bodyBlocked: false,
-  chatAnimation: "none"
+const globalState = {
+    streamBlocked: false,
+    bodyBlocked: false,
+    animation: 'none',
+    speed: 2,
+    text: ''
 };
+
 
    // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
@@ -224,14 +228,37 @@ if (defaultColor.value) {
 if (defaultGradient.value) {
     io.emit('updateDefaultGradient', { gradient: defaultGradient.value });
 }
-     // šaljemo trenutno stanje novom korisniku
-  io.emit("globalState", globalState);
+    socket.emit('globalState', globalState);
 
-  socket.on("globalControl", (data) => {
-    globalState = { ...globalState, ...data };
-    io.emit("globalState", globalState);
-  });
+    // 2️⃣ sluša admin kontrole
+    socket.on('globalControl', (data) => {
+
+        // SAMO eksplicitno polja
+        if ('streamBlocked' in data) {
+            globalState.streamBlocked = data.streamBlocked;
+        }
+
+        if ('bodyBlocked' in data) {
+            globalState.bodyBlocked = data.bodyBlocked;
+        }
+
+        if ('animation' in data) {
+            globalState.animation = data.animation;
+        }
+
+        if ('speed' in data) {
+            globalState.speed = data.speed;
+        }
+
+        if ('text' in data) {
+            globalState.text = data.text;
+        }
+
+        // 3️⃣ emituj svim klijentima
+        io.emit('globalState', globalState);
+    });
   socket.on('disconnect', () => {});
     });
 };
+
 
