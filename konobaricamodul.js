@@ -54,7 +54,8 @@ socket.on('chatMessage', (msgData) => {
   const text = msgData.text.toLowerCase();
 
   const konobaricaReactions = {
-    'pauza': 'Arlijo nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
+    'pauza': '*__X__* nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
+      'x': '*Da da , bas taj x , to je najbolji decko na svetu, udacu se za njega jednog dana , znam ja to. ',
       'umorna': 'Da, bas sam mnogo umorna, sve me boli , X tako bi mi prijale tvoje zlatne ruke sada da mi masiraju noge ',
     'red bul': 'Evo stiže odmah <img src="emoji gif/redbul.webp" style="height:40px;">',
     'viski': 'Evo stiže odmah viski za Lepu i ostale goste <img src="emoji gif/viski.png" style="height:40px;">',
@@ -64,7 +65,7 @@ socket.on('chatMessage', (msgData) => {
      'kisela': 'Mj kisela je dobra za tebe , stabilizovace ti se pritisak  <img src="emoji gif/kisela.avif" style="height:40px;">',
      'jede': 'Gladni i siti slobodno se posluzite , na racun galaksije  <img src="emoji gif/jede.avif" style="height:40px;">',
      'pije': 'Nemojte se stideti samo se posluzite  <img src="emoji gif/jede.avif" style="height:40px;">',
-    'kokta': 'Ima kokte dovoljno za sve  <img src="emoji gif/kokta.webp" style="height:40px;">'
+    'kokta': ' Letim , kokta za Najlepsu ciganku i drustvo ,ima kokte dovoljno za sve  <img src="emoji gif/kokta.webp" style="height:40px;">'
   };
   for (const key in konobaricaReactions) {
     const regex = new RegExp(`\\b${key}\\b`, 'i');
@@ -260,5 +261,6 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
 
 
