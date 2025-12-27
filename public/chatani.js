@@ -7,8 +7,9 @@
     /* ================= USER STATE ================= */
     const AUTO_PLAY_KEY = 'radioPlayed';
     let userWantsPlay = localStorage.getItem(AUTO_PLAY_KEY) === 'true';
-      let previousStreamBlocked = false;
-   /* ================= ADMIN STATE ================= */
+    let previousStreamBlocked = false;
+
+    /* ================= ADMIN STATE ================= */
     let adminStreamBlocked = false;
 
     /* ================= GLOBAL TEXT ================= */
@@ -89,7 +90,7 @@
     `;
     document.head.appendChild(style);
 
-    /* ================= USER SAFE PLAY ================= */
+    /* ================= SAFE PLAY ================= */
     function safePlay(reason) {
         if (adminStreamBlocked) return;
         audio.play().catch(() => {});
@@ -102,6 +103,7 @@
     /* ================= EFFECT HELPERS ================= */
     function clearEffects() {
         effectLayer.innerHTML = '';
+        if (emojiInterval) clearInterval(emojiInterval);
     }
     function spawnStars() {
         clearEffects();
@@ -159,21 +161,21 @@
     `;
     document.body.appendChild(adminPanel);
 
-  const animPanel = document.createElement('div');
- Object.assign(animPanel.style,{
-    display:'none',
-    position:'fixed',
-    bottom:'0',
-    right:'5px',
-    zIndex:'9999',
-    background:'rgba(0,0,0,0.9)',
-    border:'2px solid #fff',
-    padding:'15px',
-    color:'#fff',
-    width: '250px',
-    height: '250px',
-    fontFamily:'Arial, sans-serif'  // promenio si font
-});
+    const animPanel = document.createElement('div');
+    Object.assign(animPanel.style,{
+        display:'none',
+        position:'fixed',
+        bottom:'0',
+        right:'5px',
+        zIndex:'9999',
+        background:'rgba(0,0,0,0.9)',
+        border:'2px solid #fff',
+        padding:'15px',
+        color:'#fff',
+        width: '250px',
+        height: '250px',
+        fontFamily:'Arial, sans-serif'
+    });
 
     animPanel.innerHTML=`
         <button data-anim="none">NONE</button>
@@ -186,150 +188,123 @@
     document.body.appendChild(animPanel);
 
     /* ================= KEY COMBO 3s HOLD ================= */
-document.addEventListener('keydown', (e) => {
-    if (!e.key) return;
-    activeKeys.add(e.key.toUpperCase());
+    document.addEventListener('keydown', (e) => {
+        if (!e.key) return;
+        activeKeys.add(e.key.toUpperCase());
 
-    // Ako su svi tasteri pritisnuti
-    if (activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('2')) {
-        if (comboTimer === null) {
-            // start timer od 3 sekunde
-            comboTimer = setTimeout(() => {
-                adminPanel.style.display = 'block';
-                comboTimer = null; // resetujemo timer
-            }, 3000);
+        if (activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('2')) {
+            if (comboTimer === null) {
+                comboTimer = setTimeout(() => {
+                    adminPanel.style.display = 'block';
+                    comboTimer = null;
+                }, 3000);
+            }
+        } else {
+            if (comboTimer !== null) {
+                clearTimeout(comboTimer);
+                comboTimer = null;
+            }
         }
-    } else {
-        // Ako nije kompletan combo, resetuj timer
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (!e.key) return;
+        activeKeys.delete(e.key.toUpperCase());
         if (comboTimer !== null) {
             clearTimeout(comboTimer);
             comboTimer = null;
         }
-    }
-});
-
-document.addEventListener('keyup', (e) => {
-    if (!e.key) return;
-    activeKeys.delete(e.key.toUpperCase());
-    // Ako se otpusti bilo koji taster, resetujemo timer
-    if (comboTimer !== null) {
-        clearTimeout(comboTimer);
-        comboTimer = null;
-    }
-});
-
+    });
 
     /* ================= BUTTON ACTIONS ================= */
     document.getElementById('close-admin').onclick=()=>{
         adminPanel.style.display='none';
         animPanel.style.display='none';
     };
-    document.getElementById('toggle-stream').onclick=()=>{ socket.emit('globalControl',{toggleStream:true}); };
+    document.getElementById('toggle-stream').onclick=()=>{ socket.emit('globalControl',{streamBlocked:!adminStreamBlocked}); };
     document.getElementById('toggle-body').onclick=()=>{ 
         socket.emit('globalControl',{bodyBlocked:!document.body.classList.contains('body-locked')}); 
     };
-    document.getElementById('open-anim').onclick=()=>{
-        animPanel.style.display = animPanel.style.display==='none'?'block':'none';
-    };
-    document.getElementById('speed-slider').oninput=e=>{
-        socket.emit('globalControl',{speed:e.target.value});
-    };
-    document.getElementById('global-text-input').onchange=e=>{
-        socket.emit('globalControl',{text:e.target.value});
-    };
-    animPanel.querySelectorAll('button').forEach(btn=>{
-        btn.onclick=()=>{ socket.emit('globalControl',{animation:btn.dataset.anim}); };
-    });
+    document.getElementById('open-anim').onclick=()=>{ animPanel.style.display = animPanel.style.display==='none'?'block':'none'; };
+    document.getElementById('speed-slider').oninput=e=>{ socket.emit('globalControl',{speed:e.target.value}); };
+    document.getElementById('global-text-input').onchange=e=>{ socket.emit('globalControl',{text:e.target.value}); };
+    animPanel.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>{ socket.emit('globalControl',{animation:btn.dataset.anim}); }; });
 
     /* ================= SOCKET APPLY ================= */
-
-socket.on('globalState', state => {
-    // Pauzira audio samo ako se stvarno promenila vrednost
-    if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
-        adminStreamBlocked = state.streamBlocked;
-        if(adminStreamBlocked){
-            audio.pause();
-        } else {
-            audio.play().catch(()=>{});
-        }
-        previousStreamBlocked = state.streamBlocked;
-    }
-
-    // ostali update-i
-    if('bodyBlocked' in state){
-        document.body.classList.toggle('body-locked', state.bodyBlocked);
-    }
-  if('animation' in state){
-    chat.className='';
-    clearEffects();
-
-    if(['rotate','mirror','dance'].includes(state.animation))
-        chat.classList.add(state.animation);
-
-    if(state.animation === 'stars') spawnStars();
-    if(state.animation === 'hearts') spawnHearts();
-    if(state.animation === 'euroEmoji') spawnCustomEmoji(20);
-}
-
-    if('speed' in state){
-        chat.style.setProperty('--speed', state.speed+'s');
-    }
-    if('text' in state){
-        globalTextOverlay.textContent = state.text || '';
-    }
-});
-
-   /* ================= CUSTOM IMAGE ANIMATION ================= */
-function spawnCustomEmoji(count = 20) {
-    clearEffects(); // briše prethodne efekte
-
-    // niz sa svim slikama koje želiš koristiti
-    const imagePaths = [
+    let emojiInterval = null;
+    const euroImages = [
         'emoji gif/100euro.avif',
         'emoji gif/500euro.avif',
         'emoji gif/1000chfb.avif',
         'emoji gif/1000front.avif'
     ];
 
-    for(let i=0;i<count;i++){
-        const img = document.createElement('img');
-
-        // random biramo jednu sliku iz niza
-        const path = imagePaths[Math.floor(Math.random()*imagePaths.length)];
-        img.src = path;
-
-        img.style.position = 'absolute';
-        img.style.left = Math.random()*100+'%';
-        img.style.width = (30 + Math.random()*50)+'px'; // random veličina
-        img.style.height = 'auto';
-        img.style.pointerEvents = 'none';
-
-        // Animacija padanja + rotacija random
-        const duration = 3 + Math.random()*4;
-        const rx = Math.random()*360;
-        const ry = Math.random()*360;
-        const rz = Math.random()*360;
-        img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
-        img.style.animation = `fall ${duration}s linear infinite`;
-
-        effectLayer.appendChild(img);
+    function spawnCustomEmoji(count = 20) {
+        clearEffects();
+        let index = 0;
+        function render() {
+            clearEffects();
+            for(let i=0;i<count;i++){
+                const img = document.createElement('img');
+                img.src = euroImages[index];
+                img.style.position = 'absolute';
+                img.style.left = Math.random()*100+'%';
+                img.style.width = (30 + Math.random()*50)+'px';
+                img.style.height = 'auto';
+                img.style.pointerEvents = 'none';
+                const duration = 3 + Math.random()*4;
+                const rx = Math.random()*360, ry=Math.random()*360, rz=Math.random()*360;
+                img.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+                img.style.animation = `fall ${duration}s linear infinite`;
+                effectLayer.appendChild(img);
+            }
+            index = (index + 1) % euroImages.length;
+        }
+        render();
+        emojiInterval = setInterval(render,5000);
     }
-}
 
-// Dugme u animPanel
-const emojiBtn = document.createElement('button');
-emojiBtn.textContent = 'EURO EMOJI';
-emojiBtn.onclick = () => { spawnCustomEmoji(20); };
-animPanel.appendChild(emojiBtn);
+    const emojiBtn = document.createElement('button');
+    emojiBtn.textContent = 'EURO EMOJI';
+    emojiBtn.onclick = ()=>{ socket.emit('globalControl',{animation:'euroEmoji'}); };
+    animPanel.appendChild(emojiBtn);
 
-// Novi style tag za keyframes, drugačije ime da nema sukoba
-const customStyle = document.createElement('style');
-customStyle.innerHTML = `
-@keyframes fall {
-    from { transform: translateY(-10vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-    to { transform: translateY(110vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-}
-`;
-document.head.appendChild(customStyle);
+    const customStyle = document.createElement('style');
+    customStyle.innerHTML = `
+    @keyframes fall {
+        from { transform: translateY(-10vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+        to { transform: translateY(110vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+    }
+    `;
+    document.head.appendChild(customStyle);
+
+    socket.on('globalState', state => {
+
+        /* STREAM CONTROL */
+        if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
+            adminStreamBlocked = state.streamBlocked;
+            previousStreamBlocked = state.streamBlocked;
+            if(adminStreamBlocked){
+                audio.pause();
+                audio.currentTime = 0;
+            } else if(userWantsPlay){
+                safePlay('admin-unblock');
+            }
+        }
+
+        if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
+
+        if('animation' in state){
+            chat.className='';
+            clearEffects();
+            if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
+            if(state.animation==='stars') spawnStars();
+            if(state.animation==='hearts') spawnHearts();
+            if(state.animation==='euroEmoji') spawnCustomEmoji();
+        }
+
+        if('speed' in state) chat.style.setProperty('--speed', state.speed+'s');
+        if('text' in state) globalTextOverlay.textContent = state.text || '';
+    });
+
 })();
-
