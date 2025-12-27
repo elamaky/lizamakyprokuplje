@@ -11,7 +11,6 @@ let fullLayoutData = null;   // BEZ MASKE
 let defaultGradient = {};
 
   let globalState = {
-  streamBlocked: false,
   bodyBlocked: false,
   chatAnimation: "none"
 };
@@ -235,3 +234,4 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
