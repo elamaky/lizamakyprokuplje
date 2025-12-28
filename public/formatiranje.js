@@ -477,8 +477,6 @@ socket.on('private_message', function (data) {
         messageArea.scrollTop = 0;
     }
 });
-
-
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -486,6 +484,7 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
+    newGuest.dataset.nick = nickname;
     newGuest.textContent = nickname;
 
     if (!guestsData[guestId]) {
@@ -494,27 +493,10 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
+
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', users => {
-    users.forEach(nickname => {
-        const guestId = `guest-${nickname}`;
-        let guestEl = document.getElementById(guestId);
-
-        if (!guestEl) {
-            // Dodaj samo nove goste
-            guestEl = document.createElement('div');
-            guestEl.className = 'guest';
-            guestEl.id = guestId;
-            guestEl.dataset.nick = nickname;
-            guestList.appendChild(guestEl);
-        }
-
-        // Ažuriraj 🔒 ako je banovan
-        const isBanned = bannedSet.has(nickname) || (nickname === myNickname && localStorage.getItem('banned'));
-        guestEl.textContent = isBanned ? `${nickname} 🔒` : nickname;
-    });
-});
-
+    const guestList = document.getElementById('guestList');
 
     // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
@@ -913,6 +895,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
