@@ -67,8 +67,6 @@ const assignedNumbers = new Set(); // Set za generisane brojeve
 const userColors = {}; // Ovdje čuvamo boje korisnika
 const sviAvatari = {};
 const userGradients = {};
-// Dodavanje socket događaja iz banmodula
-setupSocketEvents(io, guests, bannedUsers); // Dodavanje guests i bannedUsers u banmodul
 let currentBackground = "";
 let textElements = [];
 startVirtualGuests(io, guests);
@@ -241,6 +239,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
 
 
