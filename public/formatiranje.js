@@ -495,20 +495,26 @@ socket.on('newGuest', function (nickname) {
     guestList.appendChild(newGuest);
 });
 // Ažuriranje liste gostiju bez resetovanja stilova
-socket.on('updateGuestList', function (users) {
-    const guestList = document.getElementById('guestList');
-    const currentGuests = Array.from(guestList.children).map(guest => guest.textContent);
+socket.on('updateGuestList', users => {
+    users.forEach(nickname => {
+        const guestId = `guest-${nickname}`;
+        let guestEl = document.getElementById(guestId);
 
-    // Ukloni goste koji više nisu u listi
-    currentGuests.forEach(nickname => {
-        if (!users.includes(nickname)) {
-            delete guestsData[`guest-${nickname}`];
-            const guestElement = Array.from(guestList.children).find(guest => guest.textContent.replace(' 🔒','') === nickname);
-            if (guestElement) {
-                guestList.removeChild(guestElement);
-            }
+        if (!guestEl) {
+            // Dodaj samo nove goste
+            guestEl = document.createElement('div');
+            guestEl.className = 'guest';
+            guestEl.id = guestId;
+            guestEl.dataset.nick = nickname;
+            guestList.appendChild(guestEl);
         }
+
+        // Ažuriraj 🔒 ako je banovan
+        const isBanned = bannedSet.has(nickname) || (nickname === myNickname && localStorage.getItem('banned'));
+        guestEl.textContent = isBanned ? `${nickname} 🔒` : nickname;
     });
+});
+
 
     // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
@@ -907,6 +913,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
