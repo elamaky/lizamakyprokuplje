@@ -62,3 +62,8 @@ function addGuest(nickname) {
 
     guestList.appendChild(guestEl);
 }
+
+socket.on('updateGuestList', users => {
+    guestList.innerHTML = '';
+    users.forEach(addGuest);
+});
