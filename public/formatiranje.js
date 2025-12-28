@@ -494,11 +494,10 @@ socket.on('newGuest', function (nickname) {
     guestList.appendChild(newGuest);
 });
 
-// Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', users => {
     const guestList = document.getElementById('guestList');
 
-    // Reorder: "Radio Galaksija" na vrhu
+    // Sačuvaj trenutni redosled i podesi nove pozicije prema tvojim pravilima
     if (users.includes("Radio Galaksija")) {
         users = ["Radio Galaksija", ...users.filter(n => n !== "Radio Galaksija")];
 
@@ -517,11 +516,11 @@ socket.on('updateGuestList', users => {
         let guestEl = document.getElementById(guestId);
 
         if (!guestEl) {
+            // Kreiraj novi div za gosta
             guestEl = document.createElement('div');
             guestEl.className = 'guest';
             guestEl.id = guestId;
             guestEl.dataset.nick = nickname;
-            guestList.appendChild(guestEl);
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -532,19 +531,21 @@ socket.on('updateGuestList', users => {
                 guestEl.style.color = '';
                 guestsData[guestId] = { nickname, color: '' };
             }
+
+            guestList.appendChild(guestEl);
         }
 
-        // Render nickname sa 🔒 ako je banovan
+        // Prikazi 🔒 ako je banovan
         const isBanned = bannedSet.has(nickname) || (nickname === myNickname && localStorage.getItem('banned'));
         guestEl.textContent = isBanned ? `${nickname} 🔒` : nickname;
     });
 
-    // Poređaj DOM elemente po redosledu iz `users`
+    // Poređaj DOM elemente po redosledu iz users
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        const guestElement = document.getElementById(guestId);
-        if (guestElement) {
-            guestList.appendChild(guestElement);
+        const guestEl = document.getElementById(guestId);
+        if (guestEl) {
+            guestList.appendChild(guestEl);
         }
     });
 });
@@ -895,6 +896,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
