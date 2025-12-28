@@ -477,6 +477,8 @@ socket.on('private_message', function (data) {
         messageArea.scrollTop = 0;
     }
 });
+
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -484,7 +486,6 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.dataset.nick = nickname;
     newGuest.textContent = nickname;
 
     if (!guestsData[guestId]) {
@@ -493,63 +494,69 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
-
-socket.on('updateGuestList', users => {
+// Ažuriranje liste gostiju bez resetovanja stilova
+socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
+    const currentGuests = Array.from(guestList.children).map(guest => guest.textContent);
 
-    // Sačuvaj trenutni redosled i podesi nove pozicije prema tvojim pravilima
+    // Ukloni goste koji više nisu u listi
+    currentGuests.forEach(nickname => {
+        if (!users.includes(nickname)) {
+            delete guestsData[`guest-${nickname}`];
+            const guestElement = Array.from(guestList.children).find(guest => guest.textContent === nickname);
+            if (guestElement) {
+                guestList.removeChild(guestElement);
+            }
+        }
+    });
+   // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
         users = ["Radio Galaksija", ...users.filter(n => n !== "Radio Galaksija")];
 
+        // Ulogovani korisnik na drugo mesto ako nije Galaksija
         if (myNickname !== "Radio Galaksija") {
             users = users.filter(n => n !== myNickname);
             users.splice(1, 0, myNickname);
         }
     } else {
+        // Ako nema Galaksije, korisnik ide na prvo mesto
         users = users.filter(n => n !== myNickname);
         users.unshift(myNickname);
     }
 
-    // Dodaj ili ažuriraj goste
+    // Dodaj nove goste
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        let guestEl = document.getElementById(guestId);
-
-        if (!guestEl) {
-            // Kreiraj novi div za gosta
-            guestEl = document.createElement('div');
-            guestEl.className = 'guest';
-            guestEl.id = guestId;
-            guestEl.dataset.nick = nickname;
+        if (!guestsData[guestId]) {
+            const newGuest = document.createElement('div');
+            newGuest.className = 'guest';
+            newGuest.id = guestId;
+            newGuest.textContent = nickname;
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
-                guestEl.style.color = vg.color;
+                newGuest.style.color = vg.color;
                 guestsData[guestId] = { nickname, color: vg.color };
             } else {
-                guestEl.style.color = '';
+                newGuest.style.color = '';
                 guestsData[guestId] = { nickname, color: '' };
             }
 
-            guestList.appendChild(guestEl);
+            newGuest.setAttribute('data-guest-id', guestId);
+            guestList.appendChild(newGuest);
         }
-
-        // Prikazi 🔒 ako je banovan
-        const isBanned = bannedSet.has(nickname) || (nickname === myNickname && localStorage.getItem('banned'));
-        guestEl.textContent = isBanned ? `${nickname} 🔒` : nickname;
     });
 
-    // Poređaj DOM elemente po redosledu iz users
+    // Poređaj DOM elemente po redosledu iz `users`
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        const guestEl = document.getElementById(guestId);
-        if (guestEl) {
-            guestList.appendChild(guestEl);
+        const guestElement = document.getElementById(guestId);
+        if (guestElement) {
+            guestList.appendChild(guestElement);
         }
     });
 });
-
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -896,12 +903,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
-
-
-
-
