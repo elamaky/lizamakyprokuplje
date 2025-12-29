@@ -6,6 +6,11 @@ socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
 
+function renderNickname(nickname) {
+    return bannedSet.has(nickname)
+        ? `${nickname} 🔒`
+        : nickname;
+}
 const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
   { nickname: 'Halime', color: 'purple' },
@@ -903,3 +908,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
