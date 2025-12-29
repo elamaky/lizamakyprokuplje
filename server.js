@@ -62,8 +62,8 @@ const hiddenImageUsers = new Set(['ZI ZU','*___F117___*','*__X__*','-𝔸𝕣�
 const bannedUsers = new Set();
 // Skladištenje informacija o gostima
 const guests = {};
-softGuestBan(io, guests);
 const guestsData = {};
+softGuestBan(io, guests);
 const assignedNumbers = new Set(); // Set za generisane brojeve
 const userColors = {}; // Ovdje čuvamo boje korisnika
 const sviAvatari = {};
@@ -240,4 +240,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
 
