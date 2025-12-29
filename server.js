@@ -3,7 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { connectDB } = require('./mongo');
 const { register, login } = require('./prijava');
-const { setupSocketEvents } = require('./banmodul'); // Uvoz funkcije iz banmodula
+const softGuestBan = require('./banmodul'); // relativna putanja do banmodul.js
 const konobaricamodul = require('./konobaricamodul'); // Uvoz konobaricamodul.js
 const slikemodul = require('./slikemodul');
 const pingService = require('./ping');
@@ -62,13 +62,12 @@ const hiddenImageUsers = new Set(['ZI ZU','*___F117___*','*__X__*','-𝔸𝕣�
 const bannedUsers = new Set();
 // Skladištenje informacija o gostima
 const guests = {};
+softGuestBan(io, guests);
 const guestsData = {};
 const assignedNumbers = new Set(); // Set za generisane brojeve
 const userColors = {}; // Ovdje čuvamo boje korisnika
 const sviAvatari = {};
 const userGradients = {};
-// Dodavanje socket događaja iz banmodula
-setupSocketEvents(io, guests, bannedUsers); // Dodavanje guests i bannedUsers u banmodul
 let currentBackground = "";
 let textElements = [];
 startVirtualGuests(io, guests);
@@ -241,3 +240,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
+
