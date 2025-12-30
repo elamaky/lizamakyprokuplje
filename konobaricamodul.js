@@ -55,15 +55,14 @@ socket.on('chatMessage', (msgData) => {
 
   const konobaricaReactions = {
     'pauza': '*__X__* nesrećo moja, ovo maltretiranje trpim samo zbog tebe jer te volim. Ja se ubih od posla, a gosti ne daju bakšiš nikako. Hoću povišicu od 500%',
-      'x': '*Da da , bas taj x , to je najbolji decko na svetu, udacu se za njega jednog dana , znam ja to. ',
-      'umorna': 'Da, bas sam mnogo umorna, sve me boli , X tako bi mi prijale tvoje zlatne ruke sada da mi masiraju noge ',
+    'umorna': 'Da, bas sam mnogo umorna, sve me boli , X tako bi mi prijale tvoje zlatne ruke sada da mi masiraju noge ',
     'red bul': 'Evo stiže odmah <img src="emoji gif/redbul.webp" style="height:40px;">',
     'viski': 'Evo stiže odmah viski za Lepu i ostale goste <img src="emoji gif/viski.png" style="height:40px;">',
     'vodka': 'Dok vi pijete vodku djavo sedi u cose i smeje se <img src="emoji gif/vodka.webp" style="height:40px;">',
      'pivo': 'Naravno, Pivo samo za vas <img src="emoji gif/pivo.avif" style="height:40px;">',
      'caj': 'Caj za Dj Sandru <img src="emoji gif/caj.avif" style="height:40px;">',
      'kisela': 'Mj kisela je dobra za tebe , stabilizovace ti se pritisak  <img src="emoji gif/kisela.avif" style="height:40px;">',
-     'jede': 'Gladni i siti slobodno se posluzite , na racun galaksije  <img src="emoji gif/jede.avif" style="height:40px;">',
+     'jede': 'Na racun galaksije  <img src="emoji gif/jede.avif" style="height:40px;">',
      'pije': 'Nemojte se stideti samo se posluzite  <img src="emoji gif/jede.avif" style="height:40px;">',
     'kokta': ' Letim , kokta za Najlepsu ciganku i drustvo ,ima kokte dovoljno za sve  <img src="emoji gif/kokta.webp" style="height:40px;">'
   };
@@ -261,6 +260,7 @@ if (defaultGradient.value) {
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
