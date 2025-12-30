@@ -263,10 +263,17 @@ text = tempDiv.innerHTML;
         }
     }
 
-    // ===== COLOR =====
-    else if (data.color) {
-        newMessage.style.color = data.color;
-    }
+ // ===== COLOR =====
+else if (data.color) {
+    // uklanjanje prethodnog gradijenta/efekata
+    newMessage.style.backgroundImage = '';
+    newMessage.style.backgroundClip = '';
+    newMessage.style.webkitBackgroundClip = '';
+    newMessage.style.webkitTextFillColor = '';
+
+    // primena korisničke boje
+    newMessage.style.color = data.color;
+}
 
     // CONTENT
     newMessage.innerHTML = `
@@ -903,3 +910,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
