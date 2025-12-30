@@ -16,7 +16,7 @@ const authorizedUsers = new Set([
 ]);
 
 // ================== MODULE ==================
-module.exports = function softGuestBan(io, guests) {
+module.exports = function softGuestBan(io, guests, guestIds) {
 
     io.on('connection', async (socket) => {
         console.log('[SOCKET] connected:', socket.id);
@@ -28,31 +28,11 @@ module.exports = function softGuestBan(io, guests) {
         socket.emit('bannedList', bannedIds);
         console.log('[INIT] bannedList sent:', bannedIds.length);
 
-        // ================== REGISTER ==================
-        socket.on('registerGuestIdentity', async ({ guestId }) => {
-            if (!guestId) return;
-
-            console.log('[REGISTER] socket:', socket.id, 'guestId:', guestId);
-
-            let guest = await SoftGuest.findOne({ guestId });
-
-            if (!guest) {
-                guest = await SoftGuest.create({ guestId, banned: false });
-                console.log('[DB] new guest created:', guestId);
-            }
-
-            if (guest.banned) {
-                console.warn('[BAN] guest already banned:', guestId);
-                socket.emit('userBanned', guestId);
-            }
-        });
-
         // ================== TOGGLE BAN ==================
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
-            const requester = guests[socket.id]?.nickname;
-
-            if (!authorizedUsers.has(requester)) {
-                console.warn('[BAN] unauthorized attempt by', requester);
+            const requesterNick = guests[socket.id]; // nick iz starog sistema
+            if (!authorizedUsers.has(requesterNick)) {
+                console.warn('[BAN] unauthorized attempt by', requesterNick);
                 return;
             }
 
@@ -75,5 +55,20 @@ module.exports = function softGuestBan(io, guests) {
                 io.emit('userUnbanned', guestId);
             }
         });
+
+        // ================== REGISTER GUEST ID ==================
+        socket.on('registerGuestIdentity', ({ guestId }) => {
+            guestIds[socket.id] = guestId;
+            console.log('[BAN] guestId linked:', guests[socket.id], guestId);
+
+            // Ako je banovan, odmah javi njemu
+            SoftGuest.findOne({ guestId }).then(guest => {
+                if (guest?.banned) {
+                    console.warn('[BAN] guest already banned:', guestId);
+                    socket.emit('userBanned', guestId);
+                }
+            }).catch(err => console.error('[BAN] error checking ban:', err));
+        });
+
     });
 };
