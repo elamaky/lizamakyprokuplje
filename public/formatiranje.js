@@ -99,7 +99,7 @@ function updateInputStyle() {
     }
 
     // COLOR
-    inputField.style.color = currentColor || '#fff';
+   inputField.style.color = currentColor || "rgb(168, 168, 168)";
 }
 
 let lastMessages = {};
@@ -837,4 +837,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
