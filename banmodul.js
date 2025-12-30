@@ -1,4 +1,13 @@
-const SoftGuest = require('./models/SoftGuest'); // pretpostavimo da je model u models folderu ili prilagodi
+const mongoose = require('mongoose');
+
+// Schema i model za soft ban
+const SoftGuestSchema = new mongoose.Schema({
+    guestId: { type: String, unique: true },
+    banned: { type: Boolean, default: false }
+});
+const SoftGuest = mongoose.model('SoftGuest', SoftGuestSchema);
+
+// Ko sme da ban-uje
 const authorizedUsers = new Set([
     'Radio Galaksija','ZI ZU','*___F117___*','*__X__*',
     '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','-𝔸𝕣𝕝𝕚𝕛𝕒-',
@@ -7,13 +16,26 @@ const authorizedUsers = new Set([
 
 module.exports = function initBanModule(io, guests) {
 
-    io.on('connection', async socket => {
+    io.on('connection', socket => {
 
-        // Pošalji novom klijentu listu banovanih
-        const bannedGuests = await SoftGuest.find({ banned: true });
-        socket.emit('bannedList', bannedGuests.map(g => g.guestId));
+        // Pošalji ban listu novom klijentu
+        SoftGuest.find({ banned: true }).then(bannedGuests => {
+            socket.emit('bannedList', bannedGuests.map(g => g.guestId));
+        });
 
-        // Toggle ban/unban
+        // Registracija korisnika
+        socket.on('registerGuestIdentity', async ({ guestId }) => {
+            if (!guestId) return;
+
+            guests[socket.id] = guestId;
+
+            let guest = await SoftGuest.findOne({ guestId });
+            if (!guest) guest = await SoftGuest.create({ guestId, banned: false });
+
+            if (guest.banned) socket.emit('userBanned', guestId);
+        });
+
+        // Toggle soft ban
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
             const requesterName = guests[socket.id];
             if (!authorizedUsers.has(requesterName)) return;
@@ -26,27 +48,8 @@ module.exports = function initBanModule(io, guests) {
                 await guest.save();
             }
 
-            // Emit svima
-            if (guest.banned) {
-                io.emit('userBanned', guestId);
-            } else {
-                io.emit('userUnbanned', guestId);
-            }
-        });
-
-        // Opcionalno: registracija/postaavljanje guestId
-        socket.on('registerGuestIdentity', async ({ guestId }) => {
-            if (!guestId) return;
-            guests[socket.id] = guestId;
-
-            let guest = await SoftGuest.findOne({ guestId });
-            if (!guest) {
-                guest = await SoftGuest.create({ guestId, banned: false });
-            }
-
-            if (guest.banned) {
-                socket.emit('userBanned', guestId);
-            }
+            if (guest.banned) io.emit('userBanned', guestId);
+            else io.emit('userUnbanned', guestId);
         });
 
     });
