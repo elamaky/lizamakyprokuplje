@@ -494,7 +494,6 @@ socket.on('newGuest', function (nickname) {
     newGuest.id = guestId;
     newGuest.textContent = nickname;
      guestEl.textContent = renderNickname(nickname);
-    newGuest.textContent = bannedSet.has(nickname) ? `${nickname} 🔒` : nickname;
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -541,9 +540,8 @@ socket.on('updateGuestList', function (users) {
             newGuest.id = guestId;
             newGuest.textContent = nickname;
              guestEl.textContent = renderNickname(nickname);
-    newGuest.textContent = bannedSet.has(nickname) ? `${nickname} 🔒` : nickname;
-
-            // Dodaj boju ako je virtualni gost
+  
+          // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
                 newGuest.style.color = vg.color;
@@ -913,4 +911,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
