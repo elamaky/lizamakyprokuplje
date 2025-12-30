@@ -5,7 +5,7 @@ const bannedSet = new Set();
 socket.on('userBanned', nickname => {
     bannedSet.add(nickname);
 
-     const el = document.getElementById(`guest-${nickname}`);
+    const el = document.getElementById(`guest-${nickname}`);
     if (el) el.textContent = renderNickname(nickname);
 
     if (nickname === myNickname) {
@@ -43,4 +43,22 @@ guestList.addEventListener('dblclick', e => {
 if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
+}
+
+// ================== RENDER ==================
+function renderNickname(nickname) {
+    return bannedSet.has(nickname)
+        ? `${nickname} 🔒`
+        : nickname;
+}
+
+// ================== GUEST LIST ==================
+function addGuest(nickname) {
+    const guestEl = document.createElement('div');
+    guestEl.className = 'guest';
+    guestEl.id = `guest-${nickname}`;
+    guestEl.dataset.nick = nickname;
+    guestEl.textContent = renderNickname(nickname);
+
+    guestList.appendChild(guestEl);
 }
