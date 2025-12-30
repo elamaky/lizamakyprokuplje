@@ -99,7 +99,7 @@ function updateInputStyle() {
     }
 
     // COLOR
-   inputField.style.color = currentColor || "rgb(168, 168, 168)";
+  inputField.style.color = currentColor || "rgb(168, 168, 168)";
 }
 
 let lastMessages = {};
@@ -109,17 +109,58 @@ function applyAnimationToMessageName(strongElement, nickname) {
     if (!animationAuthorizedUsers.has(nickname)) return;
 
     const animData = allUserAnimations[nickname];
-    if (!animData || !animData.animation) return;
+    if (!animData) return;
 
     const animationName = animData.animation;
     const speed = animData.speed || 2;
 
-    // Uzmemo tekst imena (bez : )
+    // originalno ime (bez :)
     const originalName = strongElement.textContent.replace(':', '').trim();
 
-    // Očistimo ime
+    // reset
     strongElement.innerHTML = '';
+    strongElement.style.animation = 'none';
+    strongElement.style.background = '';
+    strongElement.style.webkitTextFillColor = '';
+    strongElement.style.backgroundClip = '';
+    strongElement.style.webkitBackgroundClip = '';
 
+    // =========================
+    // 🎇 GLITTER ZA PORUKE
+    // =========================
+    if (animData.glitter) {
+        strongElement.style.background = `url('/glit/${animData.glitter}')`;
+        strongElement.style.backgroundSize = 'cover';
+        strongElement.style.backgroundRepeat = 'repeat';
+        strongElement.style.backgroundClip = 'text';
+        strongElement.style.webkitBackgroundClip = 'text';
+        strongElement.style.webkitTextFillColor = 'transparent';
+
+        if (animationName && animationName !== 'guestGradientGlow') {
+            strongElement.style.animationName = animationName;
+            strongElement.style.animationDuration = `${speed}s`;
+            strongElement.style.animationIterationCount = 'infinite';
+            strongElement.style.animationTimingFunction = 'ease-in-out';
+        }
+
+        strongElement.textContent = originalName + ': ';
+        return;
+    }
+
+    // =========================
+    // 🌈 GUEST GRADIENT GLOW
+    // =========================
+    if (animationName === 'guestGradientGlow') {
+        strongElement.classList.add('guest-gradient-anim');
+        strongElement.style.animationDuration = `${speed}s`;
+        strongElement.style.animationIterationCount = 'infinite';
+        strongElement.textContent = originalName + ': ';
+        return;
+    }
+
+    // =========================
+    // 🔤 ANIMACIJE PO SLOVIMA
+    // =========================
     const problematicChars = [
         ' ', '*', '(', ')', '-', '_', '[', ']', '{', '}', '^', '$', '#', '@',
         '!', '+', '=', '~', '`', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '"', "'"
@@ -136,13 +177,11 @@ function applyAnimationToMessageName(strongElement, nickname) {
         const span = document.createElement('span');
         span.textContent = char;
 
-        // postojeće klase — iste kao u glavnom animacija fajlu
         if (animationName === 'rotateLetters') span.classList.add('rotate-letter');
         else if (animationName === 'glowBlink') span.classList.add('glow-letter');
         else if (animationName === 'fadeInOut') span.classList.add('fade-letter');
         else if (animationName === 'bounce') span.classList.add('bounce-letter');
         else if (animationName === 'superCombo') span.classList.add('superCombo-letter');
-         else if (animationName === 'guestGradientGlow') span.classList.add('guest-gradient-anim');
 
         span.style.animationDuration = `${speed}s`;
         span.style.animationIterationCount = 'infinite';
@@ -151,9 +190,10 @@ function applyAnimationToMessageName(strongElement, nickname) {
         strongElement.appendChild(span);
     }
 
-    // vratimo ":" iza animiranog imena
-    strongElement.innerHTML += ': ';
+    // vrati :
+    strongElement.appendChild(document.createTextNode(': '));
 }
+
 function canSeeHiddenImage(userName) {
   return hiddenImageUsers.has(userName);
 }
@@ -235,31 +275,44 @@ text = tempDiv.innerHTML;
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-    // NAME ANIMATION
-    const strongName = newMessage.querySelector('strong');
-    const userAnim = allUserAnimations[data.nickname];
-    if (userAnim && userAnim.animation) {
-        strongName.style.animationName = userAnim.animation;
-        strongName.style.animationDuration = `${userAnim.speed || 1}s`;
-        strongName.style.animationIterationCount = 'infinite';
-        strongName.style.display = 'inline-block';
+      // NAME ANIMATION
+ // NAME ANIMATION
+const strongName = newMessage.querySelector('strong');
+const userAnim = allUserAnimations[data.nickname];
 
-        if (data.glitter) {
-            strongName.style.background = `url('/glit/${data.glitter}')`;
-            strongName.style.backgroundSize = 'cover';
-        } else if (data.gradient || window.defaultAdminGradient) {
-            const gradClass = data.gradient || window.defaultAdminGradient;
-            const gradEl = document.querySelector(`.${gradClass}`);
-            if (gradEl) {
-                strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
-            }
+if (userAnim && userAnim.animation) {
+    strongName.style.animationName = userAnim.animation;
+    strongName.style.animationDuration = `${userAnim.speed || 1}s`;
+    strongName.style.animationIterationCount = 'infinite';
+    strongName.style.display = 'inline-block';
+
+    let hasBackground = false;
+
+    // 🎇 GLITTER
+    if (data.glitter) {
+        strongName.style.background = `url('/glit/${data.glitter}')`;
+        strongName.style.backgroundSize = 'cover';
+        strongName.style.backgroundRepeat = 'repeat';
+        hasBackground = true;
+    }
+    // 🌈 GRADIENT
+    else if (data.gradient || window.defaultAdminGradient) {
+        const gradClass = data.gradient || window.defaultAdminGradient;
+        const gradEl = document.querySelector(`.${gradClass}`);
+        if (gradEl) {
+            strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+            hasBackground = true;
         }
+    }
 
+    // 👉 SAMO AKO IMA BACKGROUND
+    if (hasBackground) {
         strongName.style.backgroundClip = 'text';
         strongName.style.webkitBackgroundClip = 'text';
         strongName.style.webkitTextFillColor = 'transparent';
         strongName.style.color = 'transparent';
     }
+}
 
     // AVATAR
     if (authorizedUsers.has(data.nickname) && data.avatar) {
@@ -365,27 +418,39 @@ socket.on('private_message', function (data) {
     // NAME ANIMATION
     const strongName = newMessage.querySelector('strong');
     const userAnim = allUserAnimations[data.from];
+
     if (userAnim && userAnim.animation) {
         strongName.style.animationName = userAnim.animation;
         strongName.style.animationDuration = `${userAnim.speed || 1}s`;
         strongName.style.animationIterationCount = 'infinite';
         strongName.style.display = 'inline-block';
 
+        let hasBackground = false;
+
+        // 🎇 GLITTER
         if (data.glitter) {
             strongName.style.background = `url('/glit/${data.glitter}')`;
             strongName.style.backgroundSize = 'cover';
-        } else if (data.gradient || window.defaultAdminGradient) {
+            strongName.style.backgroundRepeat = 'repeat';
+            hasBackground = true;
+        }
+        // 🌈 GRADIENT
+        else if (data.gradient || window.defaultAdminGradient) {
             const gradClass = data.gradient || window.defaultAdminGradient;
             const gradEl = document.querySelector(`.${gradClass}`);
             if (gradEl) {
                 strongName.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+                hasBackground = true;
             }
         }
 
-        strongName.style.backgroundClip = 'text';
-        strongName.style.webkitBackgroundClip = 'text';
-        strongName.style.webkitTextFillColor = 'transparent';
-        strongName.style.color = 'transparent';
+        // SAMO AKO IMA BACKGROUND
+        if (hasBackground) {
+            strongName.style.backgroundClip = 'text';
+            strongName.style.webkitBackgroundClip = 'text';
+            strongName.style.webkitTextFillColor = 'transparent';
+            strongName.style.color = 'transparent';
+        }
     }
 
     // AVATAR
@@ -412,6 +477,7 @@ socket.on('private_message', function (data) {
         messageArea.scrollTop = 0;
     }
 });
+
 
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
@@ -837,5 +903,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
