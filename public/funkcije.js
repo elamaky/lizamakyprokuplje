@@ -1,59 +1,66 @@
 // ================== BAN STATE ==================
 const bannedSet = new Set();
+const chatInput = document.getElementById('chat-input');
+const messageArea = document.getElementById('message-area');
+const guestList = document.getElementById('guestList');
 
-// ================== SOCKET EVENTS ==================
-socket.on('userBanned', nickname => {
-    bannedSet.add(nickname);
 
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
+// ================== INICIJALIZACIJA BAN MODULA ==================
+function initBanModule(socket) {
 
-    if (nickname === myNickname) {
+    // Server šalje da je korisnik banovan
+    socket.on('userBanned', nickname => {
+        bannedSet.add(nickname);
+        const el = document.getElementById(`guest-${nickname}`);
+        if (el) el.textContent = renderNickname(nickname);
+
+        if (nickname === myNickname) {
+            chatInput.disabled = true;
+            messageArea.style.display = 'none';
+            localStorage.setItem('banned', '1');
+        }
+    });
+
+    // Server šalje da je korisnik unbanovan
+    socket.on('userUnbanned', nickname => {
+        bannedSet.delete(nickname);
+        const el = document.getElementById(`guest-${nickname}`);
+        if (el) el.textContent = renderNickname(nickname);
+
+        if (nickname === myNickname) {
+            chatInput.disabled = false;
+            messageArea.style.display = 'block';
+            localStorage.removeItem('banned');
+        }
+    });
+
+    // Double click za ban/unban
+    guestList.addEventListener('dblclick', e => {
+        const guestEl = e.target.closest('.guest');
+        if (!guestEl) return;
+
+        const nickname = guestEl.dataset.nick || guestEl.textContent.replace(' 🔒', '');
+        if (!authorizedUsers.has(myNickname)) return;
+
+        socket.emit('toggleSoftGuestBan', { guestId: nickname });
+    });
+
+    // Self-ban pri učitavanju stranice
+    if (localStorage.getItem('banned')) {
         chatInput.disabled = true;
         messageArea.style.display = 'none';
-        localStorage.setItem('banned', '1');
     }
-});
-
-socket.on('userUnbanned', nickname => {
-    bannedSet.delete(nickname);
-
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
-
-    if (nickname === myNickname) {
-        chatInput.disabled = false;
-        messageArea.style.display = 'block';
-        localStorage.removeItem('banned');
-    }
-});
-
-// ================== DOUBLE CLICK BAN / UNBAN ==================
-guestList.addEventListener('dblclick', e => {
-    const guestEl = e.target.closest('.guest');
-    if (!guestEl) return;
-
-    const nickname = guestEl.dataset.nick;
-    if (!authorizedUsers.has(myNickname)) return;
-
-    socket.emit('toggleSoftGuestBan', { guestId: nickname });
-});
-
-// ================== SELF BAN STATE ==================
-if (localStorage.getItem('banned')) {
-    chatInput.disabled = true;
-    messageArea.style.display = 'none';
 }
 
-// ================== RENDER ==================
+// ================== FUNKCIJA ZA RENDER BANOVANIH ==================
 function renderNickname(nickname) {
-    return bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
+    return bannedSet.has(nickname) ? `${nickname} 🔒` : nickname;
 }
 
-// ================== GUEST LIST ==================
+// ================== FUNKCIJA ZA DODAVANJE GOSTA ==================
 function addGuest(nickname) {
+    if (document.getElementById(`guest-${nickname}`)) return;
+
     const guestEl = document.createElement('div');
     guestEl.className = 'guest';
     guestEl.id = `guest-${nickname}`;
@@ -62,3 +69,5 @@ function addGuest(nickname) {
 
     guestList.appendChild(guestEl);
 }
+
+// Funkcije su globalne, mogu se pozvati direktno iz glavnog fajla
