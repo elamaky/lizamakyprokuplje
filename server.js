@@ -59,13 +59,11 @@ app.post('/restart', (req, res) => {
 const authorizedUsers = new Set(['Radio Galaksija','ZI ZU','*___F117___*','*__X__*','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','-𝔸𝕣𝕝𝕚𝕛𝕒-','Najlepsa Ciganka','Dia💎','Dia']);
 const animationAuthorizedUsers = new Set(['Radio Galaksija','ZI ZU','*___F117___*','*__X__*','-𝔸𝕣𝕝𝕚𝕛𝕒-','Dia💎','Dia','Najlepsa Ciganka','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊']);
 const hiddenImageUsers = new Set(['ZI ZU','*___F117___*','*__X__*','-𝔸𝕣𝕝𝕚𝕛𝕒-','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka','Dia💎','Dia']);
-const bannedUsers = new Set();
-const guestIds = {}; // socket.id -> UUID
 // Skladištenje informacija o gostima
 const guests = {};
+softGuestBan(io, guests);
 const guestsData = {};
 const assignedNumbers = new Set(); // Set za generisane brojeve
-softGuestBan(io, guests, guestIds);
 const userColors = {}; // Ovdje čuvamo boje korisnika
 const sviAvatari = {};
 const userGradients = {};
@@ -75,26 +73,19 @@ startVirtualGuests(io, guests);
 const allGlitters = {};
 privatmodul(io, guests, sviAvatari, allGlitters);
 
+
 // Socket.io događaji
 io.on('connection', (socket) => {
-
-    // ================== REGISTER GUEST UUID ==================
-    socket.on('registerGuestIdentity', ({ guestId }) => {
-        guestIds[socket.id] = guestId;
-        console.log('[BAN] guestId linked:', guests[socket.id], guestId);
-    });
-
-    // ================== GENERISANJE NICKNAME-A ==================
+    // Generisanje jedinstvenog broja za gosta
     const uniqueNumber = generateUniqueNumber();
     const nickname = `Gost-${uniqueNumber}`; // Nadimak korisnika
     guests[socket.id] = nickname; // Dodajemo korisnika u guest list
-    socket.emit('setNickname', nickname);
+ socket.emit('setNickname', nickname);
     socket.emit('yourNickname', nickname);
-
     const ipList = socket.handshake.headers['x-forwarded-for'];
-    const ipAddress = ipList ? ipList.split(',')[0].trim() : socket.handshake.address;
-
-    // Funkcija za generisanje jedinstvenog broja
+const ipAddress = ipList ? ipList.split(',')[0].trim() : socket.handshake.address;
+   
+// Funkcija za generisanje jedinstvenog broja
     function generateUniqueNumber() {
         let number;
         do {
@@ -103,34 +94,32 @@ io.on('connection', (socket) => {
         assignedNumbers.add(number);
         return number;
     }
-
-    // Emitovanje događaja da bi ostali korisnici videli novog gosta
+// Emitovanje događaja da bi ostali korisnici videli novog gosta
     socket.broadcast.emit('newGuest', nickname);
+io.emit('updateGuestList', Object.values(guests));
+ console.log(`${guests[socket.id]} se povezao. IP adresa korisnika: ${ipAddress}`);
+ io.emit('new-log', `${guests[socket.id]} se povezao. IP adresa korisnika: ${ipAddress}`);
+
+  // Obrada prijave korisnika
+socket.on('userLoggedIn', (username) => {
+    const oldNickname = guests[socket.id]; // Sačuvamo trenutni nadimak
+
+    console.log(`${oldNickname} je sada ${username}.`);
+    io.emit('new-log', `${oldNickname} je sada ${username}.`);
+
+    guests[socket.id] = username;
+
+    if (authorizedUsers.has(username)) {
+        console.log(`${username} je autentifikovan kao admin.`);
+        io.emit('new-log', `${username} je autentifikovan kao admin.`);
+    } else {
+        console.log(`${username} se prijavio kao gost.`);
+        io.emit('new-log', `${username} se prijavio kao gost.`);
+    }
+
     io.emit('updateGuestList', Object.values(guests));
-
-    console.log(`${guests[socket.id]} se povezao. IP adresa korisnika: ${ipAddress}`);
-    io.emit('new-log', `${guests[socket.id]} se povezao. IP adresa korisnika: ${ipAddress}`);
-
-    // ================== OBRADE LOGIN-A ==================
-    socket.on('userLoggedIn', (username) => {
-        const oldNickname = guests[socket.id]; // Sačuvamo trenutni nadimak
-
-        console.log(`${oldNickname} je sada ${username}.`);
-        io.emit('new-log', `${oldNickname} je sada ${username}.`);
-
-        guests[socket.id] = username;
-
-        if (authorizedUsers.has(username)) {
-            console.log(`${username} je autentifikovan kao admin.`);
-            io.emit('new-log', `${username} je autentifikovan kao admin.`);
-        } else {
-            console.log(`${username} se prijavio kao gost.`);
-            io.emit('new-log', `${username} se prijavio kao gost.`);
-        }
-
-        io.emit('updateGuestList', Object.values(guests));
-    });
-
+});
+        
  // Obrada slanja chat poruka
 socket.on('chatMessage', (msgData) => {
     const time = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin' });
@@ -250,9 +239,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server je pokrenut na portu ${PORT}`);
 });
-
-
-
-
-
 
