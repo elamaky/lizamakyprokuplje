@@ -1,68 +1,64 @@
-let privilegedUsers = new Set(['Radio Galaksija','R-Galaksija','ZI ZU','*___F117___*','-𝔸𝕣𝕝𝕚𝕛𝕒-','*__X__*','𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','Najlepsa Ciganka','Dia']);
-const userSockets = new Map(); // Mapa koja čuva socket.id → username
+const mongoose = require('mongoose');
 
-function setupSocketEvents(io, guests, bannedUsers) {
-    io.on('connection', (socket) => {
-        // Provera da li je korisnik banovan
-        if (bannedUsers.has(socket.id)) {
-            socket.emit('banned', 'Banovani ste sa servera.');
-            socket.disconnect(true);
-            return;
-        }
+const SoftGuestSchema = new mongoose.Schema({
+    guestId: { type: String, unique: true }, // nickname
+    banned: { type: Boolean, default: false }
+});
 
-        // Kada se korisnik prijavi
-        socket.on('userLoggedIn', (username) => {
-            userSockets.set(socket.id, username); // Sačuvaj socket ID i username
+const SoftGuest = mongoose.model('SoftGuest', SoftGuestSchema);
 
-            if (privilegedUsers.has(username)) {
-                socket.emit('adminAccess', "Pristup odobren.");
+// Ko sme da ban-uje
+const authorizedUsers = new Set([
+    'Radio Galaksija','ZI ZU','*___F117___*','*__X__*',
+    '𝕯𝖔𝖈𝖙𝖔𝖗 𝕷𝖔𝖛𝖊','-𝔸𝕣𝕝𝕚𝕛𝕒-',
+    'Najlepsa Ciganka','Dia💎','Dia'
+]);
+
+module.exports = function softGuestBan(io, guests) {
+
+    io.on('connection', async (socket) => {
+
+        // 🔒 Pošalji novom klijentu kompletnu listu banovanih
+        const bannedGuests = await SoftGuest.find({ banned: true });
+        socket.broadcast.emit('bannedList', bannedGuests.map(g => g.guestId));
+
+        // Klijent se predstavi (nickname)
+        socket.on('registerGuestIdentity', async ({ guestId }) => {
+            if (!guestId) return;
+
+            let guest = await SoftGuest.findOne({ guestId });
+            if (!guest) {
+                guest = await SoftGuest.create({ guestId, banned: false });
+            }
+
+            // Ako je banovan – javi NJEMU (self lock)
+            if (guest.banned) {
+                socket.broadcast.emit('userBanned', guestId);
             }
         });
 
-        // Banovanje korisnika
-        socket.on('banUser', (nickname) => {
-            const username = userSockets.get(socket.id);
+        // Toggle ban
+        socket.on('toggleSoftGuestBan', async ({ guestId }) => {
+            const requesterName = guests[socket.id];
+            if (!authorizedUsers.has(requesterName)) return;
 
-            if (!privilegedUsers.has(username)) {
-                socket.emit('error', "Nemate prava za banovanje.");
-                return;
+            let guest = await SoftGuest.findOne({ guestId });
+
+            if (!guest) {
+                guest = await SoftGuest.create({ guestId, banned: true });
+            } else {
+                guest.banned = !guest.banned;
+                await guest.save();
             }
 
-            const targetSocketId = Object.keys(guests).find(id => guests[id] === nickname);
-
-            if (!targetSocketId) {
-                socket.emit('error', "Korisnik nije pronađen.");
-                return;
-            }
-
-            bannedUsers.add(targetSocketId);
-            io.to(targetSocketId).emit('banned', "Banovani ste sa servera.");
-            const targetSocket = io.sockets.sockets.get(targetSocketId);
-            if (targetSocket) targetSocket.disconnect(true);
-
-            io.emit('userBanned', nickname);
-        });
-
-        // Odbanovanje korisnika
-        socket.on('unbanUser', (nickname) => {
-            const username = userSockets.get(socket.id);
-
-            if (!privilegedUsers.has(username)) {
-                socket.emit('error', "Nemate prava za odbanovanje.");
-                return;
-            }
-
-            const targetSocketId = Object.keys(guests).find(id => guests[id] === nickname);
-
-            if (targetSocketId) {
-                bannedUsers.delete(targetSocketId);
-                io.emit('userUnbanned', nickname);
+            // Broadcast svima
+            if (guest.banned) {
+                io.emit('userBanned', guestId);
+            } else {
+                io.emit('userUnbanned', guestId);
             }
         });
+
     });
-}
-
-module.exports = { setupSocketEvents };
-
-
+};
 
