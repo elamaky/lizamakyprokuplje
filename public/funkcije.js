@@ -1,30 +1,61 @@
+// ================== GUEST ID (PERSISTENT) ==================
+let guestId = localStorage.getItem('guestId');
+
+if (!guestId) {
+    guestId = crypto.randomUUID();
+    localStorage.setItem('guestId', guestId);
+    console.log('[INIT] New guestId generated:', guestId);
+} else {
+    console.log('[INIT] Existing guestId loaded:', guestId);
+}
+
 // ================== BAN STATE ==================
 const bannedSet = new Set();
+let selfBanned = localStorage.getItem('banned') === '1';
+
+console.log('[STATE] Initial selfBanned:', selfBanned);
+
+// ================== REGISTER IDENTITY ==================
+socket.emit('registerGuestIdentity', { guestId });
+console.log('[SOCKET] registerGuestIdentity sent:', guestId);
 
 // ================== SOCKET EVENTS ==================
-socket.on('userBanned', nickname => {
-    bannedSet.add(nickname);
 
-     const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
+// Full banned list from server
+socket.on('bannedList', list => {
+    console.log('[SOCKET] bannedList received:', list);
 
-    if (nickname === myNickname) {
-        chatInput.disabled = true;
-        messageArea.style.display = 'none';
-        localStorage.setItem('banned', '1');
+    bannedSet.clear();
+    list.forEach(id => bannedSet.add(id));
+
+    if (bannedSet.has(guestId)) {
+        applySelfBan();
+    } else {
+        removeSelfBan();
     }
 });
 
-socket.on('userUnbanned', nickname => {
-    bannedSet.delete(nickname);
+// Someone got banned
+socket.on('userBanned', id => {
+    console.log('[SOCKET] userBanned:', id);
 
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
+    bannedSet.add(id);
+    updateGuestUI(id);
 
-    if (nickname === myNickname) {
-        chatInput.disabled = false;
-        messageArea.style.display = 'block';
-        localStorage.removeItem('banned');
+    if (id === guestId) {
+        applySelfBan();
+    }
+});
+
+// Someone got unbanned
+socket.on('userUnbanned', id => {
+    console.log('[SOCKET] userUnbanned:', id);
+
+    bannedSet.delete(id);
+    updateGuestUI(id);
+
+    if (id === guestId) {
+        removeSelfBan();
     }
 });
 
@@ -33,14 +64,52 @@ guestList.addEventListener('dblclick', e => {
     const guestEl = e.target.closest('.guest');
     if (!guestEl) return;
 
-    const nickname = guestEl.dataset.nick;
-    if (!authorizedUsers.has(myNickname)) return;
+    const targetGuestId = guestEl.dataset.guestid;
+    if (!authorizedUsers.has(myNickname)) {
+        console.warn('[BAN] Unauthorized ban attempt by', myNickname);
+        return;
+    }
 
-    socket.emit('toggleSoftGuestBan', { guestId: nickname });
+    console.log('[BAN] toggleSoftGuestBan:', targetGuestId);
+    socket.emit('toggleSoftGuestBan', { guestId: targetGuestId });
 });
 
-// ================== SELF BAN STATE ==================
-if (localStorage.getItem('banned')) {
+// ================== UI HELPERS ==================
+function applySelfBan() {
+    if (selfBanned) return;
+
+    console.warn('[BAN] SELF BAN APPLIED');
+    selfBanned = true;
+    chatInput.disabled = true;
+    messageArea.style.display = 'none';
+    localStorage.setItem('banned', '1');
+}
+
+function removeSelfBan() {
+    if (!selfBanned) return;
+
+    console.log('[BAN] SELF BAN REMOVED');
+    selfBanned = false;
+    chatInput.disabled = false;
+    messageArea.style.display = 'block';
+    localStorage.removeItem('banned');
+}
+
+function updateGuestUI(id) {
+    const el = document.querySelector(`.guest[data-guestid="${id}"]`);
+    if (!el) {
+        console.log('[UI] Guest element not found for', id);
+        return;
+    }
+
+    const nick = el.dataset.nick;
+    el.textContent = renderNickname(nick);
+    console.log('[UI] Guest UI updated:', id);
+}
+
+// ================== INIT SELF BAN ON LOAD ==================
+if (selfBanned) {
+    console.warn('[INIT] Restoring self ban from localStorage');
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
