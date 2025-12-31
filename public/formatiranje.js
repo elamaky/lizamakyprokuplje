@@ -486,9 +486,7 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-   newGuest.textContent = nickname;
-
-  
+    newGuest.textContent = renderNickname(nickname); // <- ovde
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -496,6 +494,7 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
+
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
@@ -506,12 +505,11 @@ socket.on('updateGuestList', function (users) {
         if (!users.includes(nickname)) {
             delete guestsData[`guest-${nickname}`];
             const guestElement = Array.from(guestList.children).find(guest => guest.textContent === nickname);
-            if (guestElement) {
-                guestList.removeChild(guestElement);
-            }
+            if (guestElement) guestList.removeChild(guestElement);
         }
     });
-   // Reorder: "Radio Galaksija" na vrhu
+
+    // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
         users = ["Radio Galaksija", ...users.filter(n => n !== "Radio Galaksija")];
 
@@ -529,12 +527,13 @@ socket.on('updateGuestList', function (users) {
     // Dodaj nove goste
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        if (!guestsData[guestId]) {
-            const newGuest = document.createElement('div');
+        let newGuest = document.getElementById(guestId);
+        if (!newGuest) {
+            newGuest = document.createElement('div');
             newGuest.className = 'guest';
             newGuest.id = guestId;
-            newGuest.textContent = nickname;
-            
+            newGuest.textContent = renderNickname(nickname); // <- ovde
+
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
@@ -547,6 +546,9 @@ socket.on('updateGuestList', function (users) {
 
             newGuest.setAttribute('data-guest-id', guestId);
             guestList.appendChild(newGuest);
+        } else {
+            // Ako gost već postoji, samo update text-a po ban statusu
+            newGuest.textContent = renderNickname(nickname);
         }
     });
 
@@ -554,11 +556,10 @@ socket.on('updateGuestList', function (users) {
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
         const guestElement = document.getElementById(guestId);
-        if (guestElement) {
-            guestList.appendChild(guestElement);
-        }
+        if (guestElement) guestList.appendChild(guestElement);
     });
 });
+
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -905,6 +906,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
