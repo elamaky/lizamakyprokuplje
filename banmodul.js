@@ -28,7 +28,7 @@ module.exports = function softGuestBan(io, guests) {
 
     // OVDE: pošalji ban status odmah
     if (guest.banned) {
-        socket.emit('userBanned', guestId);
+        io.emit('userBanned', guestId);
     }
 });
 
@@ -51,4 +51,5 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
 
