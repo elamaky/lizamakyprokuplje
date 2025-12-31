@@ -38,18 +38,23 @@ socket.on('userUnbanned', nickname => {
 });
 
 // ================== DOUBLE CLICK BAN / UNBAN ==================
+// Event delegation za dvoklik
 guestList.addEventListener('dblclick', e => {
     const guestEl = e.target.closest('.guest');
     if (!guestEl) return;
 
-    const nickname = guestEl.dataset.nick;
+    const nickname = guestEl.dataset.nick; // mora biti setovan kod svakog gosta
+    if (!nickname) return;
+
     if (!authorizedUsers.has(myNickname)) return;
 
     socket.emit('toggleSoftGuestBan', { guestId: nickname });
 });
+
 
 // ================== SELF BAN STATE ==================
 if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
