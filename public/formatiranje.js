@@ -6,6 +6,13 @@ socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
 
+// ================== RENDER ==================
+function renderNickname(nickname) {
+    return bannedSet.has(nickname)
+        ? `${nickname} 🔒`
+        : nickname;
+}
+
 const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
   { nickname: 'Halime', color: 'purple' },
@@ -30,6 +37,9 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
+const bannedSet = window.bannedSet || new Set();
+window.bannedSet = bannedSet; // globalno
+
 
 let virtualsEnabled = false;
 
@@ -906,6 +916,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
