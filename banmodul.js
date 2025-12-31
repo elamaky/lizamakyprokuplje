@@ -18,18 +18,20 @@ module.exports = function softGuestBan(io, guests) {
 
     io.on('connection', (socket) => {
 
-        socket.on('registerGuestIdentity', async ({ guestId }) => {
-            if (!guestId) return;
+       socket.on('registerGuestIdentity', async ({ guestId }) => {
+    if (!guestId) return;
 
-            let guest = await SoftGuest.findOne({ guestId });
-            if (!guest) {
-                guest = await SoftGuest.create({ guestId, banned: false });
-            }
+    let guest = await SoftGuest.findOne({ guestId });
+    if (!guest) {
+        guest = await SoftGuest.create({ guestId, banned: false });
+    }
 
-            if (guest.banned) {
-                socket.emit('userBanned', guestId);
-            }
-        });
+    // OVDE: pošalji ban status odmah
+    if (guest.banned) {
+        socket.emit('userBanned', guestId);
+    }
+});
+
 
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
             const requesterName = guests[socket.id];
@@ -49,3 +51,4 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
