@@ -44,10 +44,3 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
-
-// ================== RENDER ==================
-function renderNickname(nickname) {
-    return bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
-}
