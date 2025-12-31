@@ -37,9 +37,6 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
-const bannedSet = window.bannedSet || new Set();
-window.bannedSet = bannedSet; // globalno
-
 
 let virtualsEnabled = false;
 
@@ -916,6 +913,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
