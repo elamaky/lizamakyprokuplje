@@ -539,19 +539,7 @@ socket.on('updateGuestList', function (users) {
             guestEl.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
             guestEl.dataset.nick = nickname;
 
-           // ================== BAN ==================
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
-
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
-        // ================== /BAN ==================
-
-               // Dodaj boju ako je virtualni gost
+          // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
                 guestEl.style.color = vg.color;
@@ -572,6 +560,18 @@ socket.on('updateGuestList', function (users) {
         const guestElement = document.getElementById(guestId);
         if (guestElement) {
             guestList.appendChild(guestElement);
+
+                // ================== BAN ==================
+        const existingLock = guestEl.querySelector('.lock-icon');
+        if (existingLock) guestEl.removeChild(existingLock);
+
+        if (window.bannedSet.has(nickname)) {
+            const lock = document.createElement('span');
+            lock.textContent = ' 🔒';
+            lock.className = 'lock-icon';
+            guestEl.appendChild(lock);
+        }
+        // ================== /BAN ==================
         }
     });
 });
@@ -923,4 +923,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
