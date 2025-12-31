@@ -1,3 +1,5 @@
+window.bannedSet = window.bannedSet || new Set();
+
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
     bannedSet.add(nickname);
@@ -41,4 +43,5 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
 
