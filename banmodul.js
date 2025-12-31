@@ -16,22 +16,25 @@ const authorizedUsers = new Set([
 
 module.exports = function softGuestBan(io, guests) {
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
 
-       socket.on('registerGuestIdentity', async ({ guestId }) => {
-    if (!guestId) return;
+        const bannedGuests = await SoftGuest.find({ banned: true });
+        bannedGuests.forEach(g => {
+            socket.emit('userBanned', g.guestId);
+        });
 
-    let guest = await SoftGuest.findOne({ guestId });
-    if (!guest) {
-        guest = await SoftGuest.create({ guestId, banned: false });
-    }
+        socket.on('registerGuestIdentity', async ({ guestId }) => {
+            if (!guestId) return;
 
-    // OVDE: pošalji ban status odmah
-    if (guest.banned) {
-        io.emit('userBanned', guestId);
-    }
-});
+            let guest = await SoftGuest.findOne({ guestId });
+            if (!guest) {
+                guest = await SoftGuest.create({ guestId, banned: false });
+            }
 
+            if (guest.banned) {
+                socket.emit('userBanned', guestId);
+            }
+        });
 
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
             const requesterName = guests[socket.id];
@@ -51,5 +54,3 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
-
-
