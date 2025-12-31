@@ -1,4 +1,5 @@
-window.bannedSet = window.bannedSet || new Set();
+// ================== BAN STATE ==================
+const bannedSet = new Set();
 
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
@@ -44,15 +45,35 @@ if (localStorage.getItem('banned')) {
     messageArea.style.display = 'none';
 }
 
-// ================== GUEST LIST ==================
-function addGuest(nickname) {
-    const guestEl = document.createElement('div');
-    guestEl.className = 'guest';
-    guestEl.id = `guest-${nickname}`;
-    guestEl.dataset.nick = nickname;
-    guestEl.textContent = renderNickname(nickname);
-
-    guestList.appendChild(guestEl);
+// ================== RENDER ==================
+// ================== RENDER ==================
+function renderNickname(nickname) {
+    return bannedSet.has(nickname)
+        ? `${nickname} 🔒`
+        : nickname;
 }
 
+// ================== UPDATE BAN STATE ==================
+socket.on('userBanned', nickname => {
+    bannedSet.add(nickname);
+    const el = document.getElementById(`guest-${nickname}`);
+    if (el) el.textContent = renderNickname(nickname);
 
+    if (nickname === myNickname) {
+        chatInput.disabled = true;
+        messageArea.style.display = 'none';
+        localStorage.setItem('banned', '1');
+    }
+});
+
+socket.on('userUnbanned', nickname => {
+    bannedSet.delete(nickname);
+    const el = document.getElementById(`guest-${nickname}`);
+    if (el) el.textContent = renderNickname(nickname);
+
+    if (nickname === myNickname) {
+        chatInput.disabled = false;
+        messageArea.style.display = 'block';
+        localStorage.removeItem('banned');
+    }
+});
