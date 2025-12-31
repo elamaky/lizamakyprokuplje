@@ -4,6 +4,7 @@ let myNickname = ''; // biće postavljen od servera
 socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
+    socket.emit('registerGuestIdentity', { guestId: myNickname });
 });
 
 const virtualGuests = [
@@ -930,6 +931,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
