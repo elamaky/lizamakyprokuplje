@@ -31,6 +31,7 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
+let guestId = nickname;
 let guestEl = document.getElementById(guestId);
 
 let virtualsEnabled = false;
@@ -936,3 +937,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
