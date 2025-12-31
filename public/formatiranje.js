@@ -486,7 +486,8 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.textContent = nickname;
+  newGuest.textContent = renderNickname(nickname);
+
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -504,7 +505,8 @@ socket.on('updateGuestList', function (users) {
         if (!users.includes(nickname)) {
             delete guestsData[`guest-${nickname}`];
             const guestElement = Array.from(guestList.children).find(guest => guest.textContent === nickname);
-            if (guestElement) {
+            guestElement.textContent = renderNickname(nickname);
+             if (guestElement) {
                 guestList.removeChild(guestElement);
             }
         }
@@ -531,7 +533,8 @@ socket.on('updateGuestList', function (users) {
             const newGuest = document.createElement('div');
             newGuest.className = 'guest';
             newGuest.id = guestId;
-            newGuest.textContent = nickname;
+          newGuest.textContent = renderNickname(nickname);
+
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -903,4 +906,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
