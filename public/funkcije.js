@@ -1,12 +1,21 @@
-// ================== BAN STATE ==================
-const bannedSet = new Set();
+// ================== BAN SYSTEM ==================
+
+// Koristi globalni set da oba fajla dele stanje
+window.bannedSet = window.bannedSet || new Set();
+
+// Render funkcija za prikaz ban statusa
+function renderNickname(nickname) {
+    return window.bannedSet.has(nickname)
+        ? `${nickname} 🔒`
+        : nickname;
+}
 
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
-    bannedSet.add(nickname);
+    window.bannedSet.add(nickname);
 
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
+    const guestElement = document.getElementById(`guest-${nickname}`);
+    if (guestElement) guestElement.textContent = renderNickname(nickname);
 
     if (nickname === myNickname) {
         chatInput.disabled = true;
@@ -16,10 +25,10 @@ socket.on('userBanned', nickname => {
 });
 
 socket.on('userUnbanned', nickname => {
-    bannedSet.delete(nickname);
+    window.bannedSet.delete(nickname);
 
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
+    const guestElement = document.getElementById(`guest-${nickname}`);
+    if (guestElement) guestElement.textContent = renderNickname(nickname);
 
     if (nickname === myNickname) {
         chatInput.disabled = false;
@@ -44,26 +53,3 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
-
-// ================== RENDER ==================
-function renderNickname(nickname) {
-    return bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
-}
-
-// ================== GUEST LIST ==================
-function addGuest(nickname) {
-    const guestEl = document.createElement('div');
-    guestEl.className = 'guest';
-    guestEl.id = `guest-${nickname}`;
-    guestEl.dataset.nick = nickname;
-    guestEl.textContent = renderNickname(nickname);
-
-    guestList.appendChild(guestEl);
-}
-
-socket.on('updateGuestList', users => {
-    guestList.innerHTML = '';
-    users.forEach(addGuest);
-});
