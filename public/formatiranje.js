@@ -479,7 +479,6 @@ socket.on('private_message', function (data) {
     }
 });
 
-// ================== NOVI GOST ==================
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -496,13 +495,8 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 
-    // ================== BAN ==================
-    if (window.bannedSet.has(nickname)) {
-        const lock = document.createElement('span');
-        lock.textContent = ' 🔒';
-        newGuest.appendChild(lock);
-    }
-    // ================== /BAN ==================
+    // Ban logika je sada centralizovana u updateGuestList
+    renderBanStatus(newGuest, nickname);
 });
 
 // Ažuriranje liste gostiju bez resetovanja stilova
@@ -561,16 +555,7 @@ socket.on('updateGuestList', function (users) {
         }
 
         // ================== BAN ==================
-        // ukloni stari katanac ako postoji
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
-
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
+        renderBanStatus(guestEl, nickname);
         // ================== /BAN ==================
     });
 
@@ -583,6 +568,29 @@ socket.on('updateGuestList', function (users) {
         }
     });
 });
+
+// ================== CENTRALIZOVANA FUNKCIJA ZA BAN ==================
+function renderBanStatus(guestEl, nickname) {
+    const existingLock = guestEl.querySelector('.lock-icon');
+    if (existingLock) guestEl.removeChild(existingLock);
+
+    if (window.bannedSet.has(nickname)) {
+        const lock = document.createElement('span');
+        lock.textContent = ' 🔒';
+        lock.className = 'lock-icon';
+        guestEl.appendChild(lock);
+
+        if (nickname === myNickname) {
+            chatInput.disabled = true;
+            messageArea.style.display = 'none';
+            localStorage.setItem('banned', '1');
+        }
+    } else if (nickname === myNickname) {
+        chatInput.disabled = false;
+        messageArea.style.display = 'block';
+        localStorage.removeItem('banned');
+    }
+}
 
 
 // COLOR PICKER - OBICNE BOJE
@@ -931,6 +939,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
