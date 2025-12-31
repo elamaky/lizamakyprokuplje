@@ -31,6 +31,7 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
+let guestEl = document.getElementById(guestId);
 
 let virtualsEnabled = false;
 
@@ -493,7 +494,19 @@ socket.on('newGuest', function (nickname) {
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
+    
+   // ================== BAN ==================
+        // ukloni stari katanac ako postoji
+        const existingLock = guestEl.querySelector('.lock-icon');
+        if (existingLock) guestEl.removeChild(existingLock);
 
+        if (window.bannedSet.has(nickname)) {
+            const lock = document.createElement('span');
+            lock.textContent = ' 🔒';
+            lock.className = 'lock-icon';
+            guestEl.appendChild(lock);
+        }
+        // ================== /BAN ==================
     guestList.appendChild(newGuest);
 
 });
@@ -530,16 +543,15 @@ socket.on('updateGuestList', function (users) {
     // Dodaj nove goste ili update postojeće
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        let guestEl = document.getElementById(guestId);
-
-        if (!guestEl) {
+      
+         if (!guestEl) {
             guestEl = document.createElement('div');
             guestEl.className = 'guest';
             guestEl.id = guestId;
             guestEl.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
             guestEl.dataset.nick = nickname;
 
-          // Dodaj boju ako je virtualni gost
+            // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
                 guestEl.style.color = vg.color;
@@ -552,16 +564,9 @@ socket.on('updateGuestList', function (users) {
             guestEl.setAttribute('data-guest-id', guestId);
             guestList.appendChild(guestEl);
         }
-    });
 
-    // Poređaj DOM elemente po redosledu iz `users`
-    users.forEach(nickname => {
-        const guestId = `guest-${nickname}`;
-        const guestElement = document.getElementById(guestId);
-        if (guestElement) {
-            guestList.appendChild(guestElement);
-
-                // ================== BAN ==================
+        // ================== BAN ==================
+        // ukloni stari katanac ako postoji
         const existingLock = guestEl.querySelector('.lock-icon');
         if (existingLock) guestEl.removeChild(existingLock);
 
@@ -572,6 +577,14 @@ socket.on('updateGuestList', function (users) {
             guestEl.appendChild(lock);
         }
         // ================== /BAN ==================
+    });
+
+    // Poređaj DOM elemente po redosledu iz `users`
+    users.forEach(nickname => {
+        const guestId = `guest-${nickname}`;
+        const guestElement = document.getElementById(guestId);
+        if (guestElement) {
+            guestList.appendChild(guestElement);
         }
     });
 });
@@ -923,5 +936,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
