@@ -26,12 +26,16 @@ socket.on('userBanned', nickname => {
     const guestElement = document.getElementById(`guest-${nickname}`);
     if (guestElement) guestElement.textContent = renderNickname(nickname);
 
+    // FORCE refresh liste
+    socket.emit('requestGuestList');
+
     if (nickname === myNickname) {
         chatInput.disabled = true;
         messageArea.style.display = 'none';
         localStorage.setItem('banned', '1');
     }
 });
+
 
 socket.on('userUnbanned', nickname => {
     window.bannedSet.delete(nickname);
@@ -66,5 +70,6 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
 
 
