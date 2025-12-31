@@ -6,13 +6,6 @@ socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
 
-// ================== RENDER ==================
-function renderNickname(nickname) {
-    return bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
-}
-
 const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
   { nickname: 'Halime', color: 'purple' },
@@ -493,7 +486,7 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
- newGuest.textContent = renderNickname(nickname);
+   newGuest.textContent = nickname;
 
   
 
@@ -540,8 +533,8 @@ socket.on('updateGuestList', function (users) {
             const newGuest = document.createElement('div');
             newGuest.className = 'guest';
             newGuest.id = guestId;
-           newGuest.textContent = renderNickname(nickname);
-
+            newGuest.textContent = nickname;
+            
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
@@ -912,6 +905,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
