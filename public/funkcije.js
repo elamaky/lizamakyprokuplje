@@ -46,34 +46,8 @@ if (localStorage.getItem('banned')) {
 }
 
 // ================== RENDER ==================
-// ================== RENDER ==================
 function renderNickname(nickname) {
     return bannedSet.has(nickname)
         ? `${nickname} 🔒`
         : nickname;
 }
-
-// ================== UPDATE BAN STATE ==================
-socket.on('userBanned', nickname => {
-    bannedSet.add(nickname);
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
-
-    if (nickname === myNickname) {
-        chatInput.disabled = true;
-        messageArea.style.display = 'none';
-        localStorage.setItem('banned', '1');
-    }
-});
-
-socket.on('userUnbanned', nickname => {
-    bannedSet.delete(nickname);
-    const el = document.getElementById(`guest-${nickname}`);
-    if (el) el.textContent = renderNickname(nickname);
-
-    if (nickname === myNickname) {
-        chatInput.disabled = false;
-        messageArea.style.display = 'block';
-        localStorage.removeItem('banned');
-    }
-});
