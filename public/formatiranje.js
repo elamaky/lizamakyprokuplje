@@ -5,7 +5,7 @@ socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
-
+const bannedSet = new Set();
 // ================== RENDER ==================
 function renderNickname(nickname) {
     return bannedSet.has(nickname)
@@ -912,6 +912,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
