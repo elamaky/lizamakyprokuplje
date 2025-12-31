@@ -496,18 +496,6 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 
-   // ================== BAN ==================
-        // ukloni stari katanac ako postoji
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
-
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
-        // ================== /BAN ==================
 });
 
 // Ažuriranje liste gostiju bez resetovanja stilova
@@ -551,7 +539,19 @@ socket.on('updateGuestList', function (users) {
             guestEl.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
             guestEl.dataset.nick = nickname;
 
-            // Dodaj boju ako je virtualni gost
+           // ================== BAN ==================
+        const existingLock = guestEl.querySelector('.lock-icon');
+        if (existingLock) guestEl.removeChild(existingLock);
+
+        if (window.bannedSet.has(nickname)) {
+            const lock = document.createElement('span');
+            lock.textContent = ' 🔒';
+            lock.className = 'lock-icon';
+            guestEl.appendChild(lock);
+        }
+        // ================== /BAN ==================
+
+               // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
                 guestEl.style.color = vg.color;
@@ -564,19 +564,6 @@ socket.on('updateGuestList', function (users) {
             guestEl.setAttribute('data-guest-id', guestId);
             guestList.appendChild(guestEl);
         }
-
-        // ================== BAN ==================
-        // ukloni stari katanac ako postoji
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
-
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
-        // ================== /BAN ==================
     });
 
     // Poređaj DOM elemente po redosledu iz `users`
@@ -936,3 +923,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
