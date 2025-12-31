@@ -5,11 +5,6 @@ socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
-function renderNickname(nickname) {
-    return bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
-}
 
 const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
@@ -104,7 +99,7 @@ function updateInputStyle() {
     }
 
     // COLOR
-  inputField.style.color = currentColor || "rgb(168, 168, 168)";
+    inputField.style.color = currentColor || '#fff';
 }
 
 let lastMessages = {};
@@ -237,32 +232,41 @@ text = tempDiv.innerHTML;
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-if (data.glitter) {
-    newMessage.style.background = `url('/glit/${data.glitter}')`;
-    newMessage.style.backgroundSize = 'cover';
-    newMessage.style.backgroundRepeat = 'repeat';
-    newMessage.style.backgroundClip = 'text';
-    newMessage.style.webkitBackgroundClip = 'text';
-    newMessage.style.webkitTextFillColor = 'transparent';
-    newMessage.style.color = 'transparent';
-} else if (data.color) {
-    newMessage.style.background = '';
-    newMessage.style.backgroundClip = '';
-    newMessage.style.webkitBackgroundClip = '';
-    newMessage.style.webkitTextFillColor = '';
-    newMessage.style.color = data.color;
-} else if (data.gradient || window.defaultAdminGradient) {
-    const gradClass = data.gradient || window.defaultAdminGradient;
-    const gradEl = document.querySelector(`.${gradClass}`);
-    if (gradEl) {
-        newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+    // ===== RESET =====
+    newMessage.style.background = 'none';
+    newMessage.style.backgroundImage = 'none';
+    newMessage.style.backgroundClip = 'initial';
+    newMessage.style.webkitBackgroundClip = 'initial';
+    newMessage.style.webkitTextFillColor = 'initial';
+    newMessage.style.color = 'initial';
+
+    // ===== GLITTER =====
+    if (data.glitter) {
+        newMessage.style.background = `url('/glit/${data.glitter}')`;
+        newMessage.style.backgroundSize = 'cover';
         newMessage.style.backgroundClip = 'text';
         newMessage.style.webkitBackgroundClip = 'text';
         newMessage.style.webkitTextFillColor = 'transparent';
         newMessage.style.color = 'transparent';
     }
-}
 
+    // ===== GRADIENT =====
+    else if (data.gradient || window.defaultAdminGradient) {
+        const gradClass = data.gradient || window.defaultAdminGradient;
+        const gradEl = document.querySelector(`.${gradClass}`);
+        if (gradEl) {
+            newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
+            newMessage.style.backgroundClip = 'text';
+            newMessage.style.webkitBackgroundClip = 'text';
+            newMessage.style.webkitTextFillColor = 'transparent';
+            newMessage.style.color = 'transparent';
+        }
+    }
+
+    // ===== COLOR =====
+    else if (data.color) {
+        newMessage.style.color = data.color;
+    }
 
     // CONTENT
     newMessage.innerHTML = `
@@ -483,7 +487,6 @@ socket.on('newGuest', function (nickname) {
     newGuest.classList.add('guest');
     newGuest.id = guestId;
     newGuest.textContent = nickname;
-     newGuest.textContent = renderNickname(nickname);
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -529,7 +532,6 @@ socket.on('updateGuestList', function (users) {
             newGuest.className = 'guest';
             newGuest.id = guestId;
             newGuest.textContent = nickname;
-           newGuest.textContent = renderNickname(nickname);
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -901,3 +903,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
