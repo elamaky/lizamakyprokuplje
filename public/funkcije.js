@@ -51,19 +51,3 @@ function renderNickname(nickname) {
         ? `${nickname} 🔒`
         : nickname;
 }
-
-// ================== GUEST LIST ==================
-function addGuest(nickname) {
-    const guestEl = document.createElement('div');
-    guestEl.className = 'guest';
-    guestEl.id = `guest-${nickname}`;
-    guestEl.dataset.nick = nickname;
-    guestEl.textContent = renderNickname(nickname);
-
-    guestList.appendChild(guestEl);
-}
-
-socket.on('updateGuestList', users => {
-    guestList.innerHTML = '';
-    users.forEach(addGuest);
-});
