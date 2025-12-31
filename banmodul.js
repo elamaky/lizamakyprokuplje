@@ -23,6 +23,11 @@ module.exports = function softGuestBan(io, guests) {
             socket.emit('userBanned', g.guestId);
         });
 
+        
+socket.on('requestGuestList', () => {
+    socket.emit('updateGuestList', Object.values(guests));
+});
+
         socket.on('registerGuestIdentity', async ({ guestId }) => {
             if (!guestId) return;
 
@@ -54,3 +59,4 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
