@@ -5,8 +5,6 @@ socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
 });
-
-// ================== RENDER ==================
 function renderNickname(nickname) {
     return bannedSet.has(nickname)
         ? `${nickname} 🔒`
@@ -239,41 +237,32 @@ text = tempDiv.innerHTML;
         (data.underline ? 'underline ' : '') +
         (data.overline ? 'overline' : '');
 
-    // ===== RESET =====
-    newMessage.style.background = 'none';
-    newMessage.style.backgroundImage = 'none';
-    newMessage.style.backgroundClip = 'initial';
-    newMessage.style.webkitBackgroundClip = 'initial';
-    newMessage.style.webkitTextFillColor = 'initial';
-    newMessage.style.color = 'initial';
-
-    // ===== GLITTER =====
-    if (data.glitter) {
-        newMessage.style.background = `url('/glit/${data.glitter}')`;
-        newMessage.style.backgroundSize = 'cover';
+if (data.glitter) {
+    newMessage.style.background = `url('/glit/${data.glitter}')`;
+    newMessage.style.backgroundSize = 'cover';
+    newMessage.style.backgroundRepeat = 'repeat';
+    newMessage.style.backgroundClip = 'text';
+    newMessage.style.webkitBackgroundClip = 'text';
+    newMessage.style.webkitTextFillColor = 'transparent';
+    newMessage.style.color = 'transparent';
+} else if (data.color) {
+    newMessage.style.background = '';
+    newMessage.style.backgroundClip = '';
+    newMessage.style.webkitBackgroundClip = '';
+    newMessage.style.webkitTextFillColor = '';
+    newMessage.style.color = data.color;
+} else if (data.gradient || window.defaultAdminGradient) {
+    const gradClass = data.gradient || window.defaultAdminGradient;
+    const gradEl = document.querySelector(`.${gradClass}`);
+    if (gradEl) {
+        newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
         newMessage.style.backgroundClip = 'text';
         newMessage.style.webkitBackgroundClip = 'text';
         newMessage.style.webkitTextFillColor = 'transparent';
         newMessage.style.color = 'transparent';
     }
+}
 
-    // ===== GRADIENT =====
-    else if (data.gradient || window.defaultAdminGradient) {
-        const gradClass = data.gradient || window.defaultAdminGradient;
-        const gradEl = document.querySelector(`.${gradClass}`);
-        if (gradEl) {
-            newMessage.style.backgroundImage = getComputedStyle(gradEl).backgroundImage;
-            newMessage.style.backgroundClip = 'text';
-            newMessage.style.webkitBackgroundClip = 'text';
-            newMessage.style.webkitTextFillColor = 'transparent';
-            newMessage.style.color = 'transparent';
-        }
-    }
-
-    // ===== COLOR =====
-    else if (data.color) {
-        newMessage.style.color = data.color;
-    }
 
     // CONTENT
     newMessage.innerHTML = `
@@ -493,7 +482,8 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.textContent = renderNickname(nickname); // <- ovde
+    newGuest.textContent = nickname;
+     newGuest.textContent = renderNickname(nickname);
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -501,7 +491,6 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
-
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
@@ -512,11 +501,12 @@ socket.on('updateGuestList', function (users) {
         if (!users.includes(nickname)) {
             delete guestsData[`guest-${nickname}`];
             const guestElement = Array.from(guestList.children).find(guest => guest.textContent === nickname);
-            if (guestElement) guestList.removeChild(guestElement);
+            if (guestElement) {
+                guestList.removeChild(guestElement);
+            }
         }
     });
-
-    // Reorder: "Radio Galaksija" na vrhu
+   // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
         users = ["Radio Galaksija", ...users.filter(n => n !== "Radio Galaksija")];
 
@@ -534,12 +524,12 @@ socket.on('updateGuestList', function (users) {
     // Dodaj nove goste
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        let newGuest = document.getElementById(guestId);
-        if (!newGuest) {
-            newGuest = document.createElement('div');
+        if (!guestsData[guestId]) {
+            const newGuest = document.createElement('div');
             newGuest.className = 'guest';
             newGuest.id = guestId;
-            newGuest.textContent = renderNickname(nickname); // <- ovde
+            newGuest.textContent = nickname;
+           newGuest.textContent = renderNickname(nickname);
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -553,9 +543,6 @@ socket.on('updateGuestList', function (users) {
 
             newGuest.setAttribute('data-guest-id', guestId);
             guestList.appendChild(newGuest);
-        } else {
-            // Ako gost već postoji, samo update text-a po ban statusu
-            newGuest.textContent = renderNickname(nickname);
         }
     });
 
@@ -563,10 +550,11 @@ socket.on('updateGuestList', function (users) {
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
         const guestElement = document.getElementById(guestId);
-        if (guestElement) guestList.appendChild(guestElement);
+        if (guestElement) {
+            guestList.appendChild(guestElement);
+        }
     });
 });
-
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -913,12 +901,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
-
-
-
-
