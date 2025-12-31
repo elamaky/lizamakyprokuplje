@@ -479,45 +479,44 @@ socket.on('private_message', function (data) {
 });
 
 // ================== NOVI GOST ==================
+// Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
     const guestList = document.getElementById('guestList');
+    const newGuest = document.createElement('div');
+    newGuest.classList.add('guest');
+    newGuest.id = guestId;
+    newGuest.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
+    newGuest.dataset.nick = nickname;
 
-    // Ako gost već postoji, samo update text po ban statusu
-    let newGuest = document.getElementById(guestId);
-    if (!newGuest) {
-        newGuest = document.createElement('div');
-        newGuest.classList.add('guest');
-        newGuest.id = guestId;
-        newGuest.dataset.nick = nickname;
-
-        // Dodaj boju ako je virtualni gost
-        const vg = virtualGuests.find(v => v.nickname === nickname);
-        if (vg) {
-            newGuest.style.color = vg.color;
-            guestsData[guestId] = { nickname, color: vg.color };
-        } else {
-            newGuest.style.color = '';
-            guestsData[guestId] = { nickname, color: '' };
-        }
-
-        guestList.appendChild(newGuest);
+    if (!guestsData[guestId]) {
+        guestsData[guestId] = { nickname, color: '' };
     }
 
-    // Uvek update text po ban statusu
-    newGuest.textContent = renderNickname(nickname);
+    guestList.appendChild(newGuest);
+
+    // ================== BAN ==================
+    if (window.bannedSet.has(nickname)) {
+        const lock = document.createElement('span');
+        lock.textContent = ' 🔒';
+        newGuest.appendChild(lock);
+    }
+    // ================== /BAN ==================
 });
 
-// ================== UPDATE GUEST LIST ==================
+// Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
+    const currentGuests = Array.from(guestList.children).map(guest => guest.textContent);
 
     // Ukloni goste koji više nisu u listi
-    Array.from(guestList.children).forEach(guestEl => {
-        const nickname = guestEl.dataset.nick;
+    currentGuests.forEach(nickname => {
         if (!users.includes(nickname)) {
             delete guestsData[`guest-${nickname}`];
-            guestList.removeChild(guestEl);
+            const guestElement = Array.from(guestList.children).find(guest => guest.textContent.includes(nickname));
+            if (guestElement) {
+                guestList.removeChild(guestElement);
+            }
         }
     });
 
@@ -534,7 +533,7 @@ socket.on('updateGuestList', function (users) {
         users.unshift(myNickname);
     }
 
-    // Dodaj ili update goste
+    // Dodaj nove goste ili update postojeće
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
         let guestEl = document.getElementById(guestId);
@@ -543,6 +542,7 @@ socket.on('updateGuestList', function (users) {
             guestEl = document.createElement('div');
             guestEl.className = 'guest';
             guestEl.id = guestId;
+            guestEl.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
             guestEl.dataset.nick = nickname;
 
             // Dodaj boju ako je virtualni gost
@@ -555,20 +555,34 @@ socket.on('updateGuestList', function (users) {
                 guestsData[guestId] = { nickname, color: '' };
             }
 
+            guestEl.setAttribute('data-guest-id', guestId);
             guestList.appendChild(guestEl);
         }
 
-        // Uvek update text po ban statusu
-        guestEl.textContent = renderNickname(nickname);
+        // ================== BAN ==================
+        // ukloni stari katanac ako postoji
+        const existingLock = guestEl.querySelector('.lock-icon');
+        if (existingLock) guestEl.removeChild(existingLock);
+
+        if (window.bannedSet.has(nickname)) {
+            const lock = document.createElement('span');
+            lock.textContent = ' 🔒';
+            lock.className = 'lock-icon';
+            guestEl.appendChild(lock);
+        }
+        // ================== /BAN ==================
     });
 
     // Poređaj DOM elemente po redosledu iz `users`
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-        const guestEl = document.getElementById(guestId);
-        if (guestEl) guestList.appendChild(guestEl);
+        const guestElement = document.getElementById(guestId);
+        if (guestElement) {
+            guestList.appendChild(guestElement);
+        }
     });
 });
+
 
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
@@ -916,6 +930,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
