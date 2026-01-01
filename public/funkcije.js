@@ -1,10 +1,3 @@
-// ================== BAN SYSTEM ==================
-// globalno, jednom u glavnom klijentu
-window.bannedSet = window.bannedSet || new Set();
-
-window.renderNickname = function(nickname) {
-    return window.bannedSet.has(nickname) ? `${nickname} 🔒` : nickname;
-};
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
     window.bannedSet.add(nickname);
@@ -52,5 +45,6 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
 
 
