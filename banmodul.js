@@ -21,7 +21,7 @@ module.exports = function softGuestBan(io, guests) {
         // NOVO: posalji listu svih banovanih korisnika ovom socket-u
         const bannedGuests = await SoftGuest.find({ banned: true });
         bannedGuests.forEach(g => {
-            socket.emit('userBanned', g.guestId);
+            io.emit('userBanned', g.guestId);
         });
 
         socket.on('registerGuestIdentity', async ({ guestId }) => {
@@ -55,4 +55,5 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
 
