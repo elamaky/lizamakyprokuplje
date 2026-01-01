@@ -1,14 +1,9 @@
 // ================== SOCKET EVENTS ==================
-// ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
-    // Ban stanje odmah
     window.bannedSet.add(nickname);
 
-    // Delay za prikaz katanaca
-    setTimeout(() => {
-        const guestElement = document.getElementById(`guest-${nickname}`);
-        if (guestElement) guestElement.textContent = renderNickname(nickname);
-    }, 3000); // 3000ms = 3 sekunde
+    const guestElement = document.getElementById(`guest-${nickname}`);
+    if (guestElement) guestElement.textContent = renderNickname(nickname);
 
     if (nickname === myNickname) {
         chatInput.disabled = true;
@@ -49,6 +44,7 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
 
 
 
