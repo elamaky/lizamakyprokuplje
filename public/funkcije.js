@@ -4,11 +4,15 @@
 window.bannedSet = window.bannedSet || new Set();
 
 // Render funkcija za prikaz ban statusa
-function renderNickname(nickname) {
-    return window.bannedSet.has(nickname)
-        ? `${nickname} 🔒`
-        : nickname;
+function renderGuest(nickname) {
+    const el = document.createElement('div');
+    el.id = `guest-${nickname}`;
+    el.className = 'guest';
+    el.dataset.nick = nickname;
+    el.textContent = renderNickname(nickname);
+    guestList.appendChild(el);
 }
+
 
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
@@ -57,3 +61,4 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
