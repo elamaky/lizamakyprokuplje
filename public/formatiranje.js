@@ -4,7 +4,6 @@ let myNickname = ''; // biće postavljen od servera
 socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
-    socket.emit('registerGuestIdentity', { guestId: myNickname });
 });
 
 const virtualGuests = [
@@ -31,8 +30,6 @@ window.guestsData = guestsData;
 let currentGuestId = ''; 
 let gradijentOpen = false; // Definiši promenljivu
 let currentGradient = null;
-let guestId = nickname;
-let guestEl = document.getElementById(guestId);
 
 let virtualsEnabled = false;
 
@@ -102,7 +99,7 @@ function updateInputStyle() {
     }
 
     // COLOR
-    inputField.style.color = currentColor || '#fff';
+  inputField.style.color = currentColor || "rgb(168, 168, 168)";
 }
 
 let lastMessages = {};
@@ -481,7 +478,7 @@ socket.on('private_message', function (data) {
     }
 });
 
-// ================== NOVI GOST ==================
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -489,29 +486,16 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
+    newGuest.textContent = nickname;
+    newGuest.textContent = renderNickname(nickname);
     newGuest.dataset.nick = nickname;
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
-    
-   // ================== BAN ==================
-        // ukloni stari katanac ako postoji
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
 
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
-        // ================== /BAN ==================
     guestList.appendChild(newGuest);
-
 });
-
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
     const guestList = document.getElementById('guestList');
@@ -521,63 +505,51 @@ socket.on('updateGuestList', function (users) {
     currentGuests.forEach(nickname => {
         if (!users.includes(nickname)) {
             delete guestsData[`guest-${nickname}`];
-            const guestElement = Array.from(guestList.children).find(guest => guest.textContent.includes(nickname));
+            const guestElement = Array.from(guestList.children).find(guest => guest.textContent === nickname);
             if (guestElement) {
                 guestList.removeChild(guestElement);
             }
         }
     });
-
-    // Reorder: "Radio Galaksija" na vrhu
+   // Reorder: "Radio Galaksija" na vrhu
     if (users.includes("Radio Galaksija")) {
         users = ["Radio Galaksija", ...users.filter(n => n !== "Radio Galaksija")];
 
+        // Ulogovani korisnik na drugo mesto ako nije Galaksija
         if (myNickname !== "Radio Galaksija") {
             users = users.filter(n => n !== myNickname);
             users.splice(1, 0, myNickname);
         }
     } else {
+        // Ako nema Galaksije, korisnik ide na prvo mesto
         users = users.filter(n => n !== myNickname);
         users.unshift(myNickname);
     }
 
-    // Dodaj nove goste ili update postojeće
+    // Dodaj nove goste
     users.forEach(nickname => {
         const guestId = `guest-${nickname}`;
-      
-         if (!guestEl) {
-            guestEl = document.createElement('div');
-            guestEl.className = 'guest';
-            guestEl.id = guestId;
-            guestEl.textContent = nickname; // OSTAJE KAO ŠTO JE BILO
-            guestEl.dataset.nick = nickname;
+        if (!guestsData[guestId]) {
+            const newGuest = document.createElement('div');
+            newGuest.className = 'guest';
+            newGuest.id = guestId;
+            newGuest.textContent = nickname;
+            newGuest.textContent = renderNickname(nickname);
+           newGuest.dataset.nick = nickname;
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
             if (vg) {
-                guestEl.style.color = vg.color;
+                newGuest.style.color = vg.color;
                 guestsData[guestId] = { nickname, color: vg.color };
             } else {
-                guestEl.style.color = '';
+                newGuest.style.color = '';
                 guestsData[guestId] = { nickname, color: '' };
             }
 
-            guestEl.setAttribute('data-guest-id', guestId);
-            guestList.appendChild(guestEl);
+            newGuest.setAttribute('data-guest-id', guestId);
+            guestList.appendChild(newGuest);
         }
-
-        // ================== BAN ==================
-        // ukloni stari katanac ako postoji
-        const existingLock = guestEl.querySelector('.lock-icon');
-        if (existingLock) guestEl.removeChild(existingLock);
-
-        if (window.bannedSet.has(nickname)) {
-            const lock = document.createElement('span');
-            lock.textContent = ' 🔒';
-            lock.className = 'lock-icon';
-            guestEl.appendChild(lock);
-        }
-        // ================== /BAN ==================
     });
 
     // Poređaj DOM elemente po redosledu iz `users`
@@ -589,8 +561,6 @@ socket.on('updateGuestList', function (users) {
         }
     });
 });
-
-
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -937,4 +907,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
