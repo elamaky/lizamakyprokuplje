@@ -1,19 +1,10 @@
 // ================== BAN SYSTEM ==================
-
-// Koristi globalni set da oba fajla dele stanje
+// globalno, jednom u glavnom klijentu
 window.bannedSet = window.bannedSet || new Set();
 
-// Render funkcija za prikaz ban statusa
-function renderGuest(nickname) {
-    const el = document.createElement('div');
-    el.id = `guest-${nickname}`;
-    el.className = 'guest';
-    el.dataset.nick = nickname;
-    el.textContent = renderNickname(nickname);
-    guestList.appendChild(el);
-}
-
-
+window.renderNickname = function(nickname) {
+    return window.bannedSet.has(nickname) ? `${nickname} 🔒` : nickname;
+};
 // ================== SOCKET EVENTS ==================
 socket.on('userBanned', nickname => {
     window.bannedSet.add(nickname);
@@ -61,4 +52,5 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
 
