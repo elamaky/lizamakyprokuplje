@@ -46,3 +46,16 @@ if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
 }
+
+// ================== SEND BAN STATUS TO SERVER ON CONNECT ==================
+if (localStorage.getItem('banned')) {
+    socket.emit('checkBanStatus', { nickname: myNickname });
+}
+
+// ================== HANDLE BAN UPDATE FROM SERVER ==================
+socket.on('markGuestAsBanned', nickname => {
+    const guestElement = document.getElementById(`guest-${nickname}`);
+    if (guestElement) {
+        guestElement.textContent = renderNickname(nickname) + ' 🔒'; // katanac
+    }
+});
