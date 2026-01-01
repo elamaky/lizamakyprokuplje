@@ -483,7 +483,6 @@ socket.on('private_message', function (data) {
     }
 });
 
-
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -491,8 +490,7 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.textContent = nickname;
-    newGuest.textContent = renderNickname(nickname);
+     newGuest.textContent = renderNickname(nickname);
     newGuest.dataset.nick = nickname;
 
     if (!guestsData[guestId]) {
@@ -501,6 +499,7 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
+
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
  const guestList = document.getElementById('guestList');
@@ -922,5 +921,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
