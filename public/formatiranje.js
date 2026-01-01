@@ -498,7 +498,15 @@ socket.on('newGuest', function (nickname) {
 });
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
-    const guestList = document.getElementById('guestList');
+ const guestList = document.getElementById('guestList');
+
+ // === DODATAK ZA BAN, NIŠTA NE UKLANJA ===
+ Array.from(guestList.children).forEach(el => {
+     const nick = el.dataset.nick;
+     if (nick) el.textContent = renderNickname(nick);
+ });
+ // === KRAJ DODATKA ===
+
     const currentGuests = Array.from(guestList.children).map(guest => guest.textContent);
 
     // Ukloni goste koji više nisu u listi
@@ -561,6 +569,8 @@ socket.on('updateGuestList', function (users) {
         }
     });
 });
+
+
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -907,3 +917,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
