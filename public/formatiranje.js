@@ -488,11 +488,11 @@ socket.on('newGuest', function (nickname) {
     newGuest.textContent = nickname;
    newGuest.dataset.nick = nickname;
 
-     if (localStorage.getItem('banned') && myNickname === nickname) {
-        newGuest.textContent += ' 🔒';
-    }
+  if (window.bannedSet.has(nickname)) {
+    newGuest.textContent += ' 🔒';
+}
 
-    if (!guestsData[guestId]) {
+  if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
 
@@ -538,7 +538,7 @@ socket.on('updateGuestList', function (users) {
             newGuest.textContent = nickname;
            newGuest.dataset.nick = nickname;
 
-            if (localStorage.getItem('banned') && myNickname === nickname) {
+           if (window.bannedSet.has(nickname)) {
     newGuest.textContent += ' 🔒';
 }
 
@@ -912,4 +912,5 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
