@@ -4,6 +4,11 @@ let myNickname = ''; // biće postavljen od servera
 socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
+
+    // Provera ban statusa odmah po konekciji
+    if (localStorage.getItem('banned')) {
+        socket.emit('checkBanStatus', { nickname: myNickname });
+    }
 });
 
 const virtualGuests = [
@@ -912,5 +917,6 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
