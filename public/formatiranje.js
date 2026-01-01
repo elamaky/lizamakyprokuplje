@@ -275,8 +275,7 @@ text = tempDiv.innerHTML;
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-      // NAME ANIMATION
- // NAME ANIMATION
+  // NAME ANIMATION
 const strongName = newMessage.querySelector('strong');
 const userAnim = allUserAnimations[data.nickname];
 
@@ -478,6 +477,7 @@ socket.on('private_message', function (data) {
     }
 });
 
+
 // Kada nov gost dođe
 socket.on('newGuest', function (nickname) {
     const guestId = `guest-${nickname}`;
@@ -485,7 +485,8 @@ socket.on('newGuest', function (nickname) {
     const newGuest = document.createElement('div');
     newGuest.classList.add('guest');
     newGuest.id = guestId;
-    newGuest.dataset.nick = nickname;
+    newGuest.textContent = nickname;
+   newGuest.dataset.nick = nickname;
 
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
@@ -493,18 +494,9 @@ socket.on('newGuest', function (nickname) {
 
     guestList.appendChild(newGuest);
 });
-
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
- const guestList = document.getElementById('guestList');
-
- // === DODATAK ZA BAN, NIŠTA NE UKLANJA ===
- Array.from(guestList.children).forEach(el => {
-     const nick = el.dataset.nick;
-     if (nick) el.textContent = renderNickname(nick);
- });
- // === KRAJ DODATKA ===
-
+    const guestList = document.getElementById('guestList');
     const currentGuests = Array.from(guestList.children).map(guest => guest.textContent);
 
     // Ukloni goste koji više nisu u listi
@@ -540,7 +532,7 @@ socket.on('updateGuestList', function (users) {
             newGuest.className = 'guest';
             newGuest.id = guestId;
             newGuest.textContent = nickname;
-            newGuest.dataset.nick = nickname;
+           newGuest.dataset.nick = nickname;
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -566,8 +558,6 @@ socket.on('updateGuestList', function (users) {
         }
     });
 });
-
-
 // COLOR PICKER - OBICNE BOJE
 document.getElementById('colorBtn').addEventListener('click', () => {
     document.getElementById('colorPicker').click();
@@ -914,8 +904,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
