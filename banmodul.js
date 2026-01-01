@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const SoftGuestSchema = new mongoose.Schema({
@@ -16,31 +17,20 @@ const authorizedUsers = new Set([
 
 module.exports = function softGuestBan(io, guests) {
 
-    io.on('connection', async (socket) => {
+    io.on('connection', (socket) => {
 
-        // NOVO: posalji listu svih banovanih korisnika ovom socket-u
-        const bannedGuests = await SoftGuest.find({ banned: true });
-        bannedGuests.forEach(g => {
-            socket emit.emit('userBanned', g.guestId);
+        socket.on('registerGuestIdentity', async ({ guestId }) => {
+            if (!guestId) return;
+
+            let guest = await SoftGuest.findOne({ guestId });
+            if (!guest) {
+                guest = await SoftGuest.create({ guestId, banned: false });
+            }
+
+            if (guest.banned) {
+                socket.emit('userBanned', guestId);
+            }
         });
-
-       socket.on('registerGuestIdentity', async ({ guestId }) => {
-    if (!guestId) return;
-
-    // pošalji SVE banovane novom klijentu
-    const bannedGuests = await SoftGuest.find({ banned: true }).select('guestId');
-    socket.emit('syncBannedGuests', bannedGuests.map(g => g.guestId));
-
-    let guest = await SoftGuest.findOne({ guestId });
-    if (!guest) {
-        guest = await SoftGuest.create({ guestId, banned: false });
-    }
-
-    if (guest.banned) {
-        socket.emit('userBanned', guestId);
-    }
-});
-
 
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
             const requesterName = guests[socket.id];
@@ -60,6 +50,3 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
-
-
-
