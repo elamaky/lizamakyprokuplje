@@ -16,7 +16,13 @@ const authorizedUsers = new Set([
 
 module.exports = function softGuestBan(io, guests) {
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
+
+        // NOVO: posalji listu svih banovanih korisnika ovom socket-u
+        const bannedGuests = await SoftGuest.find({ banned: true });
+        bannedGuests.forEach(g => {
+            socket.emit('userBanned', g.guestId);
+        });
 
         socket.on('registerGuestIdentity', async ({ guestId }) => {
             if (!guestId) return;
@@ -49,3 +55,4 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
