@@ -21,21 +21,26 @@ module.exports = function softGuestBan(io, guests) {
         // NOVO: posalji listu svih banovanih korisnika ovom socket-u
         const bannedGuests = await SoftGuest.find({ banned: true });
         bannedGuests.forEach(g => {
-            io.emit('userBanned', g.guestId);
+            socket emit.emit('userBanned', g.guestId);
         });
 
-        socket.on('registerGuestIdentity', async ({ guestId }) => {
-            if (!guestId) return;
+       socket.on('registerGuestIdentity', async ({ guestId }) => {
+    if (!guestId) return;
 
-            let guest = await SoftGuest.findOne({ guestId });
-            if (!guest) {
-                guest = await SoftGuest.create({ guestId, banned: false });
-            }
+    // pošalji SVE banovane novom klijentu
+    const bannedGuests = await SoftGuest.find({ banned: true }).select('guestId');
+    socket.emit('syncBannedGuests', bannedGuests.map(g => g.guestId));
 
-            if (guest.banned) {
-                io.emit('userBanned', guestId);
-            }
-        });
+    let guest = await SoftGuest.findOne({ guestId });
+    if (!guest) {
+        guest = await SoftGuest.create({ guestId, banned: false });
+    }
+
+    if (guest.banned) {
+        socket.emit('userBanned', guestId);
+    }
+});
+
 
         socket.on('toggleSoftGuestBan', async ({ guestId }) => {
             const requesterName = guests[socket.id];
@@ -55,5 +60,6 @@ module.exports = function softGuestBan(io, guests) {
 
     });
 };
+
 
 
