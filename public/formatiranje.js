@@ -488,6 +488,10 @@ socket.on('newGuest', function (nickname) {
     newGuest.textContent = nickname;
    newGuest.dataset.nick = nickname;
 
+     if (localStorage.getItem('banned') && myNickname === nickname) {
+        newGuest.textContent += ' 🔒';
+    }
+
     if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
@@ -533,6 +537,10 @@ socket.on('updateGuestList', function (users) {
             newGuest.id = guestId;
             newGuest.textContent = nickname;
            newGuest.dataset.nick = nickname;
+
+            if (localStorage.getItem('banned') && myNickname === nickname) {
+    newGuest.textContent += ' 🔒';
+}
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -904,3 +912,4 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
