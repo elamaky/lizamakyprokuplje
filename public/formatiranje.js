@@ -5,13 +5,7 @@ socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
 
-    // Provera ban statusa odmah po konekciji
-    if (localStorage.getItem('banned')) {
-        socket.emit('checkBanStatus', { nickname: myNickname });
-    }
-});
-
-const virtualGuests = [
+ const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
   { nickname: 'Halime', color: 'purple' },
   { nickname: 'Holofira', color: 'red' },
@@ -912,6 +906,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
