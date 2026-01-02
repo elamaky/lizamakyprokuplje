@@ -4,8 +4,9 @@ let myNickname = ''; // biće postavljen od servera
 socket.off('yourNickname');
 socket.on('yourNickname', function(nick) {
     myNickname = nick;
+});
 
- const virtualGuests = [
+const virtualGuests = [
   { nickname: 'Bala Hatun', color: 'deepskyblue' },
   { nickname: 'Halime', color: 'purple' },
   { nickname: 'Holofira', color: 'red' },
@@ -274,7 +275,8 @@ text = tempDiv.innerHTML;
         <span style="font-size:0.8em;color:gray;">(${data.time})</span>
     `;
 
-  // NAME ANIMATION
+      // NAME ANIMATION
+ // NAME ANIMATION
 const strongName = newMessage.querySelector('strong');
 const userAnim = allUserAnimations[data.nickname];
 
@@ -485,15 +487,13 @@ socket.on('newGuest', function (nickname) {
     newGuest.classList.add('guest');
     newGuest.id = guestId;
     newGuest.textContent = nickname;
-   newGuest.dataset.nick = nickname;
+     newGuest.dataset.nick = nickname;
 
-      if (!guestsData[guestId]) {
+    if (!guestsData[guestId]) {
         guestsData[guestId] = { nickname, color: '' };
     }
- if (window.bannedSet.has(nickname)) {
-    newGuest.textContent += ' 🔒';
-}
- guestList.appendChild(newGuest);
+
+    guestList.appendChild(newGuest);
 });
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
@@ -533,11 +533,7 @@ socket.on('updateGuestList', function (users) {
             newGuest.className = 'guest';
             newGuest.id = guestId;
             newGuest.textContent = nickname;
-           newGuest.dataset.nick = nickname;
-
-           if (window.bannedSet.has(nickname)) {
-    newGuest.textContent += ' 🔒';
-}
+            newGuest.dataset.nick = nickname;
 
             // Dodaj boju ako je virtualni gost
             const vg = virtualGuests.find(v => v.nickname === nickname);
@@ -909,9 +905,3 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
-
-
-
-
-
-
