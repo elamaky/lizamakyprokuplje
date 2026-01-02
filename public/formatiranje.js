@@ -487,7 +487,10 @@ socket.on('newGuest', function (nickname) {
     newGuest.textContent = nickname;
    newGuest.dataset.nick = nickname;
 
-  if (window.bannedSet.has(nickname)) {
+      if (!guestsData[guestId]) {
+        guestsData[guestId] = { nickname, color: '' };
+    }
+ if (window.bannedSet.has(nickname)) {
     newGuest.textContent += ' 🔒';
 }
  guestList.appendChild(newGuest);
@@ -906,6 +909,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
