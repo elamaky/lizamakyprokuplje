@@ -40,18 +40,11 @@ guestList.addEventListener('dblclick', e => {
     socket.emit('toggleSoftGuestBan', { guestId: nickname });
 });
 
+// ================== SELF-BAN STATE ==================
 if (localStorage.getItem('banned')) {
     chatInput.disabled = true;
     messageArea.style.display = 'none';
-    socket.emit('userBanned', myNickname);
 }
 
+// ================== PROVERA BAN STATUSA PRI CONNECT ==================
 socket.emit('checkBanStatus', { nickname: myNickname });
-
-socket.on('checkBanStatus', ({ nickname }) => {
-    if (bannedSet.has(nickname)) {
-        socket.emit('userBanned', nickname); // samo toj sesiji
-    }
-});
-
-
