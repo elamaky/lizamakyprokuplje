@@ -47,3 +47,11 @@ if (localStorage.getItem('banned')) {
 }
 
 socket.emit('checkBanStatus', { nickname: myNickname });
+
+socket.on('checkBanStatus', ({ nickname }) => {
+    if (bannedSet.has(nickname)) {
+        socket.emit('userBanned', nickname); // samo toj sesiji
+    }
+});
+
+
