@@ -45,3 +45,5 @@ if (localStorage.getItem('banned')) {
     messageArea.style.display = 'none';
     socket.emit('userBanned', myNickname);
 }
+
+socket.emit('checkBanStatus', { nickname: myNickname });
