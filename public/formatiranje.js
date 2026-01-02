@@ -496,12 +496,7 @@ socket.on('newGuest', function (nickname) {
   if (window.bannedSet.has(nickname)) {
     newGuest.textContent += ' 🔒';
 }
-
-  if (!guestsData[guestId]) {
-        guestsData[guestId] = { nickname, color: '' };
-    }
-
-    guestList.appendChild(newGuest);
+ guestList.appendChild(newGuest);
 });
 // Ažuriranje liste gostiju bez resetovanja stilova
 socket.on('updateGuestList', function (users) {
@@ -917,6 +912,7 @@ socket.on('updateDefaultGradient', (data) => {
         });
     }, 3000);
 });
+
 
 
 
