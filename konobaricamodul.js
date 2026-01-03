@@ -15,11 +15,11 @@ const globalState = {
     bodyBlocked: false,
     animation: 'none',
     speed: 2,
-    text: ''
+    text: '',
+    textGlitter: ''   // dodato
 };
 
-
-   // **Šema i model za banovane IP adrese**
+ // **Šema i model za banovane IP adrese**
     const baniraniSchema = new mongoose.Schema({
         ipAddress: { type: String, required: true, unique: true }
     });
@@ -230,36 +230,21 @@ if (defaultGradient.value) {
 }
     socket.emit('globalState', globalState);
 
-    // 2️⃣ sluša admin kontrole
-    socket.on('globalControl', (data) => {
+socket.on('globalControl', (data) => {
+    if ('streamBlocked' in data) globalState.streamBlocked = data.streamBlocked;
+    if ('bodyBlocked' in data) globalState.bodyBlocked = data.bodyBlocked;
+    if ('animation' in data) globalState.animation = data.animation;
+    if ('speed' in data) globalState.speed = data.speed;
+    if ('text' in data) globalState.text = data.text;
 
-        // SAMO eksplicitno polja
-        if ('streamBlocked' in data) {
-            globalState.streamBlocked = data.streamBlocked;
-        }
+    if ('textGlitter' in data) globalState.textGlitter = data.textGlitter;  // dodato
 
-        if ('bodyBlocked' in data) {
-            globalState.bodyBlocked = data.bodyBlocked;
-        }
-
-        if ('animation' in data) {
-            globalState.animation = data.animation;
-        }
-
-        if ('speed' in data) {
-            globalState.speed = data.speed;
-        }
-
-        if ('text' in data) {
-            globalState.text = data.text;
-        }
-
-        // 3️⃣ emituj svim klijentima
-        io.emit('globalState', globalState);
-    });
+    io.emit('globalState', globalState);
+});
   socket.on('disconnect', () => {});
     });
 };
+
 
 
 
