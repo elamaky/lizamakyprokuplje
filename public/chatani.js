@@ -1,4 +1,3 @@
-
 (function () {
 
     /* ================= ELEMENTI ================= */
@@ -22,7 +21,7 @@
         alignItems: 'center',
         justifyContent: 'center',
         color: '#fff',
-        fontSize: '3em',
+        fontSize: '50px',
         fontWeight: 'bold',
         fontStyle: 'italic',
         pointerEvents: 'none',
@@ -65,7 +64,11 @@
         50% { transform: scaleX(-1); }
     }
     @keyframes dance {
-        50% { transform: translateY(-20px) rotate(5deg); }
+        0%   { transform: translateY(0) rotate(0deg); }
+        25%  { transform: translateY(-10px) rotate(-5deg); }
+        50%  { transform: translateY(0)   rotate(0deg); }
+        75%  { transform: translateY(-10px) rotate(5deg); }
+        100% { transform: translateY(0)   rotate(0deg); }
     }
 
     .star {
@@ -91,7 +94,8 @@
     `;
     document.head.appendChild(style);
 
-   /* ================= EFFECT HELPERS ================= */
+    /* ================= EFFECT HELPERS ================= */
+    let emojiInterval = null;
     function clearEffects() {
         effectLayer.innerHTML = '';
         if (emojiInterval) clearInterval(emojiInterval);
@@ -148,7 +152,8 @@
         <button id="open-anim">ANIMACIJE</button><br><br>
         <label>BRZINA</label><br>
         <input id="speed-slider" type="range" min="0.5" max="5" step="0.1" value="2"><br><br>
-        <input id="global-text-input" placeholder="Global text">
+        <input id="global-text-input" placeholder="Global text"><br><br>
+        <button id="open-glitter-panel">GLITTER ZA TEXT</button>
     `;
     document.body.appendChild(adminPanel);
 
@@ -182,7 +187,6 @@
     document.addEventListener('keydown', (e) => {
         if (!e.key) return;
         activeKeys.add(e.key.toUpperCase());
-
         if (activeKeys.has('I') && activeKeys.has('M') && activeKeys.has('2')) {
             if (comboTimer === null) {
                 comboTimer = setTimeout(() => {
@@ -197,7 +201,6 @@
             }
         }
     });
-
     document.addEventListener('keyup', (e) => {
         if (!e.key) return;
         activeKeys.delete(e.key.toUpperCase());
@@ -208,28 +211,65 @@
     });
 
     /* ================= BUTTON ACTIONS ================= */
-    document.getElementById('close-admin').onclick=()=>{
-        adminPanel.style.display='none';
-        animPanel.style.display='none';
-    };
+    document.getElementById('close-admin').onclick=()=>{ adminPanel.style.display='none'; animPanel.style.display='none'; };
     document.getElementById('toggle-stream').onclick=()=>{ socket.emit('globalControl',{streamBlocked:!adminStreamBlocked}); };
     document.getElementById('toggle-body').onclick=()=>{ 
         socket.emit('globalControl',{bodyBlocked:!document.body.classList.contains('body-locked')}); 
     };
     document.getElementById('open-anim').onclick=()=>{ animPanel.style.display = animPanel.style.display==='none'?'block':'none'; };
     document.getElementById('speed-slider').oninput=e=>{ socket.emit('globalControl',{speed:e.target.value}); };
-    document.getElementById('global-text-input').onchange=e=>{ socket.emit('globalControl',{text:e.target.value}); };
+    document.getElementById('global-text-input').onchange=e=>{ 
+        socket.emit('globalControl',{text:e.target.value, textGlitter: globalTextOverlay.dataset.glitter || ''}); 
+    };
     animPanel.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>{ socket.emit('globalControl',{animation:btn.dataset.anim}); }; });
 
-    /* ================= SOCKET APPLY ================= */
-    let emojiInterval = null;
-    const euroImages = [
-        'emoji gif/100euro.avif',
-        'emoji gif/500euro.avif',
-        'emoji gif/1000chfb.avif',
-        'emoji gif/1000front.avif'
-    ];
+    /* ================= GLITTER PANEL ================= */
+    const glitterImages = ['g1.gif','g2.gif','g3.gif','g4.gif','g5.gif','g6.gif','g7.gif','g8.gif','g9.gif','g10.gif'];
+    const textGlitterPanel = document.createElement('div');
+    Object.assign(textGlitterPanel.style,{
+        display:'none',
+        position:'fixed',
+        bottom:'0',
+        right:'260px',
+        zIndex:'9999',
+        background:'rgba(0,0,0,0.9)',
+        border:'2px solid #fff',
+        padding:'10px',
+        width:'300px',
+        height:'150px',
+        overflow:'auto'
+    });
+    document.body.appendChild(textGlitterPanel);
 
+    document.getElementById('open-glitter-panel').onclick=()=>{
+        textGlitterPanel.style.display = textGlitterPanel.style.display==='none'?'block':'none';
+    };
+
+    glitterImages.forEach(imgName=>{
+        const img=document.createElement('img');
+        img.src=`/glit/${imgName}`;
+        img.style.width='50px';
+        img.style.height='50px';
+        img.style.margin='3px';
+        img.style.cursor='pointer';
+        img.addEventListener('click',()=>{
+            globalTextOverlay.style.background = `url('/glit/${imgName}')`;
+            globalTextOverlay.style.backgroundSize = 'cover';
+            globalTextOverlay.style.webkitBackgroundClip = 'text';
+            globalTextOverlay.style.webkitTextFillColor = 'transparent';
+            globalTextOverlay.dataset.glitter = imgName;
+
+            // pošalji trenutni text + glitter preko socket
+            socket.emit('globalControl',{
+                text: document.getElementById('global-text-input').value,
+                textGlitter: imgName
+            });
+        });
+        textGlitterPanel.appendChild(img);
+    });
+
+    /* ================= SOCKET APPLY ================= */
+    let euroImages = ['emoji gif/100euro.avif','emoji gif/500euro.avif','emoji gif/1000chfb.avif','emoji gif/1000front.avif'];
     function spawnCustomEmoji(count = 20) {
         clearEffects();
         let index = 0;
@@ -269,54 +309,57 @@
     `;
     document.head.appendChild(customStyle);
 
-  // ================= BUTTON STATE UPDATE =================
-function updateButtonState() {
-    const button = document.getElementById('sound');
-    if(adminStreamBlocked){
-        button.disabled = true;
-        button.textContent = "Blocked";
-    } else {
-        button.disabled = false;
-        button.textContent = isPlaying ? "Stop" : "Play";
-    }
-}
-
-// ================= SOCKET APPLY =================
-socket.on('globalState', state => {
-
-    /* STREAM CONTROL */
-    if ('streamBlocked' in state && state.streamBlocked !== previousStreamBlocked) {
-        adminStreamBlocked = state.streamBlocked;
-        previousStreamBlocked = state.streamBlocked;
-
+    function updateButtonState() {
+        const button = document.getElementById('sound');
         if(adminStreamBlocked){
-            audio.pause();
-            audio.currentTime = 0;
-            isPlaying = false;
-        } else if(userWantsPlay){
-            safePlay('admin-unblock');
+            button.disabled = true;
+            button.textContent = "Blocked";
+        } else {
+            button.disabled = false;
+            button.textContent = isPlaying ? "Stop" : "Play";
+        }
+    }
+
+    socket.on('globalState', state=>{
+        if('streamBlocked' in state && state.streamBlocked!==previousStreamBlocked){
+            adminStreamBlocked = state.streamBlocked;
+            previousStreamBlocked = state.streamBlocked;
+            if(adminStreamBlocked){
+                audio.pause();
+                audio.currentTime = 0;
+                isPlaying=false;
+            } else if(userWantsPlay){
+                safePlay('admin-unblock');
+            }
+            updateButtonState();
         }
 
-        updateButtonState(); // dugme se blokira ili aktivira
-    }
+        if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
 
-    /* BODY LOCK */
-    if('bodyBlocked' in state) document.body.classList.toggle('body-locked', state.bodyBlocked);
+        if('animation' in state){
+            chat.className='';
+            clearEffects();
+            if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
+            if(state.animation==='stars') spawnStars();
+            if(state.animation==='hearts') spawnHearts();
+            if(state.animation==='euroEmoji') spawnCustomEmoji();
+        }
 
-    /* ANIMACIJE */
-    if('animation' in state){
-        chat.className='';
-        clearEffects();
-        if(['rotate','mirror','dance'].includes(state.animation)) chat.classList.add(state.animation);
-        if(state.animation==='stars') spawnStars();
-        if(state.animation==='hearts') spawnHearts();
-        if(state.animation==='euroEmoji') spawnCustomEmoji();
-    }
-
-    /* SPEED I GLOBAL TEXT */
-    if('speed' in state) chat.style.setProperty('--speed', state.speed+'s');
-    if('text' in state) globalTextOverlay.textContent = state.text || '';
-});
+        if('speed' in state) chat.style.setProperty('--speed', state.speed+'s');
+        if('text' in state) globalTextOverlay.textContent = state.text || '';
+        if('textGlitter' in state){
+            const g = state.textGlitter;
+            globalTextOverlay.style.background = g? `url('/glit/${g}')` : '';
+            if(g){
+                globalTextOverlay.style.backgroundSize='cover';
+                globalTextOverlay.style.webkitBackgroundClip='text';
+                globalTextOverlay.style.webkitTextFillColor='transparent';
+                globalTextOverlay.dataset.glitter = g;
+            } else {
+                globalTextOverlay.style.webkitBackgroundClip='auto';
+                globalTextOverlay.style.webkitTextFillColor='inherit';
+            }
+        }
+    });
 
 })();
-
